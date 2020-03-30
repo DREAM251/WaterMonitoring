@@ -34,29 +34,33 @@ QDateTime MeasureMode::getNextPoint()
 
 
 
-ElementInterface::ElementInterface(const QString &element, QObject *parent) :
+ElementInterface::ElementInterface(ElementType element, QObject *parent) :
     QObject(parent),
     MeasureMode(),
     timer(new QTimer(this)),
     counter(0),
     currentTaskType(TT_Idle),
     protocol(NULL),
-    errorProc(NULL),
-    currentTask(NULL)
+    currentTask(NULL),
+    factory(element)
 {
-    ElementFactory ef(element);
-    flowTable = ElementFactory::
+    for (int i = 1 + (int)TT_Idle; i < (int)TT_END; i++)
+    {
+        TaskType tt = (TaskType)(i);
 
+        ITask *it = factory.getTask(tt);
+        if (it)
+            flowTable.insert(tt, it);
+    }
+    protocol = factory.getProtocol();
 
     timer->start(100);
     connect(timer, SIGNAL(timeout()), this, SLOT(TimerEvent()));
-
 }
 
 ElementInterface::~ElementInterface()
 {
     qDeleteAll(flowTable.values());
-    if (errorProc) delete errorProc;
     if (protocol) delete protocol;
 }
 
@@ -98,9 +102,35 @@ void ElementInterface::TimerEvent()
 {
     counter++;
 
-    if (counter % 10 == 0)
+    if (counter % 5 == 0)
+    {
+        if (currentTask && currentTaskType != TT_Idle)
+        {
+            currentTask->TRecvEvent();
+        }
+    }
+
+    if (counter % 10 == 0) {
         MMTimerEvent();
 
+        if (currentTask) {
+            currentTask->TTimeEvent();
+
+            switch (currentTask->isWorking()) {
+            case ITask::Error:
+                currentTaskType = TT_Idle;
+                currentTask = NULL;
+                startTask(TT_ErrorProc);
+                break;
+            case ITask::Idle:
+                currentTaskType = TT_Idle;
+                currentTask = NULL;
+                break;
+            default:
+                break;
+            }
+        }
+    }
 }
 
 void ElementInterface::externTriggerMeasure()

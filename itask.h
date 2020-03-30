@@ -2,6 +2,7 @@
 #define ITASK_H
 
 #include <QString>
+#include <QTimer>
 #include <QVariant>
 #include "iprotocol.h"
 #include <QObject>
@@ -9,13 +10,17 @@
 
 enum TaskType
 {
-    TT_Idle,
+    TT_Idle = 0,
     TT_Measure,
     TT_ZeroCalibration,
     TT_SampleCalibration,
     TT_ZeroCheck,
     TT_SampleCheck,
-    TT_SpikedCheck
+    TT_SpikedCheck,
+    TT_ErrorProc,
+    TT_STOP,
+
+    TT_END /*end flag, don't use*/
 };
 
 
@@ -24,22 +29,52 @@ class IInsFlow
 
 };
 
-class ITask : public QObject
+class ITask
 {
-    Q_OBJECT
-
 public:
-    ITask(QObject *parent = NULL);
+    enum TaskStatus
+    {
+        Error,
+        Idle,
+        Busy
+    };
 
-    virtual bool start(QList<QVariant> arguments, IProtocol *protocol);
-    void stop();
+    ITask();
+    virtual ~ITask(){;}
+
+    virtual bool start(const QList<QVariant> &arguments, IProtocol *protocol);
+    virtual void stop();
+    virtual void TTimeEvent();
+    virtual void TRecvEvent();
+    virtual bool collectBlankValues();
+    virtual bool collectColorValues();
+    inline bool isWorking(){return workFlag;}
+
+protected:
+    virtual void decodeArguments(const QList<QVariant> &){;}
+    virtual QStringList loadCommands() = 0;
+    virtual void fixCommands(const QStringList &sources);
 
 private:
-    IProtocol *protocol;
+    IProtocol *protocol; // shared
+    QStringList commandList;
+    int current;
+    QString cmd;
+    int tickCount;
+    bool workFlag;
+    bool isError;
 };
+
 
 class MeasureTask : public ITask
 {
+    struct WorkArguments
+    {
+        int range;
+        bool rangeLock;
+
+    };
+
 public:
     // arguments:
     // 0 : range         int

@@ -7,17 +7,26 @@
 #include <QHash>
 #include <QString>
 
+enum ElementType
+{
+    ET_CODCr = 0,
+    ET_NH3N,
+    ET_TP,
+    ET_TN,
+    ET_CODMN,
+    ET_TPb
+};
+
 class ElementFactory
 {
 public:
-    ElementFactory(const QString &elementName = "NH3N");
+    ElementFactory(ElementType elementName);
 
-    QHash<TaskType, ITask *> getFlowTable();
+    ITask *getTask(TaskType type);
     IProtocol *getProtocol();
-    ITask * errorProc;
 
 private:
-    QString element;
+    ElementType element;
 };
 
 #endif // ELEMENTFACTORY_H

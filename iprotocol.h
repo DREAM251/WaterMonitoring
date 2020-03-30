@@ -5,6 +5,7 @@ class IProtocol
 {
 public:
     IProtocol();
+
 };
 
 #endif // IPROTOCOL_H

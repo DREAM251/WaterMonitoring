@@ -40,7 +40,7 @@ class ElementInterface : public QObject,
     Q_OBJECT
 
 public:
-    ElementInterface(const QString &element, QObject *parent = NULL);
+    ElementInterface(ElementType element, QObject *parent = NULL);
     ~ElementInterface();
 
     int getLastMeasureTime();
@@ -60,8 +60,8 @@ private:
 
     QHash<TaskType, ITask *> flowTable;
     IProtocol *protocol;
-    ITask *errorProc;
     ITask *currentTask;
+    ElementFactory factory;
 };
 
 #endif // ELEMENTINTERFACE_H
