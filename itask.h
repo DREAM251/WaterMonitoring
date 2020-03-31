@@ -23,46 +23,40 @@ enum TaskType
     TT_END /*end flag, don't use*/
 };
 
-
-class IInsFlow
+enum ErrorFlag
 {
-
+    EF_NoError = 0,
+    EF_HeatError,
+    EF_SamplingError,
+    EF_BlankError
 };
 
 class ITask
 {
 public:
-    enum TaskStatus
-    {
-        Error,
-        Idle,
-        Busy
-    };
-
     ITask();
     virtual ~ITask(){;}
 
     virtual bool start(const QList<QVariant> &arguments, IProtocol *protocol);
     virtual void stop();
-    virtual void TTimeEvent();
-    virtual void TRecvEvent();
-    virtual bool collectBlankValues();
-    virtual bool collectColorValues();
+    virtual void timeEvent();
+    virtual void recvEvent(){}
     inline bool isWorking(){return workFlag;}
+    inline ErrorFlag isError(){return errorFlag;}
 
 protected:
     virtual void decodeArguments(const QList<QVariant> &){;}
     virtual QStringList loadCommands() = 0;
-    virtual void fixCommands(const QStringList &sources);
+    virtual void fixCommands(const QStringList &sources){commandList = sources;}
 
 private:
     IProtocol *protocol; // shared
     QStringList commandList;
-    int current;
+    int cmdIndex;
     QString cmd;
-    int tickCount;
+
     bool workFlag;
-    bool isError;
+    ErrorFlag errorFlag;
 };
 
 
@@ -72,15 +66,42 @@ class MeasureTask : public ITask
     {
         int range;
         bool rangeLock;
+        int pipe;
+
+        float k;
+        float b;
+        float a;
+        float b;
+        float c;
 
     };
 
 public:
+    MeasureTask();
+
     // arguments:
     // 0 : range         int
     // 1 : rangeLock     bool
     // 2 : ...
-    bool start(QList<QVariant> arguments, IProtocol *protocol);
+    bool start(const QList<QVariant> &arguments, IProtocol *protocol);
+
+    virtual bool collectBlankValues();
+    virtual bool collectColorValues();
+
+    virtual void dataProcess();
+    virtual void recvEvent();
+    virtual void decodeArguments(const QList<QVariant> &arguments);
+    virtual QStringList loadCommands();
+
+private:
+    int blankSampleTimes;
+    int colorSampleTimes;
+    int blankValue;
+    int colorValue;
+    WorkArguments args;
+
+    double vabs;
+    double conc;
 };
 
 

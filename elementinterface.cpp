@@ -106,7 +106,7 @@ void ElementInterface::TimerEvent()
     {
         if (currentTask && currentTaskType != TT_Idle)
         {
-            currentTask->TRecvEvent();
+            currentTask->recvEvent();
         }
     }
 
@@ -114,20 +114,18 @@ void ElementInterface::TimerEvent()
         MMTimerEvent();
 
         if (currentTask) {
-            currentTask->TTimeEvent();
+            currentTask->timeEvent();
 
-            switch (currentTask->isWorking()) {
-            case ITask::Error:
+            if (currentTask->isError() != EF_NoError) {
                 currentTaskType = TT_Idle;
                 currentTask = NULL;
                 startTask(TT_ErrorProc);
-                break;
-            case ITask::Idle:
+            }
+            else if (!currentTask->isWorking()) {
                 currentTaskType = TT_Idle;
                 currentTask = NULL;
-                break;
-            default:
-                break;
+
+                // ...
             }
         }
     }

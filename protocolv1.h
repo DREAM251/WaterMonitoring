@@ -1,7 +1,9 @@
 #ifndef PROTOCOLV1_H
 #define PROTOCOLV1_H
 
-class ProtocolV1
+#include "iprotocol.h"
+
+class ProtocolV1 : public IProtocol
 {
 public:
     ProtocolV1();

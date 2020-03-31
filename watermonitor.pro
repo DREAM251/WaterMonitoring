@@ -8,6 +8,7 @@ QT       += core gui sql net
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+include(qextserialport/qextserialport.pri)
 #DEFINES += NO_PROFILE
 TARGET = cmplatform1
 TEMPLATE = app

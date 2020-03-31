@@ -33,5 +33,5 @@ ITask *ElementFactory::getTask(TaskType type)
 
 IProtocol *ElementFactory::getProtocol()
 {
-
+    return new ProtocolV1();
 }
