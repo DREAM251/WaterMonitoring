@@ -2,14 +2,9 @@
 #include "protocolv1.h"
 #include "nh3ntask.h"
 
-ElementFactory::ElementFactory(const QString &elementName) :
-    element(elementName)
+ElementFactory::ElementFactory(ElementType type) :
+    element(type)
 {
-}
-
-ElementFactory::ElementFactory(ElementType elementName)
-{
-
 }
 
 ITask *ElementFactory::getTask(TaskType type)
@@ -18,13 +13,15 @@ ITask *ElementFactory::getTask(TaskType type)
 
     switch (type)
     {
-    case TT_Measure:break;
-    case TT_ZeroCalibration:break;
-    case TT_SampleCalibration:break;
-    case TT_ZeroCheck:break;
-    case TT_SampleCheck:break;
-    case TT_SpikedCheck:break;
-    case TT_ErrorProc:break;
+    case TT_Measure:it = static_cast<ITask *>(new MeasureTask());break;
+    case TT_ZeroCalibration:it = static_cast<ITask *>(new MeasureTask());break;
+    case TT_SampleCalibration:it = static_cast<ITask *>(new MeasureTask());break;
+    case TT_ZeroCheck:it = static_cast<ITask *>(new MeasureTask());break;
+    case TT_SampleCheck:it = static_cast<ITask *>(new MeasureTask());break;
+    case TT_SpikedCheck:it = static_cast<ITask *>(new MeasureTask());break;
+    case TT_ErrorProc:it = static_cast<ITask *>(new MeasureTask());break;
+    case TT_STOP:it = static_cast<ITask *>(new StopTask());break;
+    case TT_CLEAN:it = static_cast<ITask *>(new CleaningTask());break;
     default:
         break;
     }
@@ -33,5 +30,5 @@ ITask *ElementFactory::getTask(TaskType type)
 
 IProtocol *ElementFactory::getProtocol()
 {
-    return new ProtocolV1();
+    return static_cast<IProtocol *>(new ProtocolV1());
 }

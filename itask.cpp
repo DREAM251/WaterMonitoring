@@ -16,6 +16,7 @@ bool ITask::start(const QList<QVariant> &arguments , IProtocol *sp)
     if (sp)
     {
         protocol = sp;
+        protocol->reset();
         cmdIndex = 0;
         workFlag = true;
         errorFlag = EF_NoError;
@@ -31,6 +32,8 @@ bool ITask::start(const QList<QVariant> &arguments , IProtocol *sp)
 
 void ITask::stop()
 {
+    if (protocol)
+        protocol->reset();
     protocol = NULL;
     workFlag = false;
 }
@@ -41,7 +44,11 @@ void ITask::timeEvent()
         return;
 
     // send next command
-    if (protocol->isIdle())
+    if (protocol->isTimeOut())
+    {
+        stop();
+    }
+    else if (protocol->isIdle())
     {
         if (cmdIndex < commandList.count())
         {
@@ -51,11 +58,35 @@ void ITask::timeEvent()
         else
             stop();
     }
-    else if (protocol->isTimeOut())
+}
+
+void ITask::recvEvent()
+{
+    if (protocol && protocol->recvNewData())
     {
-        stop();
+        if (protocol->getSender()->isHeatStep())
+        {
+            if (protocol->getSender()->getHeatTemp() >= protocol->getReceiver()->getHeatTemp())
+                protocol->skipCurrentStep();
+        }
+
+        else if (protocol->getSender()->isHeatJudgeStep())
+        {
+            if (protocol->getSender()->getHeatTemp() < protocol->getReceiver()->getHeatTemp() - 2)
+                errorFlag = EF_HeatError;
+            protocol->skipCurrentStep();
+        }
+
+        else if (protocol->getSender()->isWaterLevelJudgeStep())
+        {
+            if (protocol->getReceiver()->getWaterLevel() == 0)
+                errorFlag = EF_SamplingError;
+            protocol->skipCurrentStep();
+        }
     }
 }
+
+
 
 //
 //
@@ -89,7 +120,7 @@ bool MeasureTask::collectBlankValues()
     if (blankSampleTimes < sampleMaxTimes)
     {
         blankSampleTimes++;
-        blankValue += protocol->getLightVoltage();
+        blankValue += protocol->getSender()->getLightVoltage();
     }
 
     if (blankSampleTimes >= sampleMaxTimes)
@@ -106,7 +137,7 @@ bool MeasureTask::collectColorValues()
     if (blankSampleTimes < sampleMaxTimes)
     {
         blankSampleTimes++;
-        colorValue += protocol->getLightVoltage();
+        colorValue += protocol->getReceiver()->getLightVoltage();
     }
 
     if (colorSampleTimes >= sampleMaxTimes)
@@ -123,18 +154,19 @@ void MeasureTask::dataProcess()
     double vcolor = colorValue > 0 ? colorValue : 1;
     vabs = log10(vblank / vcolor);
 
-    conc = vabs * args.k + args.b;
+    conc = vabs * args.lineark + args.linearb;
 }
 
 void MeasureTask::recvEvent()
 {
+    ITask::recvEvent();
     if (protocol && protocol->recvNewData())
     {
-        if (protocol->isBlankStep())
+        if (protocol->getSender()->isBlankStep())
         {
             bool finished = collectBlankValues();
             if (finished) {
-                if (protocol->isBlankJudgeStep() && blankValue < 2500)
+                if (protocol->getSender()->isBlankJudgeStep() && blankValue < 2500)
                     errorFlag = EF_BlankError;
                 else if (colorSampleTimes > 0)
                     dataProcess();
@@ -143,33 +175,13 @@ void MeasureTask::recvEvent()
             }
         }
 
-        else if (protocol->isColorStep())
+        else if (protocol->getSender()->isColorStep())
         {
             bool finished = collectColorValues();
             if (finished)
                 protocol->skipCurrentStep();
             else if (blankSampleTimes > 0)
                 dataProcess();
-        }
-
-        else if (protocol->isHeatStep())
-        {
-            if (protocol->getRecvHeatTemp() >= protocol->getSentHeatTemp())
-                protocol->skipCurrentStep();
-        }
-
-        else if (protocol->isHeatJudgeStep())
-        {
-            if (protocol->getRecvHeatTemp() < protocol->getSentHeatTemp() - 2)
-                errorFlag = EF_HeatError;
-            protocol->skipCurrentStep();
-        }
-
-        else if (protocol->isWaterLevelJudgeStep())
-        {
-            if (protocol->getRecvWaterLevel() == 0)
-                errorFlag = EF_SamplingError;
-            protocol->skipCurrentStep();
         }
     }
 }
@@ -188,6 +200,24 @@ void MeasureTask::decodeArguments(const QList<QVariant> &arguments)
 
 QStringList MeasureTask::loadCommands()
 {
-    QString path = "cleaning.txt";
+    QStringList paths, commands;
+    paths << "cleaning1.txt" << "sampling.txt" ; // ...
+
+    for (int i = 0; i < paths.count(); i++)
+        commands += loadCommandFileLines(paths[i]);
+    return commands;
+}
+
+
+QStringList CleaningTask::loadCommands()
+{
+    QString path = "cleaning1.txt";
+    return loadCommandFileLines(path);
+}
+
+
+QStringList StopTask::loadCommands()
+{
+    QString path = "stop.txt";
     return loadCommandFileLines(path);
 }

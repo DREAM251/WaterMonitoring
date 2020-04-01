@@ -47,6 +47,7 @@ public:
     int getCurrentWorkTime();
 
     int startTask(TaskType type);
+    void stopTasks();
     QList<QVariant> getStartArguments(TaskType type);
 
 public Q_SLOTS:

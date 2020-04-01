@@ -1,11 +1,28 @@
 #include "iprotocol.h"
 #include <QStringList>
+#include <QDebug>
+
+#define HEAD_LENGTH   7
+
+QByteArray checkSum(const QByteArray &by)
+{
+    int sum = 0;
+    for (int i = 0; i < by.count(); i++)
+        sum += (uint)(by[i]);
+
+    return QByteArray(1, (char)(sum % 256)).toHex().toUpper();
+}
+
 
 IProtocol::IProtocol(const QString &portParamter) :
+    timeoutFlag(false),
+    newDataFlag(false),
+    timeCount(0),
     timer(new QTimer(this)),
     port(new QextSerialPort(QextSerialPort::EventDriven, this)),
-    counter(new Counter(this)),
-    timeoutCounter(new Counter(this))
+    counter(new ProtocolCounter(this)),
+    sender(new Sender()),
+    receiver(new Receiver())
 {
     QStringList strlist = portParamter.split(",");
     if (strlist.count() == 5)
@@ -32,17 +49,24 @@ IProtocol::IProtocol(const QString &portParamter) :
                 timer->start(100);
         } else {
             timer->stop();
-            qDebug() << __func__ << ": com port open failed";
+            qDebug() << "com port open failed";
         }
     }
     else
-        qDebug() << __func__ << ": parameters error" << portParamter;
+        qDebug() << "parameters error" << portParamter;
 
-    connect(timer, SIGNAL(timeout()), SLOT(onReadyRead()));
-    connect(port, SIGNAL(readyRead()), SLOT(onReadyRead()));
+    connect(timer, SIGNAL(timeout()), this, SLOT(onReadyRead()));
+    connect(port, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
+    connect(counter, SIGNAL(timing()), this, SLOT(onCounterTimeout()));
 }
 
-void IProtocol::recvNewData()
+IProtocol::~IProtocol()
+{
+    delete sender;
+    delete receiver;
+}
+
+bool IProtocol::recvNewData()
 {
     if (newDataFlag)
     {
@@ -52,17 +76,32 @@ void IProtocol::recvNewData()
     return false;
 }
 
-void IProtocol::isIdle()
+void IProtocol::reset()
 {
-    counter->isIdle();
+    timeoutFlag = false;
+    newDataFlag = false;
+    timeCount = 0;
+    counter->stop();
+}
+
+
+QByteArray IProtocol::addHeader(const QByteArray &src)
+{
+    QByteArray h = "#";
+    QByteArray len = (QString("000") + QString::number(src.length())).right(3).toLatin1();
+    QByteArray cs = checkSum(QByteArray("1" + src));
+    QByteArray ver = "1";
+    return h + len + cs + ver + src;
 }
 
 void IProtocol::sendData(const QString &cmd)
 {
     if (port->isOpen()) {
-        sent = cmd.toLatin1();
-        port->write(sent);
-        timeoutCounter->start(5);
+        sender->sent = cmd.toLatin1();
+        port->write(addHeader(sender->sent));
+        counter->start(sender->getStepTime());
+        counter->lock();
+        timeCount = 0;
     }
 }
 
@@ -71,27 +110,23 @@ void IProtocol::skipCurrentStep()
     counter->stop();
 }
 
-QByteArray IProtocol::checkSum(const QByteArray &by)
-{
-    int sum = 0;
-    for (int i = 0; i < by.count(); i++)
-        sum += (uint)(by[i]);
-
-    return QByteArray(1, (char)(sum % 256)).toHex().toUpper();
-}
-
 void IProtocol::onReadyRead()
 {
-    int headerMaxLen = 7;
+    const int headerMaxLen = HEAD_LENGTH;
     if (port->bytesAvailable())
     {
         QByteArray recvPart = port->readAll();
+        QByteArray h = "#";
+        QByteArray ver;
+        QByteArray len;
+        QByteArray cs;
+        QByteArray sec;
 
-        if (recvPart.startsWith("#"))
+        if (recvPart.startsWith(h))
             recvTemp = recvPart;
         else
         {
-            if (recvTemp.startsWith("#"))
+            if (recvTemp.startsWith(h))
                 recvTemp += recvPart;
             else {
                 recvTemp.clear();
@@ -101,15 +136,52 @@ void IProtocol::onReadyRead()
 
         if (recvTemp.length() > headerMaxLen)
         {
-            int packetLen = recvTemp.mid(1,3).toInt();
-            if (packetLen <= recvTemp.length()) {
-                recvTemp = recvTemp.left(packetLen);
-                if (checkSum(recvTemp.right(headerMaxLen)) == recvTemp.mid(4,2)) {
-                    recv = recvTemp;
-                    newDataFlag = true;
-                } else
-                    qDebug() << __func__ << "checksum error" << recvTemp;
+            len = recvTemp.mid(1,3);
+            cs = recvTemp.mid(4,2);
+            ver = recvTemp.mid(6,1);
+
+            int packetLen = len.toInt() + HEAD_LENGTH;
+            if (packetLen > recvTemp.length())
+                return;
+            else if (packetLen < recvTemp.length()) {
+                sec = recvTemp.left(packetLen);
+                recvTemp = recvTemp.right(packetLen);
+                if (!recvTemp.startsWith(h))
+                    recvTemp.clear();
             }
+            else {
+                sec = recvTemp;
+                recvTemp.clear();
+            }
+
+            if (checkSum(sec.mid(headerMaxLen - 1)) == cs) {
+                receiver->recv = sec.mid(headerMaxLen);
+                if (receiver->getStep() == sender->getStep()) {
+                    newDataFlag = true;
+                    timeoutFlag = false;
+                    counter->unlock();
+                }
+            } else
+                qDebug() << "checksum error " << checkSum(sec.right(headerMaxLen - 1)) << cs;
+        }
+    }
+}
+
+void IProtocol::onCounterTimeout()
+{
+    if (counter->locked())
+    {
+        timeCount++;
+        int mod = timeCount % 5;
+        int times = timeCount / 5;
+
+        if (times >= 5) {
+            timeoutFlag = true;
+            counter->stop();
+        }
+        else if (mod == 0)
+        {
+            port->write(addHeader(sender->sent));
         }
     }
 }

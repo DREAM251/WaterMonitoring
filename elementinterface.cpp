@@ -92,6 +92,23 @@ int ElementInterface::startTask(TaskType type)
     return 0;
 }
 
+void ElementInterface::stopTasks()
+{
+    if (currentTask)
+        currentTask->stop();
+
+    ITask *task = flowTable.value(TT_STOP);
+    if (task) {
+        currentTask = task;
+        if (currentTask->start(getStartArguments(TT_STOP), protocol))
+        {
+            currentTaskType = TT_STOP;
+            return;
+        }
+    }
+    currentTaskType = TT_Idle;
+}
+
 QList<QVariant> ElementInterface::getStartArguments(TaskType type)
 {
     QList<QVariant> args;

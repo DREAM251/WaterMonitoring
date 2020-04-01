@@ -4,17 +4,21 @@
 #include <QObject>
 #include <QString>
 #include <QTimer>
+#include <qcoreevent.h>
 #include <qextserialport/qextserialport.h>
 
 // ¼ÆÊ±Æ÷
-class Counter : public QObject
+class ProtocolCounter : public QObject
 {
     Q_OBJECT
 
 public:
-    Counter(QObject *parent = NULL) : QObject(parent),
+    ProtocolCounter(QObject *parent = NULL) :
+        QObject(parent),
+        timerid(0),
         counts(0),
-        max(0)
+        max(0),
+        islock(false)
     {}
 
     void start(int seconds)
@@ -27,28 +31,72 @@ public:
 
     void stop()
     {
+        islock = false;
         if(timerid)
             killTimer(timerid);
         timerid = 0;
+        counts = max;
     }
 
-    bool isIdle() {return counts >= max;}
+    void lock(){islock = true;}
+    void unlock(){islock = false;}
+    bool locked() {return islock;}
 
+    bool isIdle() {return counts >= max;}
+    int getCounts() {return counts;}
+
+Q_SIGNALS:
+    void timing();
 
 protected:
     void timerEvent(QTimerEvent *event)
     {
-        if(event->timerId() == timerid) {
+        if(event->timerId() == timerid && !islock) {
             counts++;
             if (counts >= max)
                 stop();
         }
+        emit timing();
     }
 
-private:
     int timerid;
     int counts;
     int max;
+    bool islock;
+};
+
+
+class Sender
+{
+public:
+    int getStep(){return 0;}
+    int getStepTime(){return 10;}
+    int getHeatTemp(){return 0;}
+
+    bool isBlankStep(){return false;}
+    bool isColorStep(){return false;}
+    bool isHeatStep(){return false;}
+
+
+    bool getLightVoltage(){return false;}
+
+    bool isBlankJudgeStep(){return false;}
+    bool isHeatJudgeStep(){return false;}
+    bool isWaterLevelJudgeStep(){return false;}
+    QByteArray sent;
+};
+
+class Receiver
+{
+public:
+    int getStep(){return 0;}
+    int getStepTime(){return 10;}
+
+    int getHeatTemp(){return 0;}
+    int getWaterLevel(){return 0;}
+    int getLightVoltage() {return 0;}
+
+    QByteArray recv;
 };
 
 class IProtocol : public QObject
@@ -56,45 +104,38 @@ class IProtocol : public QObject
     Q_OBJECT
 
 public:
-    IProtocol(const QString &portParamter = "/dev/ttySAC0,9600,n,8,1");
+    IProtocol(const QString &portParamter = "com1,9600,n,8,1");
+    ~IProtocol();
 
-    void recvNewData();
-    void isTimeOut(){return isTimeout;}
-    void isIdle();
+    bool recvNewData();
+    bool isTimeOut(){return timeoutFlag;}
+    bool isIdle(){return counter->isIdle();}
+    void reset();
 
+    QByteArray addHeader(const QByteArray &src);
     void sendData(const QString &cmd);
     void skipCurrentStep();
 
-    void isBlankStep(){return false;}
-    void isColorStep(){return false;}
-    void isHeatStep(){return false;}
-
-    void isBlankJudgeStep(){return false;}
-    void isHeatJudgeStep(){return false;}
-    void isWaterLevelJudgeStep(){return false;}
-
-    void getRecvHeatTemp(){return false;}
-    void getSentHeatTemp(){return false;}
-    void getRecvWaterLevel(){return false;}
-    void getLightVoltage(){return false;}
-
-    QByteArray checkSum(const QByteArray &by);
+    Sender *getSender(){return sender;}
+    Receiver *getReceiver(){return receiver;}
 
 public Q_SLOTS:
     void onReadyRead();
+    void onCounterTimeout();
 
 protected:
-    bool isTimeout;
+    bool timeoutFlag;
     bool newDataFlag;
     int timeCount;
 
-    QByteArray sent;
-    QByteArray recv, recvTemp;
-
+    QByteArray recvTemp;
     QTimer *timer;
-    Counter *counter;
-    Counter *timeoutCounter;
+    ProtocolCounter *counter;
+    ProtocolCounter *timeoutCounter;
     QextSerialPort *port;
+
+    Sender *sender;
+    Receiver *receiver;
 };
 
 #endif // IPROTOCOL_H

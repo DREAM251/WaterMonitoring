@@ -2,6 +2,7 @@
 #define ITASK_H
 
 #include <QString>
+#include <QStringList>
 #include <QTimer>
 #include <QVariant>
 #include "iprotocol.h"
@@ -19,6 +20,7 @@ enum TaskType
     TT_SpikedCheck,
     TT_ErrorProc,
     TT_STOP,
+    TT_CLEAN,
 
     TT_END /*end flag, don't use*/
 };
@@ -40,16 +42,16 @@ public:
     virtual bool start(const QList<QVariant> &arguments, IProtocol *protocol);
     virtual void stop();
     virtual void timeEvent();
-    virtual void recvEvent(){}
+    virtual void recvEvent();
     inline bool isWorking(){return workFlag;}
     inline ErrorFlag isError(){return errorFlag;}
 
 protected:
     virtual void decodeArguments(const QList<QVariant> &){;}
-    virtual QStringList loadCommands() = 0;
+    virtual QStringList loadCommands(){return QStringList();}
     virtual void fixCommands(const QStringList &sources){commandList = sources;}
 
-private:
+protected:
     IProtocol *protocol; // shared
     QStringList commandList;
     int cmdIndex;
@@ -68,12 +70,11 @@ class MeasureTask : public ITask
         bool rangeLock;
         int pipe;
 
-        float k;
-        float b;
-        float a;
-        float b;
-        float c;
-
+        float lineark;
+        float linearb;
+        float quada;
+        float quadb;
+        float quadc;
     };
 
 public:
@@ -111,30 +112,33 @@ class CalibrationTask : public MeasureTask
 };
 
 
-class  QCTask : public MeasureTask
+class QCTask : public MeasureTask
 {
 
 };
 
 class StopTask : public ITask
 {
-
+public:
+    virtual QStringList loadCommands();
 };
 
 class CleaningTask : public ITask
-{
-
+{    
+public:
+    virtual QStringList loadCommands();
 };
 
 class EmptyTask : public ITask
 {
-
-
+public:
+    virtual QStringList loadCommands();
 };
 
 class DebugTask : public ITask
 {
-
+public:
+    virtual QStringList loadCommands();
 };
 
 #endif // ITASK_H
