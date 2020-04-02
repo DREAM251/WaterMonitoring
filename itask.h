@@ -6,6 +6,7 @@
 #include <QTimer>
 #include <QVariant>
 #include "iprotocol.h"
+#include "profile.h"
 #include <QObject>
 
 
@@ -19,8 +20,8 @@ enum TaskType
     TT_SampleCheck,
     TT_SpikedCheck,
     TT_ErrorProc,
-    TT_STOP,
-    TT_CLEAN,
+    TT_Stop,
+    TT_Clean,
 
     TT_END /*end flag, don't use*/
 };
@@ -36,34 +37,44 @@ enum ErrorFlag
 class ITask
 {
 public:
+    struct CorrelationArguments
+    {
+        int timeTab[20];
+        int tempTab[20];
+        int loopTab[20];
+    };
+
     ITask();
     virtual ~ITask(){;}
 
-    virtual bool start(const QList<QVariant> &arguments, IProtocol *protocol);
+    virtual bool start(Profile *prof, IProtocol *protocol);
     virtual void stop();
     virtual void timeEvent();
     virtual void recvEvent();
     inline bool isWorking(){return workFlag;}
     inline ErrorFlag isError(){return errorFlag;}
 
-protected:
-    virtual void decodeArguments(const QList<QVariant> &){;}
+    virtual void loadParameters();
+    virtual void saveParameters();
     virtual QStringList loadCommands(){return QStringList();}
-    virtual void fixCommands(const QStringList &sources){commandList = sources;}
+    virtual void fixCommands(const QStringList &sources);
 
 protected:
     IProtocol *protocol; // shared
+    Profile *profile; // shared
     QStringList commandList;
     int cmdIndex;
     QString cmd;
 
     bool workFlag;
     ErrorFlag errorFlag;
+    CorrelationArguments corArgs;
 };
 
 
 class MeasureTask : public ITask
 {
+public:
     struct WorkArguments
     {
         int range;
@@ -77,21 +88,21 @@ class MeasureTask : public ITask
         float quadc;
     };
 
-public:
     MeasureTask();
 
     // arguments:
     // 0 : range         int
     // 1 : rangeLock     bool
     // 2 : ...
-    bool start(const QList<QVariant> &arguments, IProtocol *protocol);
+    virtual bool start(Profile *prof, IProtocol *protocol);
 
     virtual bool collectBlankValues();
     virtual bool collectColorValues();
 
     virtual void dataProcess();
     virtual void recvEvent();
-    virtual void decodeArguments(const QList<QVariant> &arguments);
+    virtual void loadParameters();
+    virtual void saveParameters();
     virtual QStringList loadCommands();
 
 private:

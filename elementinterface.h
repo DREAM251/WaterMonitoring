@@ -2,6 +2,7 @@
 #define ELEMENTINTERFACE_H
 
 #include "elementfactory.h"
+#include "profile.h"
 #include <QDateTime>
 #include <QObject>
 #include <QTimer>
@@ -17,7 +18,8 @@ public:
         AMT_Extern
     };
 
-    MeasureMode();
+    MeasureMode(ElementType element);
+    ~MeasureMode();
 
     bool startAutoMeasure(AutoMeasureMode mode, const QString &parameter);
     void stopAutoMeasure();
@@ -32,6 +34,8 @@ public:
 private:
     bool workFlag;
     AutoMeasureMode mode;
+    Profile *profile;
+    ElementType element;
 };
 
 class ElementInterface : public QObject,

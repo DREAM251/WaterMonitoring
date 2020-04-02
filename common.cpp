@@ -1,5 +1,4 @@
 #include "common.h"
-
 #include <QFile>
 
 QStringList loadCommandFileLines(const QString &filePath)

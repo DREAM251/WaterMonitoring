@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     elementfactory.cpp \
     protocolv1.cpp \
     profile.cpp \
-    common.cpp
+    common.cpp \
+    instructioneditor.cpp
 
 HEADERS  += funwindow.h \
     systemwindow.h \
@@ -37,7 +38,8 @@ HEADERS  += funwindow.h \
     elementfactory.h \
     protocolv1.h \
     profile.h \
-    common.h
+    common.h \
+    instructioneditor.h
 
 FORMS    += funwindow.ui \
     systemwindow.ui \

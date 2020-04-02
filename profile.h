@@ -16,12 +16,18 @@
 class Profile
 {
 public:
-    static void initProfile(const QString &dbname);
-    static void saveValue(char *_class, char *_value, const QVariant &value);
-    static QVariant loadValue(char *_class, char *_value);
+    Profile(const QString &name);
+
+    void initProfile(const QString &dbname);
+
+    void beginSection(const QString &section);
+    void endSection();
+    void saveValue(const QString &name, const QVariant &value);
+    QVariant loadValue(const QString &name);
 
 private:
-    static QSqlDatabase *profileDB;
+    QString sectionName;
+    QSqlDatabase *profileDB;
 };
 
 

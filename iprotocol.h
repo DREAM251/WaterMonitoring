@@ -65,37 +65,68 @@ protected:
     bool islock;
 };
 
-
 class Sender
 {
 public:
-    int getStep(){return 0;}
-    int getStepTime(){return 10;}
-    int getHeatTemp(){return 0;}
+    Sender(const QByteArray &src);
+    Sender();
 
-    bool isBlankStep(){return false;}
-    bool isColorStep(){return false;}
-    bool isHeatStep(){return false;}
+    // data section
+    QByteArray data();
+    QByteArray rawData() {return sent;}
+    int getStep();
+    int getStepTime();
+    int getHeatTemp();
+    int getLightVoltage();
 
+    void setTime(int seconds);
+    void setTemp(int temp);
 
-    bool getLightVoltage(){return false;}
+    // control section
+    int loopFix();
+    int timeFix();
+    int tempFix();
 
-    bool isBlankJudgeStep(){return false;}
-    bool isHeatJudgeStep(){return false;}
-    bool isWaterLevelJudgeStep(){return false;}
+    bool isBlankStep();
+    bool isColorStep();
+    bool isHeatStep();
+    bool isBlankJudgeStep();
+    bool isHeatJudgeStep();
+    bool isWaterLevelJudgeStep();
+
+private:
+    // sent data format
+    //   header              data               gap  control
+    //           ---------------------------------------------
+    //           | 100 ......................... | : |  xxxx |
+    //           ----------------------------------- ---------
     QByteArray sent;
 };
 
 class Receiver
 {
 public:
-    int getStep(){return 0;}
-    int getStepTime(){return 10;}
+    Receiver(const QByteArray &src);
+    Receiver();
 
-    int getHeatTemp(){return 0;}
-    int getWaterLevel(){return 0;}
-    int getLightVoltage() {return 0;}
+    // return value
+    //  -1 : error, 0 : ok, 1 : missing
+    int check();
+    QByteArray data();
 
+    int getStep();
+    int getStepTime();
+
+    int getHeatTemp();
+    int getWaterLevel();
+    int getLightVoltage();
+
+private:
+    //recv data format
+    //  header              data               gap  control
+    //----------------------------------------
+    //|#xxxcc1 | 100 ........................|
+    //----------------------------------------
     QByteArray recv;
 };
 
@@ -104,7 +135,7 @@ class IProtocol : public QObject
     Q_OBJECT
 
 public:
-    IProtocol(const QString &portParamter = "com1,9600,n,8,1");
+    IProtocol(const QString &portParamter = "com5,9600,n,8,1");
     ~IProtocol();
 
     bool recvNewData();
@@ -112,12 +143,11 @@ public:
     bool isIdle(){return counter->isIdle();}
     void reset();
 
-    QByteArray addHeader(const QByteArray &src);
     void sendData(const QString &cmd);
     void skipCurrentStep();
 
-    Sender *getSender(){return sender;}
-    Receiver *getReceiver(){return receiver;}
+    Sender getSender(){return dataSender;}
+    Receiver getReceiver(){return dataReceiver;}
 
 public Q_SLOTS:
     void onReadyRead();
@@ -134,8 +164,8 @@ protected:
     ProtocolCounter *timeoutCounter;
     QextSerialPort *port;
 
-    Sender *sender;
-    Receiver *receiver;
+    Sender dataSender;
+    Receiver dataReceiver;
 };
 
 #endif // IPROTOCOL_H

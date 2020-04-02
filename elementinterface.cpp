@@ -1,9 +1,26 @@
 #include "elementinterface.h"
 #include "profile.h"
 
-MeasureMode::MeasureMode() :
-    workFlag(false)
+MeasureMode::MeasureMode(ElementType element) :
+    workFlag(false),
+    element(element)
 {
+    QString str;
+    switch (element)
+    {
+    case ET_CODCr:str = "codcr"; break;
+    case ET_NH3N:str = "nh3n"; break;
+    case ET_TP:str = "tp"; break;
+    case ET_TN:str = "tn"; break;
+    case ET_CODMN:str = "codmn"; break;
+    case ET_TPb:str = "tpb"; break;
+    }
+    profile = new Profile(str);
+}
+
+MeasureMode::~MeasureMode()
+{
+    delete profile;
 }
 
 bool MeasureMode::startAutoMeasure(MeasureMode::AutoMeasureMode mode, const QString &parameter)
@@ -36,7 +53,7 @@ QDateTime MeasureMode::getNextPoint()
 
 ElementInterface::ElementInterface(ElementType element, QObject *parent) :
     QObject(parent),
-    MeasureMode(),
+    MeasureMode(element),
     timer(new QTimer(this)),
     counter(0),
     currentTaskType(TT_Idle),
@@ -96,22 +113,36 @@ void ElementInterface::stopTasks()
 {
     if (currentTask)
         currentTask->stop();
+    currentTaskType = TT_Idle;
 
-    ITask *task = flowTable.value(TT_STOP);
+    ITask *task = flowTable.value(TT_Stop);
     if (task) {
         currentTask = task;
-        if (currentTask->start(getStartArguments(TT_STOP), protocol))
+        if (currentTask->start(getStartArguments(TT_Stop), protocol))
         {
-            currentTaskType = TT_STOP;
-            return;
+            currentTaskType = TT_Stop;
         }
     }
-    currentTaskType = TT_Idle;
 }
 
 QList<QVariant> ElementInterface::getStartArguments(TaskType type)
 {
     QList<QVariant> args;
+    switch (type)
+    {
+    case TT_Measure:break;
+    case TT_ZeroCalibration:break;
+    case TT_SampleCalibration:break;
+    case TT_ZeroCheck:break;
+    case TT_SampleCheck:break;
+    case TT_SpikedCheck:break;
+    case TT_ErrorProc:break;
+    case TT_Stop:break;
+    case TT_Clean:break;
+    default:
+        break;
+    }
+
     return args;
 }
 

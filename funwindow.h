@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "elementinterface.h"
+#include "instructioneditor.h"
 
 namespace Ui {
 class FunWindow;
@@ -18,14 +19,13 @@ public:
 
 private slots:
     void on_pushButton_clicked();
-
     void on_pushButton_2_clicked();
-
     void on_pushButton_3_clicked();
 
 private:
     Ui::FunWindow *ui;
     ElementInterface *ei;
+    InstructionEditor *instructionEditor;
 };
 
 #endif // FUNWINDOW_H

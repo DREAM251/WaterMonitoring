@@ -2,7 +2,7 @@
 #include <QStringList>
 #include <QDebug>
 
-#define HEAD_LENGTH   7
+#define HEAD_LENGTH  7
 
 QByteArray checkSum(const QByteArray &by)
 {
@@ -13,6 +13,102 @@ QByteArray checkSum(const QByteArray &by)
     return QByteArray(1, (char)(sum % 256)).toHex().toUpper();
 }
 
+Sender::Sender(const QByteArray &src) :
+    sent(src)
+{
+}
+
+Sender::Sender(){}
+
+QByteArray Sender::data()
+{
+    int index = sent.indexOf(':');
+    if (index < 0)
+        index = sent.length();
+
+    QByteArray da = sent.left(index);
+
+    return "#" + (QString("000") + QString::number(index)).right(3).toLatin1()
+            + checkSum(QByteArray("1" + da)) + "1" + da;
+}
+
+int Sender::getStep(){return sent.left(4).toInt();}
+int Sender::getStepTime(){return sent.mid(4, 4).toInt();}
+
+int Sender::getHeatTemp(){return 0;}
+
+int Sender::getLightVoltage(){return 0;}
+
+void Sender::setTime(int seconds){sent.replace(4,4, QString("0000%1").arg(seconds).right(4).toLatin1());}
+
+void Sender::setTemp(int temp)
+{
+
+}
+
+int Sender::timeFix(){return sent.mid(8, 2).toInt();}
+int Sender::tempFix(){return sent.mid(10, 2).toInt();}
+int Sender::loopFix(){return sent.mid(12, 2).toInt();}
+
+bool Sender::isBlankStep(){return false;}
+
+bool Sender::isColorStep(){return false;}
+
+bool Sender::isHeatStep(){return false;}
+
+bool Sender::isBlankJudgeStep(){return false;}
+
+bool Sender::isHeatJudgeStep(){return false;}
+
+bool Sender::isWaterLevelJudgeStep(){return false;}
+
+
+Receiver::Receiver(const QByteArray &src) :
+    recv(src)
+{}
+Receiver::Receiver(){}
+
+int Receiver::check()
+{
+    if (!recv.startsWith("#"))
+        return -1;
+
+    if (recv.length() < HEAD_LENGTH)
+        return 1;
+
+    int len = recv.mid(1,3).toInt();
+    if (len < 1)
+        return -2;
+
+    if (recv.length() < len + HEAD_LENGTH)
+        return 2;
+    else if (recv.length() > len + HEAD_LENGTH)
+        recv = recv.left(len + HEAD_LENGTH);
+
+    QByteArray cs = recv.mid(4,2);
+//    QByteArray ver = recv.mid(6,1);
+
+    if (checkSum(recv.mid(HEAD_LENGTH - 1, len + 1)) == cs) {
+        return 0;
+    }else
+        qDebug() << "checksum error " << cs;
+    return -3;
+}
+
+QByteArray Receiver::data()
+{
+    return recv;
+}
+
+int Receiver::getStep(){return recv.mid(HEAD_LENGTH, 4).toInt();}
+int Receiver::getStepTime(){return recv.mid(HEAD_LENGTH + 4, 4).toInt();}
+
+int Receiver::getHeatTemp(){return 0;}
+
+int Receiver::getWaterLevel(){return 0;}
+
+int Receiver::getLightVoltage() {return 0;}
+
 
 IProtocol::IProtocol(const QString &portParamter) :
     timeoutFlag(false),
@@ -20,9 +116,7 @@ IProtocol::IProtocol(const QString &portParamter) :
     timeCount(0),
     timer(new QTimer(this)),
     port(new QextSerialPort(QextSerialPort::EventDriven, this)),
-    counter(new ProtocolCounter(this)),
-    sender(new Sender()),
-    receiver(new Receiver())
+    counter(new ProtocolCounter(this))
 {
     QStringList strlist = portParamter.split(",");
     if (strlist.count() == 5)
@@ -62,8 +156,6 @@ IProtocol::IProtocol(const QString &portParamter) :
 
 IProtocol::~IProtocol()
 {
-    delete sender;
-    delete receiver;
 }
 
 bool IProtocol::recvNewData()
@@ -85,21 +177,12 @@ void IProtocol::reset()
 }
 
 
-QByteArray IProtocol::addHeader(const QByteArray &src)
-{
-    QByteArray h = "#";
-    QByteArray len = (QString("000") + QString::number(src.length())).right(3).toLatin1();
-    QByteArray cs = checkSum(QByteArray("1" + src));
-    QByteArray ver = "1";
-    return h + len + cs + ver + src;
-}
-
 void IProtocol::sendData(const QString &cmd)
 {
     if (port->isOpen()) {
-        sender->sent = cmd.toLatin1();
-        port->write(addHeader(sender->sent));
-        counter->start(sender->getStepTime());
+        dataSender = Sender(cmd.toLatin1());
+        port->write(dataSender.data());
+        counter->start(dataSender.getStepTime());
         counter->lock();
         timeCount = 0;
     }
@@ -112,57 +195,29 @@ void IProtocol::skipCurrentStep()
 
 void IProtocol::onReadyRead()
 {
-    const int headerMaxLen = HEAD_LENGTH;
     if (port->bytesAvailable())
     {
-        QByteArray recvPart = port->readAll();
-        QByteArray h = "#";
-        QByteArray ver;
-        QByteArray len;
-        QByteArray cs;
-        QByteArray sec;
+        recvTemp += port->readAll();
 
-        if (recvPart.startsWith(h))
-            recvTemp = recvPart;
-        else
+        Receiver tempr = Receiver(recvTemp);
+        int ret = tempr.check();
+
+        if (ret < 0)
         {
-            if (recvTemp.startsWith(h))
-                recvTemp += recvPart;
-            else {
-                recvTemp.clear();
-                return;
+            recvTemp.clear();
+        }
+        else if (ret == 0)
+        {
+            dataReceiver = tempr;
+            recvTemp.clear();
+            if (dataReceiver.getStep() == dataSender.getStep()) {
+                newDataFlag = true;
+                timeoutFlag = false;
+                counter->unlock();
             }
         }
-
-        if (recvTemp.length() > headerMaxLen)
+        else if (ret > 0)
         {
-            len = recvTemp.mid(1,3);
-            cs = recvTemp.mid(4,2);
-            ver = recvTemp.mid(6,1);
-
-            int packetLen = len.toInt() + HEAD_LENGTH;
-            if (packetLen > recvTemp.length())
-                return;
-            else if (packetLen < recvTemp.length()) {
-                sec = recvTemp.left(packetLen);
-                recvTemp = recvTemp.right(packetLen);
-                if (!recvTemp.startsWith(h))
-                    recvTemp.clear();
-            }
-            else {
-                sec = recvTemp;
-                recvTemp.clear();
-            }
-
-            if (checkSum(sec.mid(headerMaxLen - 1)) == cs) {
-                receiver->recv = sec.mid(headerMaxLen);
-                if (receiver->getStep() == sender->getStep()) {
-                    newDataFlag = true;
-                    timeoutFlag = false;
-                    counter->unlock();
-                }
-            } else
-                qDebug() << "checksum error " << checkSum(sec.right(headerMaxLen - 1)) << cs;
         }
     }
 }
@@ -181,7 +236,8 @@ void IProtocol::onCounterTimeout()
         }
         else if (mod == 0)
         {
-            port->write(addHeader(sender->sent));
+            port->write(dataSender.data());
         }
     }
 }
+

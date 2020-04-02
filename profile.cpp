@@ -1,22 +1,33 @@
 #include "profile.h"
 #include <QDebug>
 
-#if !defined (NO_PROFILE)
-QSqlDatabase *Profile::profileDB = NULL;
 
+Profile::Profile(const QString &name)
+{
+
+}
 
 void Profile::initProfile(const QString &dbname)
 {
     qDebug() << "initProfile" << dbname;
 }
 
-void Profile::saveValue(char *_class, char *_value, const QVariant &value)
+void Profile::beginSection(const QString &section)
 {
-    qDebug() << "saveValue" << _class << _value << value;
+
 }
 
-QVariant Profile::loadValue(char *_class, char *_value)
+void Profile::endSection()
 {
-    return QVariant();
+
 }
-#endif
+
+void Profile::saveValue(const QString &name, const QVariant &value)
+{
+    qDebug() << "saveValue" << name << value;
+}
+
+QVariant Profile::loadValue(const QString &name)
+{
+    return QVariant(name);
+}

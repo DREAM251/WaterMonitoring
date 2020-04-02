@@ -20,8 +20,8 @@ ITask *ElementFactory::getTask(TaskType type)
     case TT_SampleCheck:it = static_cast<ITask *>(new MeasureTask());break;
     case TT_SpikedCheck:it = static_cast<ITask *>(new MeasureTask());break;
     case TT_ErrorProc:it = static_cast<ITask *>(new MeasureTask());break;
-    case TT_STOP:it = static_cast<ITask *>(new StopTask());break;
-    case TT_CLEAN:it = static_cast<ITask *>(new CleaningTask());break;
+    case TT_Stop:it = static_cast<ITask *>(new StopTask());break;
+    case TT_Clean:it = static_cast<ITask *>(new CleaningTask());break;
     default:
         break;
     }
