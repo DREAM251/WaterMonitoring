@@ -34,7 +34,6 @@ public:
 private:
     bool workFlag;
     AutoMeasureMode mode;
-    Profile *profile;
     ElementType element;
 };
 
@@ -52,7 +51,6 @@ public:
 
     int startTask(TaskType type);
     void stopTasks();
-    QList<QVariant> getStartArguments(TaskType type);
 
 public Q_SLOTS:
     void TimerEvent();

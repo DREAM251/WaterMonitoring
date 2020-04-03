@@ -17,12 +17,11 @@ ITask::ITask() :
     }
 }
 
-bool ITask::start(Profile *prof , IProtocol *sp)
+bool ITask::start(IProtocol *sp)
 {
-    if (sp && prof)
+    if (sp)
     {
         protocol = sp;
-        profile = prof;
         protocol->reset();
         cmdIndex = 0;
         workFlag = true;
@@ -42,13 +41,12 @@ void ITask::stop()
     if (protocol)
         protocol->reset();
     protocol = NULL;
-    profile = NULL;
     workFlag = false;
 }
 
 void ITask::timeEvent()
 {
-    if (!protocol || !workFlag || !profile)
+    if (!protocol || !workFlag)
         return;
 
     // send next command
@@ -82,16 +80,20 @@ void ITask::recvEvent()
         // 加热温度异常判定
         else if (protocol->getSender().isHeatJudgeStep())
         {
-            if (protocol->getSender().getHeatTemp() < protocol->getReceiver().getHeatTemp() - 2)
+            if (protocol->getSender().getHeatTemp() < protocol->getReceiver().getHeatTemp() - 2) {
                 errorFlag = EF_HeatError;
+                stop();
+            }
             protocol->skipCurrentStep();
         }
 
         // 液位判定
         else if (protocol->getSender().isWaterLevelJudgeStep())
         {
-            if (protocol->getReceiver().getWaterLevel() == 0)
+            if (protocol->getReceiver().getWaterLevel() == 0) {
                 errorFlag = EF_SamplingError;
+                stop();
+            }
             protocol->skipCurrentStep();
         }
     }
@@ -99,16 +101,15 @@ void ITask::recvEvent()
 
 void ITask::loadParameters()
 {
-    if (profile)
+    DatabaseProfile profile("config.db");
+    if (profile.beginSection("correlation"))
     {
-        profile->beginSection("correlation");
         for (int i = 0; i < 20; i++)
         {
-            corArgs.loopTab[i] = profile->loadValue(QString("loop%1").arg(i)).toInt();
-            corArgs.tempTab[i] = profile->loadValue(QString("temp%1").arg(i)).toInt();
-            corArgs.timeTab[i] = profile->loadValue(QString("time%1").arg(i)).toInt();
+            corArgs.loopTab[i] = profile.value(QString("loop%1").arg(i), 1).toInt();
+            corArgs.tempTab[i] = profile.value(QString("temp%1").arg(i)).toInt();
+            corArgs.timeTab[i] = profile.value(QString("time%1").arg(i), 3).toInt();
         }
-        profile->endSection();
     }
 }
 
@@ -182,7 +183,6 @@ void ITask::fixCommands(const QStringList &sources)
     }
 }
 
-
 //
 //
 //
@@ -195,9 +195,9 @@ MeasureTask::MeasureTask() :
     colorValue(0)
 {}
 
-bool MeasureTask::start(const QList<QVariant> &arguments, IProtocol *protocol)
+bool MeasureTask::start(IProtocol *protocol)
 {
-    if (ITask::start(arguments, protocol))
+    if (ITask::start(protocol))
     {
         blankValue = 0;
         colorValue = 0;
@@ -264,8 +264,10 @@ void MeasureTask::recvEvent()
         {
             bool finished = collectBlankValues();
             if (finished) {
-                if (protocol->getSender().isBlankJudgeStep() && blankValue < 2500)
+                if (protocol->getSender().isBlankJudgeStep() && blankValue < 2500) {
                     errorFlag = EF_BlankError;
+                    stop();
+                }
                 else if (colorSampleTimes > 0)
                     dataProcess();
 
@@ -291,28 +293,30 @@ void MeasureTask::loadParameters()
 {
     ITask::loadParameters();
 
-    if (profile)
+    DatabaseProfile profile("config.db");
+    if (profile.beginSection("measure"))
     {
-        profile->beginSection("measure");
-        args.range = profile->loadValue("range").toInt();
-        args.rangeLock = profile->loadValue("rangeLock").toInt();
-        args.pipe = profile->loadValue("pipe").toInt();
-        args.lineark = profile->loadValue("lineark").toInt();
-        args.linearb = profile->loadValue("linearb").toInt();
-        args.quada = profile->loadValue("quada").toInt();
-        args.quadb = profile->loadValue("quadb").toInt();
-        args.quadc = profile->loadValue("quadc").toInt();
-        profile->endSection();
+        args.range = profile.value("range").toInt();
+        args.rangeLock = profile.value("rangeLock").toBool();
+        args.pipe = profile.value("pipe").toInt();
+        args.lineark = profile.value("lineark", 1).toFloat();
+        args.linearb = profile.value("linearb").toFloat();
+        args.quada = profile.value("quada").toFloat();
+        args.quadb = profile.value("quadb", 1).toFloat();
+        args.quadc = profile.value("quadc").toFloat();
     }
 }
 
 void MeasureTask::saveParameters()
 {
     ITask::saveParameters();
-    profile->beginSection("measure");
-    profile->saveValue("conc", conc);
-    profile->saveValue("abs", vabs);
-    profile->endSection();
+    DatabaseProfile profile("config.db");
+
+    if (profile.beginSection("measure"))
+    {
+        profile.setValue("conc", conc);
+        profile.setValue("abs", vabs);
+    }
 }
 
 QStringList MeasureTask::loadCommands()
@@ -325,16 +329,38 @@ QStringList MeasureTask::loadCommands()
     return commands;
 }
 
+//
+//
+//
+//
+//
+//
 
 QStringList CleaningTask::loadCommands()
 {
-    QString path = "cleaning1.txt";
-    return loadCommandFileLines(path);
+    return loadCommandFileLines("cleaning1.txt");
 }
 
+//
+//
+//
+//
+//
+//
 
 QStringList StopTask::loadCommands()
 {
-    QString path = "stop.txt";
-    return loadCommandFileLines(path);
+    return loadCommandFileLines("stop.txt");
+}
+
+//
+//
+//
+//
+//
+//
+
+QStringList ErrorTask::loadCommands()
+{
+    return loadCommandFileLines("error.txt");
 }

@@ -47,7 +47,7 @@ public:
     ITask();
     virtual ~ITask(){;}
 
-    virtual bool start(Profile *prof, IProtocol *protocol);
+    virtual bool start(IProtocol *protocol);
     virtual void stop();
     virtual void timeEvent();
     virtual void recvEvent();
@@ -61,7 +61,7 @@ public:
 
 protected:
     IProtocol *protocol; // shared
-    Profile *profile; // shared
+    DatabaseProfile *profile; // shared
     QStringList commandList;
     int cmdIndex;
     QString cmd;
@@ -94,7 +94,7 @@ public:
     // 0 : range         int
     // 1 : rangeLock     bool
     // 2 : ...
-    virtual bool start(Profile *prof, IProtocol *protocol);
+    virtual bool start(IProtocol *protocol);
 
     virtual bool collectBlankValues();
     virtual bool collectColorValues();
@@ -128,6 +128,12 @@ class QCTask : public MeasureTask
 
 };
 
+class ErrorTask : public ITask
+{
+public:
+    virtual QStringList loadCommands();
+};
+
 class StopTask : public ITask
 {
 public:
@@ -151,5 +157,6 @@ class DebugTask : public ITask
 public:
     virtual QStringList loadCommands();
 };
+
 
 #endif // ITASK_H

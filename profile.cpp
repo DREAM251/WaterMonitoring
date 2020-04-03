@@ -1,33 +1,102 @@
 #include "profile.h"
 #include <QDebug>
+#include <QFile>
+#include <QSqlQuery>
+#include <QStringList>
+#include <QSqlError>
 
-
-Profile::Profile(const QString &name)
+DatabaseProfile::DatabaseProfile(const QString &name)
 {
+    QSqlDatabase sqlitedb = QSqlDatabase::database(name);
 
+    if (!sqlitedb.isValid()) {
+        sqlitedb = QSqlDatabase::addDatabase("QSQLITE", name);
+        sqlitedb.setDatabaseName(name);
+    }
+
+    //SQLITECIPHER
+    //profileDB.setPassword("934526");
+    if (!sqlitedb.isOpen())
+    {
+        if (!sqlitedb.open())
+        {
+            qDebug() << sqlitedb.lastError() << name;
+            return;
+        }
+    }
+    database = sqlitedb;
 }
 
-void Profile::initProfile(const QString &dbname)
+
+bool DatabaseProfile::beginSection(const QString &section)
 {
-    qDebug() << "initProfile" << dbname;
+    QSqlDatabase sqlitedb = database;
+    if (!sqlitedb.isValid())
+    {
+        qDebug() << "sqldatabase is invalid!" << section;
+        return false;
+    }
+
+    if (!sqlitedb.tables().contains(section))
+    {
+        QSqlQuery query(sqlitedb);
+        QString sqlstring = QString("create table if not exists %1(key text unique, value text);").arg(section);
+        if (!query.exec(sqlstring))
+        {
+            qDebug() << query.lastError() << sqlstring;
+            return false;
+        }
+    }
+    sectionName = section;
+    return true;
 }
 
-void Profile::beginSection(const QString &section)
+bool DatabaseProfile::setValue(const QString &section, const QString &name, const QVariant &value)
 {
-
+    if (beginSection(section))
+    {
+        return setValue(name, value);
+    }
+    return false;
 }
 
-void Profile::endSection()
+bool DatabaseProfile::setValue(const QString &name, const QVariant &value)
 {
-
+    return updateValue(sectionName, name, value);
 }
 
-void Profile::saveValue(const QString &name, const QVariant &value)
+bool DatabaseProfile::updateValue(const QString &section, const QString &name, const QVariant &value)
 {
-    qDebug() << "saveValue" << name << value;
+    QSqlQuery query(database);
+    QString sqlstr = QString("replace into %1 (key, value) values ('%2', '%3');").arg(section).arg(name).arg(value.toString());
+    if (!query.exec(sqlstr))
+    {
+        qDebug() << query.lastError() << sqlstr;
+        return false;
+    }
+    return true;
 }
 
-QVariant Profile::loadValue(const QString &name)
+
+QVariant DatabaseProfile::value(const QString &key, const QVariant &defaultValue)
 {
-    return QVariant(name);
+    QVariant var = defaultValue;
+    QString strTable = sectionName;
+    QString strKey = key;
+
+    int index = key.indexOf('/');
+    if (index >= 0)
+    {
+        strTable = key.left(index);
+        strKey = key.mid(index);
+    }
+
+    QSqlQuery query(database);
+    QString select = QString("select value from %1 where key is '%2';").arg(strTable).arg(strKey);
+    if (query.exec(select))
+    {
+        if (query.next())
+            var = query.value(0);
+    }
+    return var;
 }

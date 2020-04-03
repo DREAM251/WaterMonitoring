@@ -2,7 +2,8 @@
 #include <QStringList>
 #include <QDebug>
 
-#define HEAD_LENGTH  7
+#define PACKET_MAX_LENGTH  7
+#define PACKET_HEAD_LENGTH 4
 
 QByteArray checkSum(const QByteArray &by)
 {
@@ -13,12 +14,9 @@ QByteArray checkSum(const QByteArray &by)
     return QByteArray(1, (char)(sum % 256)).toHex().toUpper();
 }
 
-Sender::Sender(const QByteArray &src) :
-    sent(src)
-{
-}
 
-Sender::Sender(){}
+
+
 
 QByteArray Sender::data()
 {
@@ -26,69 +24,51 @@ QByteArray Sender::data()
     if (index < 0)
         index = sent.length();
 
-    QByteArray da = sent.left(index);
-
-    return "#" + (QString("000") + QString::number(index)).right(3).toLatin1()
-            + checkSum(QByteArray("1" + da)) + "1" + da;
+    QByteArray da = "#" + QString("00%1").arg(index + PACKET_MAX_LENGTH).right(2).toLatin1() + "1" + sent.left(index);
+    return da + checkSum(da) + '!';
 }
 
 int Sender::getStep(){return sent.left(4).toInt();}
 int Sender::getStepTime(){return sent.mid(4, 4).toInt();}
-
 int Sender::getHeatTemp(){return 0;}
-
 int Sender::getLightVoltage(){return 0;}
-
 void Sender::setTime(int seconds){sent.replace(4,4, QString("0000%1").arg(seconds).right(4).toLatin1());}
-
-void Sender::setTemp(int temp)
-{
-
-}
+void Sender::setTemp(int temp){}
 
 int Sender::timeFix(){return sent.mid(8, 2).toInt();}
 int Sender::tempFix(){return sent.mid(10, 2).toInt();}
 int Sender::loopFix(){return sent.mid(12, 2).toInt();}
 
 bool Sender::isBlankStep(){return false;}
-
 bool Sender::isColorStep(){return false;}
-
 bool Sender::isHeatStep(){return false;}
-
 bool Sender::isBlankJudgeStep(){return false;}
-
 bool Sender::isHeatJudgeStep(){return false;}
-
 bool Sender::isWaterLevelJudgeStep(){return false;}
 
 
-Receiver::Receiver(const QByteArray &src) :
-    recv(src)
-{}
-Receiver::Receiver(){}
+
+
 
 int Receiver::check()
 {
     if (!recv.startsWith("#"))
         return -1;
 
-    if (recv.length() < HEAD_LENGTH)
+    int dataLen = recv.length();
+    if (dataLen < PACKET_MAX_LENGTH)
         return 1;
 
-    int len = recv.mid(1,3).toInt();
-    if (len < 1)
+    int len = recv.mid(1,2).toInt();
+    if (len < PACKET_MAX_LENGTH)
         return -2;
 
-    if (recv.length() < len + HEAD_LENGTH)
+    if (dataLen < len)
         return 2;
-    else if (recv.length() > len + HEAD_LENGTH)
-        recv = recv.left(len + HEAD_LENGTH);
 
-    QByteArray cs = recv.mid(4,2);
-//    QByteArray ver = recv.mid(6,1);
-
-    if (checkSum(recv.mid(HEAD_LENGTH - 1, len + 1)) == cs) {
+    //    QByteArray ver = recv.mid(3,1);
+    QByteArray cs = recv.mid(len - 3, 2);
+    if (checkSum(recv.left(len - 3)) == cs) {
         return 0;
     }else
         qDebug() << "checksum error " << cs;
@@ -100,14 +80,15 @@ QByteArray Receiver::data()
     return recv;
 }
 
-int Receiver::getStep(){return recv.mid(HEAD_LENGTH, 4).toInt();}
-int Receiver::getStepTime(){return recv.mid(HEAD_LENGTH + 4, 4).toInt();}
-
+int Receiver::getStep(){return recv.mid(PACKET_HEAD_LENGTH, 4).toInt();}
+int Receiver::getStepTime(){return recv.mid(PACKET_HEAD_LENGTH + 4, 4).toInt();}
 int Receiver::getHeatTemp(){return 0;}
-
 int Receiver::getWaterLevel(){return 0;}
-
 int Receiver::getLightVoltage() {return 0;}
+
+
+
+
 
 
 IProtocol::IProtocol(const QString &portParamter) :

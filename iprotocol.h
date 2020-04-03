@@ -68,8 +68,8 @@ protected:
 class Sender
 {
 public:
-    Sender(const QByteArray &src);
-    Sender();
+    Sender(const QByteArray &src) :sent(src) {}
+    Sender(){}
 
     // data section
     QByteArray data();
@@ -106,8 +106,8 @@ private:
 class Receiver
 {
 public:
-    Receiver(const QByteArray &src);
-    Receiver();
+    Receiver(const QByteArray &src) : recv(src){}
+    Receiver(){}
 
     // return value
     //  -1 : error, 0 : ok, 1 : missing
