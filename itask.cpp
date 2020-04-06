@@ -70,27 +70,46 @@ void ITask::recvEvent()
 {
     if (protocol && protocol->recvNewData())
     {        
-        // 加热温度到达判定
-        if (protocol->getSender().isHeatStep())
+        // 加热判定
+        if (protocol->getSender().heatReachStep())
         {
-            if (protocol->getSender().getHeatTemp() >= protocol->getReceiver().getHeatTemp())
+            if (protocol->getReceiver().heatTemp() >= protocol->getSender().heatTemp())
                 protocol->skipCurrentStep();
         }
-
-        // 加热温度异常判定
-        else if (protocol->getSender().isHeatJudgeStep())
+        else if (protocol->getSender().heatJudgeStep())
         {
-            if (protocol->getSender().getHeatTemp() < protocol->getReceiver().getHeatTemp() - 2) {
+            if (protocol->getReceiver().heatTemp() + 2 < protocol->getSender().heatTemp()) {
                 errorFlag = EF_HeatError;
                 stop();
             }
             protocol->skipCurrentStep();
         }
 
-        // 液位判定
-        else if (protocol->getSender().isWaterLevelJudgeStep())
+        // 降温判定
+        if (protocol->getSender().coolReachStep())
         {
-            if (protocol->getReceiver().getWaterLevel() == 0) {
+            if (protocol->getReceiver().heatTemp() <= protocol->getSender().heatTemp())
+                protocol->skipCurrentStep();
+        }
+        else if (protocol->getSender().heatJudgeStep())
+        {
+            if (protocol->getReceiver().heatTemp() - 2 > protocol->getSender().heatTemp()) {
+                errorFlag = EF_HeatError;
+                stop();
+            }
+            protocol->skipCurrentStep();
+        }
+
+
+        // 液位判定
+        if (protocol->getSender().waterLevelReachStep())
+        {
+            if (protocol->getSender().waterLevel() == protocol->getReceiver().waterLevel())
+                protocol->skipCurrentStep();
+        }
+        else if (protocol->getSender().waterLevelJudgeStep())
+        {
+            if (protocol->getReceiver().waterLevel() != protocol->getSender().waterLevel()) {
                 errorFlag = EF_SamplingError;
                 stop();
             }
@@ -133,7 +152,7 @@ void ITask::fixCommands(const QStringList &sources)
         Sender sen(sources[i].toLatin1());
         int loopFlag = sen.loopFix();
 
-        if (loopFlag > 0 && loopFlag < 41)
+        if (loopFlag > 0 && (loopFlag - 1) / 2 < sizeof(corArgs.timeTab) / sizeof (int))
         {
             if (loopStart < 0 && loopFlag%2 == 1)
             {
@@ -172,12 +191,12 @@ void ITask::fixCommands(const QStringList &sources)
         Sender sen(tempList[i].toLatin1());
 
         int timeIndex = sen.timeFix();
-        if (timeIndex > 0 && timeIndex < 21)
-            sen.setTime(corArgs.timeTab[timeIndex-1]);
+        if (timeIndex > 0 && timeIndex < sizeof(corArgs.timeTab) / sizeof(int))
+            sen.setStepTime(corArgs.timeTab[timeIndex-1] + sen.timeAddFix());
 
         int tempIndex = sen.tempFix();
-        if (tempIndex > 0 && tempIndex < 21)
-            sen.setTemp(corArgs.tempTab[tempIndex-1]);
+        if (tempIndex > 0 && tempIndex < sizeof(corArgs.tempTab) / sizeof(int))
+            sen.setHeatTemp(corArgs.tempTab[tempIndex-1]);
 
         commandList << sen.rawData();
     }
@@ -216,7 +235,7 @@ bool MeasureTask::collectBlankValues()
     if (blankSampleTimes < sampleMaxTimes)
     {
         blankSampleTimes++;
-        blankValue += protocol->getSender().getLightVoltage();
+        blankValue += protocol->getReceiver().lightVoltage1();
     }
 
     if (blankSampleTimes >= sampleMaxTimes)
@@ -233,7 +252,7 @@ bool MeasureTask::collectColorValues()
     if (blankSampleTimes < sampleMaxTimes)
     {
         blankSampleTimes++;
-        colorValue += protocol->getReceiver().getLightVoltage();
+        colorValue += protocol->getReceiver().lightVoltage1();
     }
 
     if (colorSampleTimes >= sampleMaxTimes)
@@ -260,11 +279,11 @@ void MeasureTask::recvEvent()
     if (protocol && protocol->recvNewData())
     {
         // 空白检测
-        if (protocol->getSender().isBlankStep())
+        if (protocol->getSender().blankStep())
         {
             bool finished = collectBlankValues();
             if (finished) {
-                if (protocol->getSender().isBlankJudgeStep() && blankValue < 2500) {
+                if (blankValue < 2500) {
                     errorFlag = EF_BlankError;
                     stop();
                 }
@@ -276,7 +295,7 @@ void MeasureTask::recvEvent()
         }
 
         // 显色检测
-        else if (protocol->getSender().isColorStep())
+        else if (protocol->getSender().colorStep())
         {
             bool finished = collectColorValues();
             if (finished)

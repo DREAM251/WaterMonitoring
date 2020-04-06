@@ -74,25 +74,64 @@ public:
     // data section
     QByteArray data();
     QByteArray rawData() {return sent;}
-    int getStep();
-    int getStepTime();
-    int getHeatTemp();
-    int getLightVoltage();
 
-    void setTime(int seconds);
-    void setTemp(int temp);
+    int step();
+    int stepTime();
+    int peristalticPump();
+    int peristalticPumpSpeed();
+    int pump2();
+    int TCValve1();
+    int TCValve2();
+    int valve1();
+    int valve2();
+    int valve3();
+    int valve4();
+    int valve5();
+    int valve6();
+    int valve7();
+    int extValve();
+    int extControl1();
+    int extControl2();
+    int extControl3();
+    int fun();
+    int waterLevel();
+    int heatTemp();
 
-    // control section
-    int loopFix();
     int timeFix();
+    int timeAddFix();
     int tempFix();
+    int loopFix();
+    bool waterLevelReachStep();
+    bool waterLevelJudgeStep();
+    bool heatReachStep();
+    bool heatJudgeStep();
+    bool coolReachStep();
+    bool coolJudgeStep();
+    bool blankStep();
+    bool colorStep();
+    int explainCode();
 
-    bool isBlankStep();
-    bool isColorStep();
-    bool isHeatStep();
-    bool isBlankJudgeStep();
-    bool isHeatJudgeStep();
-    bool isWaterLevelJudgeStep();
+    void setStep(int i);
+    void setStepTime(int i);
+    void setPeristalticPump(int i);
+    void setPeristalticPumpSpeed(int i);
+    void setPump2(int i);
+    void setTCValve1(int i);
+    void setTCValve2(int i);
+    void setValve1(int i);
+    void setValve2(int i);
+    void setValve3(int i);
+    void setValve4(int i);
+    void setValve5(int i);
+    void setValve6(int i);
+    void setValve7(int i);
+    void setExtValve(int i);
+    void setExtControl1(int i);
+    void setExtControl2(int i);
+    void setExtControl3(int i);
+    void setFun(int i);
+    void setWaterLevel(int i);
+    void setHeatTemp(int i);
 
 private:
     // sent data format
@@ -100,6 +139,25 @@ private:
     //           ---------------------------------------------
     //           | 100 ......................... | : |  xxxx |
     //           ----------------------------------- ---------
+    QByteArray sent;
+};
+
+class ConfigSender
+{
+public:
+    ConfigSender(const QByteArray &src) :sent(src) {}
+    ConfigSender(){}
+
+    // data section
+    QByteArray data();
+    QByteArray rawData() {return sent;}
+
+private:
+    // sent data format
+    //   header              data               gap  control
+    //           -------------------------------
+    //           |0100 ........................|
+    //           -------------------------------
     QByteArray sent;
 };
 
@@ -114,12 +172,21 @@ public:
     int check();
     QByteArray data();
 
-    int getStep();
-    int getStepTime();
-
-    int getHeatTemp();
-    int getWaterLevel();
-    int getLightVoltage();
+    int step();
+    int stepTime();
+    int extControl1();
+    int extControl2();
+    int extControl3();
+    int _420mA();
+    int waterLevel();
+    int heatTemp();
+    int mcu1Temp();
+    int mcu2Temp();
+    int lightVoltage1();
+    int lightVoltage2();
+    int lightVoltage3();
+    int measureSignal1();
+    int measureSignal2();
 
 private:
     //recv data format
@@ -165,6 +232,7 @@ protected:
     QextSerialPort *port;
 
     Sender dataSender;
+    ConfigSender configSender;
     Receiver dataReceiver;
 };
 

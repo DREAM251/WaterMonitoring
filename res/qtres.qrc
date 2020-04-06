@@ -1,0 +1,22 @@
+<RCC>
+    <qresource prefix="/">
+        <file>logo.png</file>
+        <file>logow.png</file>
+        <file>calibration.png</file>
+        <file>calibrationw.png</file>
+        <file>home.png</file>
+        <file>homew.png</file>
+        <file>maintain.png</file>
+        <file>maintainw.png</file>
+        <file>measure.png</file>
+        <file>measurew.png</file>
+        <file>settings.png</file>
+        <file>settingsw.png</file>
+        <file>user.png</file>
+        <file>userw.png</file>
+        <file>query.png</file>
+        <file>queryw.png</file>
+        <file>LedGreen.ico</file>
+        <file>LedRed.ico</file>
+    </qresource>
+</RCC>

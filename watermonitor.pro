@@ -9,6 +9,7 @@ QT       += core gui sql net
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 include(qextserialport/qextserialport.pri)
+include(env.pri)
 #DEFINES += NO_PROFILE
 TARGET = cmplatform1
 TEMPLATE = app
@@ -26,7 +27,8 @@ SOURCES += main.cpp\
     protocolv1.cpp \
     profile.cpp \
     common.cpp \
-    instructioneditor.cpp
+    instructioneditor.cpp \
+    qfmain.cpp
 
 HEADERS  += funwindow.h \
     systemwindow.h \
@@ -39,8 +41,12 @@ HEADERS  += funwindow.h \
     protocolv1.h \
     profile.h \
     common.h \
-    instructioneditor.h
+    instructioneditor.h \
+    qfmain.h
 
 FORMS    += funwindow.ui \
     systemwindow.ui \
-    loginwindow.ui
+    loginwindow.ui \
+    qfmain.ui
+
+RESOURCES += res/qtres.qrc
