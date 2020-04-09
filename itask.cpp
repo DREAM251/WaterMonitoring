@@ -1,5 +1,5 @@
 #include "itask.h"
-#include "common.h"
+#include "defines.h"
 #include <QDebug>
 #include <QFile>
 

@@ -5,7 +5,7 @@
 #include <QSignalMapper>
 #include <QTimer>
 #include <QDateTime>
-#include "funwindow.h"
+#include "elementinterface.h"
 
 namespace Ui {class QFMain;}
 class QFMain : public QWidget
@@ -16,17 +16,21 @@ public:
     explicit QFMain(QWidget *parent = 0);
     ~QFMain();
 
-    void addChemicalModule(const QString &name);
-
 public slots:
     void menuClicked(int i);
     void updateStatus();
+    void login(int level);
+
+Q_SIGNALS:
+    void systemTrigger();
+    void userTrigger();
 
 private:
     Ui::QFMain *ui;
     QSignalMapper *signalMapper;
     QTimer *timer;
-    FunWindow *element;
+    ElementInterface *element;
+    int loginLevel;
 };
 
 #endif // QFMAIN_H

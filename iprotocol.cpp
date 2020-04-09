@@ -1,6 +1,7 @@
 #include "iprotocol.h"
 #include <QStringList>
 #include <QDebug>
+#include "defines.h"
 
 #define PACKET_MAX_LENGTH  7
 #define PACKET_HEAD_LENGTH 4
@@ -13,9 +14,6 @@ QByteArray checkSum(const QByteArray &by)
 
     return QByteArray(1, (char)(sum % 256)).toHex().toUpper();
 }
-
-
-
 
 
 QByteArray Sender::data()
@@ -112,7 +110,7 @@ int Receiver::check()
     if (checkSum(recv.left(len - 3)) == cs) {
         return 0;
     }else
-        qDebug() << "checksum error " << cs;
+        mcuLogger()->error("checksum error :" + cs);
     return -3;
 }
 
@@ -139,7 +137,8 @@ int Receiver::measureSignal2(){return recv.mid(PACKET_HEAD_LENGTH + 46, 5).toInt
 
 
 
-IProtocol::IProtocol(const QString &portParamter) :
+IProtocol::IProtocol(const QString &portParamter, QObject *parent) :
+    QObject(parent),
     timeoutFlag(false),
     newDataFlag(false),
     timeCount(0),
@@ -152,9 +151,9 @@ IProtocol::IProtocol(const QString &portParamter) :
     {
         port->setPortName(strlist[0]);
         port->setBaudRate(BaudRateType(strlist[1].toInt()));
-        if (strlist[2] == "N")
+        if (strlist[2].toUpper() == "E")
             port->setParity(PAR_EVEN);
-        else if (strlist[2] == "O")
+        else if (strlist[2].toUpper() == "O")
             port->setParity(PAR_ODD);
         else
             port->setParity(PAR_NONE);
@@ -238,12 +237,13 @@ void IProtocol::onReadyRead()
         else if (ret == 0)
         {
             dataReceiver = tempr;
-            recvTemp.clear();
             if (dataReceiver.step() == dataSender.step()) {
                 newDataFlag = true;
                 timeoutFlag = false;
                 counter->unlock();
             }
+            mcuLogger()->info("receiver:" + recvTemp);
+            recvTemp.clear();
         }
         else if (ret > 0)
         {

@@ -4,11 +4,12 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql net
+QT       += core gui sql network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-include(qextserialport/qextserialport.pri)
+include(hardwareinterface/hardwareinterface.pri)
+include(modbus/modbus.pri)
 include(env.pri)
 #DEFINES += NO_PROFILE
 TARGET = cmplatform1
@@ -16,9 +17,7 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        funwindow.cpp \
     systemwindow.cpp \
-    loginwindow.cpp \
     iprotocol.cpp \
     itask.cpp \
     nh3ntask.cpp \
@@ -28,11 +27,12 @@ SOURCES += main.cpp\
     profile.cpp \
     common.cpp \
     instructioneditor.cpp \
-    qfmain.cpp
-
-HEADERS  += funwindow.h \
-    systemwindow.h \
-    loginwindow.h \
+    qfmain.cpp \
+    login/userdlg.cpp \
+    login/md5.cpp \
+    login/loginmanage.cpp \
+    modbusmodule.cpp
+HEADERS  += systemwindow.h \
     iprotocol.h \
     itask.h \
     nh3ntask.h \
@@ -42,11 +42,16 @@ HEADERS  += funwindow.h \
     profile.h \
     common.h \
     instructioneditor.h \
-    qfmain.h
+    qfmain.h \
+    login/userdlg.h \
+    login/md5.h \
+    login/loginmanage.h \
+    modbusmodule.h \
+    defines.h
 
-FORMS    += funwindow.ui \
-    systemwindow.ui \
-    loginwindow.ui \
-    qfmain.ui
+FORMS    += systemwindow.ui \
+    qfmain.ui \
+    login/userdlg.ui \
+    modbusmodule.ui
 
 RESOURCES += res/qtres.qrc

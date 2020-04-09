@@ -5,7 +5,7 @@
 #include <QString>
 #include <QTimer>
 #include <qcoreevent.h>
-#include <qextserialport/qextserialport.h>
+#include <qextserialport.h>
 
 // ¼ÆÊ±Æ÷
 class ProtocolCounter : public QObject
@@ -202,7 +202,7 @@ class IProtocol : public QObject
     Q_OBJECT
 
 public:
-    IProtocol(const QString &portParamter = "com5,9600,n,8,1");
+    IProtocol(const QString &portParamter = "com5,9600,n,8,1", QObject *parent = 0);
     ~IProtocol();
 
     bool recvNewData();

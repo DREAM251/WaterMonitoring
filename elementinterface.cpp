@@ -23,7 +23,6 @@ void MeasureMode::stopAutoMeasure()
 
 void MeasureMode::MMTimerEvent()
 {
-
     if (!isWorking())
         return;
 }

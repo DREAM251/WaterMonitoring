@@ -1,7 +1,7 @@
 #ifndef PROFILE_H
 #define PROFILE_H
 
-#include <QSqlDataBase>
+#include <QSqlDatabase>
 #include <QVariant>
 
 class DatabaseProfile

@@ -6,7 +6,7 @@
 class ProtocolV1 : public IProtocol
 {
 public:
-    ProtocolV1();
+    ProtocolV1(const QString &portArgs, QObject *parent = 0);
 };
 
 #endif // PROTOCOLV1_H
