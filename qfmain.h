@@ -6,8 +6,13 @@
 #include <QTimer>
 #include <QDateTime>
 #include "elementinterface.h"
+#include "querydata.h"
+#include "calibframe.h"
 
-namespace Ui {class QFMain;}
+namespace Ui {
+class QFMain;
+class SetUI;
+}
 class QFMain : public QWidget
 {
     Q_OBJECT
@@ -21,16 +26,27 @@ public slots:
     void updateStatus();
     void login(int level);
 
+    void loadSettings();
+    void saveSettings();
+
 Q_SIGNALS:
     void systemTrigger();
     void userTrigger();
 
 private:
     Ui::QFMain *ui;
+    Ui::SetUI *setui;
     QSignalMapper *signalMapper;
     QTimer *timer;
     ElementInterface *element;
     int loginLevel;
+
+    QSqlDatabase *userDB;
+    QueryData *queryData;
+    QueryData *queryCalib;
+    QueryData *queryError;
+    QueryData *queryLog;
+    CalibFrameUser *calibframe;
 };
 
 #endif // QFMAIN_H

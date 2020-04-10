@@ -7,7 +7,7 @@
 class DatabaseProfile
 {
 public:
-    DatabaseProfile(const QString &name);
+    DatabaseProfile(const QString &name = "config.db");
 
     bool beginSection(const QString &section);
     bool setValue(const QString &key, const QVariant &value);

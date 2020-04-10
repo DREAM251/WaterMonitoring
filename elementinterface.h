@@ -48,6 +48,7 @@ public:
 
     int getLastMeasureTime();
     int getCurrentWorkTime();
+    Receiver getReceiver();
 
     int startTask(TaskType type);
     void stopTasks();

@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QueryData</class>
+ <widget class="QWidget" name="QueryData">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>902</width>
+    <height>497</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_3">
+   <property name="margin">
+    <number>0</number>
+   </property>
+   <item row="0" column="0">
+    <widget class="QStackedWidget" name="swPageSel">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="page1">
+      <layout class="QGridLayout" name="gridLayout">
+       <property name="leftMargin">
+        <number>6</number>
+       </property>
+       <property name="topMargin">
+        <number>6</number>
+       </property>
+       <property name="rightMargin">
+        <number>6</number>
+       </property>
+       <property name="bottomMargin">
+        <number>2</number>
+       </property>
+       <property name="verticalSpacing">
+        <number>2</number>
+       </property>
+       <item row="2" column="3">
+        <widget class="QPushButton" name="pbNextPage">
+         <property name="text">
+          <string>下一页</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="4">
+        <widget class="QPushButton" name="pbFinalPage">
+         <property name="text">
+          <string>尾页</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QPushButton" name="pbLastPage">
+         <property name="text">
+          <string>上一页</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="5">
+        <widget class="QTableView" name="tvShowData">
+         <property name="styleSheet">
+          <string notr="true">font:10pt;
+</string>
+         </property>
+         <property name="autoScroll">
+          <bool>false</bool>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::ExtendedSelection</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QPushButton" name="pbPrinter">
+         <property name="text">
+          <string>导出</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QPushButton" name="pbFristPage">
+         <property name="text">
+          <string>首页</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QLabel" name="lbPages">
+         <property name="styleSheet">
+          <string notr="true">QLabel{font : 11pt;};</string>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="text">
+          <string>页码：1/100</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1" colspan="3">
+        <widget class="QStackedWidget" name="swSearch">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="pageS1">
+          <layout class="QGridLayout" name="gridLayout_5">
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="QSpinBox" name="spJumpPage">
+             <property name="buttonSymbols">
+              <enum>QAbstractSpinBox::NoButtons</enum>
+             </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>999999999</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="pageS2">
+          <layout class="QGridLayout" name="gridLayout_4">
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="QDateEdit" name="endDate">
+             <property name="buttonSymbols">
+              <enum>QAbstractSpinBox::NoButtons</enum>
+             </property>
+             <property name="currentSection">
+              <enum>QDateTimeEdit::YearSection</enum>
+             </property>
+             <property name="displayFormat">
+              <string>yyyyMMdd</string>
+             </property>
+             <property name="calendarPopup">
+              <bool>false</bool>
+             </property>
+             <property name="timeSpec">
+              <enum>Qt::LocalTime</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QComboBox" name="cbSearch">
+         <item>
+          <property name="text">
+           <string>页码检索</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>日期检索</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="page2">
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0" colspan="4">
+        <widget class="QCalendarWidget" name="cwDateSel">
+         <property name="locale">
+          <locale language="Chinese" country="China"/>
+         </property>
+         <property name="firstDayOfWeek">
+          <enum>Qt::Monday</enum>
+         </property>
+         <property name="gridVisible">
+          <bool>true</bool>
+         </property>
+         <property name="selectionMode">
+          <enum>QCalendarWidget::SingleSelection</enum>
+         </property>
+         <property name="horizontalHeaderFormat">
+          <enum>QCalendarWidget::ShortDayNames</enum>
+         </property>
+         <property name="verticalHeaderFormat">
+          <enum>QCalendarWidget::ISOWeekNumbers</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="pbQueryToday">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="text">
+          <string>查询今日</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="pbQueryWeek">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="text">
+          <string>查询7天</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QPushButton" name="pbQueryMonth">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="text">
+          <string>查询30天</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QPushButton" name="pbQueryYear">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="text">
+          <string>查询1年</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

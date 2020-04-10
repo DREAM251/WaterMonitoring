@@ -1,5 +1,6 @@
 #include "itask.h"
 #include "defines.h"
+#include "profile.h"
 #include <QDebug>
 #include <QFile>
 
@@ -120,14 +121,14 @@ void ITask::recvEvent()
 
 void ITask::loadParameters()
 {
-    DatabaseProfile profile("config.db");
-    if (profile.beginSection("correlation"))
+    DatabaseProfile profile;
+    if (profile.beginSection("settings"))
     {
         for (int i = 0; i < 20; i++)
         {
-            corArgs.loopTab[i] = profile.value(QString("loop%1").arg(i), 1).toInt();
-            corArgs.tempTab[i] = profile.value(QString("temp%1").arg(i)).toInt();
-            corArgs.timeTab[i] = profile.value(QString("time%1").arg(i), 3).toInt();
+            corArgs.loopTab[i] = profile.value(QString("Loop%1").arg(i), 1).toInt();
+            corArgs.tempTab[i] = profile.value(QString("Temp%1").arg(i)).toInt();
+            corArgs.timeTab[i] = profile.value(QString("Time%1").arg(i), 3).toInt();
         }
     }
 }
@@ -312,7 +313,7 @@ void MeasureTask::loadParameters()
 {
     ITask::loadParameters();
 
-    DatabaseProfile profile("config.db");
+    DatabaseProfile profile;
     if (profile.beginSection("measure"))
     {
         args.range = profile.value("range").toInt();
@@ -329,7 +330,7 @@ void MeasureTask::loadParameters()
 void MeasureTask::saveParameters()
 {
     ITask::saveParameters();
-    DatabaseProfile profile("config.db");
+    DatabaseProfile profile;
 
     if (profile.beginSection("measure"))
     {

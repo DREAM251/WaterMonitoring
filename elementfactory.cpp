@@ -1,6 +1,4 @@
 #include "elementfactory.h"
-#include "protocolv1.h"
-#include "nh3ntask.h"
 #include "defines.h"
 
 ElementFactory::ElementFactory(ElementType type) :
@@ -31,6 +29,5 @@ ITask *ElementFactory::getTask(TaskType type)
 
 IProtocol *ElementFactory::getProtocol()
 {
-    return static_cast<IProtocol *>(new ProtocolV1(UL_PORT",9600,n,8,1"));
-
+    return new IProtocol(UL_PORT",9600,n,8,1");
 }

@@ -31,7 +31,11 @@ SOURCES += main.cpp\
     login/userdlg.cpp \
     login/md5.cpp \
     login/loginmanage.cpp \
-    modbusmodule.cpp
+    modbusmodule.cpp \
+    querydata.cpp \
+    calibframe.cpp \
+    datafit.cpp \
+    calibframe.cpp
 HEADERS  += systemwindow.h \
     iprotocol.h \
     itask.h \
@@ -47,11 +51,19 @@ HEADERS  += systemwindow.h \
     login/md5.h \
     login/loginmanage.h \
     modbusmodule.h \
-    defines.h
+    defines.h \
+    querydata.h \
+    calibframe.h \
+    datafit.h \
+    calibframe.h
 
 FORMS    += systemwindow.ui \
     qfmain.ui \
     login/userdlg.ui \
-    modbusmodule.ui
+    modbusmodule.ui \
+    setui.ui \
+    querydata.ui \
+    calibframe.ui \
+    calibframe.ui
 
 RESOURCES += res/qtres.qrc

@@ -78,6 +78,8 @@ int ElementInterface::getCurrentWorkTime()
     return 0;
 }
 
+Receiver ElementInterface::getReceiver(){return protocol->getReceiver();}
+
 int ElementInterface::startTask(TaskType type)
 {
     if (currentTaskType != TT_Idle || !flowTable.contains(type))

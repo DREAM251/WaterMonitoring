@@ -16,7 +16,7 @@ ModbusProcesser::ModbusProcesser(QObject *parent) :
 //打开端口
 bool ModbusProcesser::OpenPort()
 {
-    DatabaseProfile profile("config.db");
+    DatabaseProfile profile;
     profile.beginSection("modbus");
     setPortName(EXT_PORT);
     switch(profile.value("baud", 0).toInt()){
@@ -64,7 +64,7 @@ unsigned char ModbusProcesser::GetSystemHoldRegister(unsigned short first, int c
     unsigned short address = getSlaveAddress();
     if(address == GetDeviceAddress())
     {
-        DatabaseProfile profile("config.db");
+        DatabaseProfile profile;
         for (int i = 0; i < counts; i++)
         {
             unsigned short ret = 0;
@@ -132,7 +132,7 @@ ModbusModule::~ModbusModule()
 //读取配置
 void ModbusModule::LoadParameter()
 {
-    DatabaseProfile profile("config.db");
+    DatabaseProfile profile;
     profile.beginSection("modbus");
     ui->sbAddr->setValue(profile.value("addr", "1").toInt());
     ui->cbBuad->setCurrentIndex(profile.value("baud", 0).toInt());
@@ -144,7 +144,7 @@ void ModbusModule::LoadParameter()
 //保存配置
 void ModbusModule::SaveParameter()
 {
-    DatabaseProfile profile("config.db");
+    DatabaseProfile profile;
     profile.beginSection("modbus");
     profile.setValue("addr", ui->sbAddr->value());
     profile.setValue("baud", ui->cbBuad->currentIndex());

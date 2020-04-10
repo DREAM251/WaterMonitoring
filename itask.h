@@ -61,7 +61,6 @@ public:
 
 protected:
     IProtocol *protocol; // shared
-    DatabaseProfile *profile; // shared
     QStringList commandList;
     int cmdIndex;
     QString cmd;
