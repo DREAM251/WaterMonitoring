@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 ** Copyright (c) 2000-2003 Wayne Roth
 ** Copyright (c) 2004-2007 Stefan Sander
 ** Copyright (c) 2007 Michal Policht
@@ -42,6 +42,10 @@
 //
 // We mean it.
 //
+
+#if !defined (QESP_NO_UDEV)
+#define QESP_NO_UDEV
+#endif
 
 #include "qextserialenumerator.h"
 

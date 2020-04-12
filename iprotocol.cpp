@@ -1,4 +1,4 @@
-#include "iprotocol.h"
+﻿#include "iprotocol.h"
 #include <QStringList>
 #include <QDebug>
 #include "defines.h"

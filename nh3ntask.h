@@ -1,4 +1,4 @@
-#ifndef NH3NTASK_H
+﻿#ifndef NH3NTASK_H
 #define NH3NTASK_H
 
 #include "itask.h"

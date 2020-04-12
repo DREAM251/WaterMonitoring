@@ -1,4 +1,4 @@
-#ifndef PROFILE_H
+﻿#ifndef PROFILE_H
 #define PROFILE_H
 
 #include <QSqlDatabase>

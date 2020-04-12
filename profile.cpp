@@ -1,4 +1,4 @@
-#include "profile.h"
+﻿#include "profile.h"
 #include <QDebug>
 #include <QFile>
 #include <QSqlQuery>
@@ -84,12 +84,12 @@ QVariant DatabaseProfile::value(const QString &key, const QVariant &defaultValue
     QString strTable = sectionName;
     QString strKey = key;
 
-    int index = key.indexOf('/');
+    /*int index = key.indexOf('/');
     if (index >= 0)
     {
         strTable = key.left(index);
         strKey = key.mid(index);
-    }
+    }*/
 
     QSqlQuery query(database);
     QString select = QString("select value from %1 where key is '%2';").arg(strTable).arg(strKey);

@@ -1,4 +1,4 @@
-#include "loginmanage.h"
+ï»¿#include "loginmanage.h"
 #include "md5.h"
 #include <stdio.h>
 #include <string.h>
@@ -25,7 +25,7 @@ LoginManage::~LoginManage()
 {
 }
 
-//Ğ£ÑéÃÜÂë
+//æ ¡éªŒå¯†ç 
 int LoginManage::check(const char* user,const char* password)
 {
     char stgPW[PASSWORD_LEN]={0},dePW[PASSWORD_LEN]={0};
@@ -42,7 +42,7 @@ int LoginManage::check(const char* user,const char* password)
     return 0;
 }
 
-//ĞŞ¸ÄÃÜÂë
+//ä¿®æ”¹å¯†ç 
 int LoginManage::modify(const char *user, const char *password, const char *newpassword)
 {
     if(check(user,password)==0)
@@ -52,8 +52,8 @@ int LoginManage::modify(const char *user, const char *password, const char *newp
 }
 
 /*
- *º¯ÊıÃû£ºint calcID(void)
- *¹¦ÄÜ£º¸ù¾İËæ»úÂë£¨initCode£©¼ÆËãÑéÖ¤Âë£¨idcode£©
+ *å‡½æ•°åï¼šint calcID(void)
+ *åŠŸèƒ½ï¼šæ ¹æ®éšæœºç ï¼ˆinitCodeï¼‰è®¡ç®—éªŒè¯ç ï¼ˆidcodeï¼‰
  */
 int LoginManage::calcID(void)
 {
@@ -74,8 +74,8 @@ int LoginManage::calcID(void)
 }
 
 /*
- *º¯ÊıÃû£ºint getMacCode(void)
- *¹¦ÄÜ£º²úÉúĞÂµÄËæ»úÂë£¨initCode£©
+ *å‡½æ•°åï¼šint getMacCode(void)
+ *åŠŸèƒ½ï¼šäº§ç”Ÿæ–°çš„éšæœºç ï¼ˆinitCodeï¼‰
  */
 int LoginManage::getMacCode(void)
 {
@@ -85,7 +85,7 @@ int LoginManage::getMacCode(void)
     return initCode;
 }
 
-//¸ù¾İÓÃ»§Ãû´ÓÎÄ¼şÖĞ¶ÁÈ¡ÃÜÂë
+//æ ¹æ®ç”¨æˆ·åä»æ–‡ä»¶ä¸­è¯»å–å¯†ç 
 bool LoginManage::findUser(const char *user, char *password)
 {
     bool ret = 0;
@@ -133,7 +133,7 @@ _FU_END_:
     return ret;
 }
 
-//¸ù¾İÓÃ»§Ãû´ÓĞŞ¸ÄÎÄ¼şÖĞµÄÃÜÂë
+//æ ¹æ®ç”¨æˆ·åä»ä¿®æ”¹æ–‡ä»¶ä¸­çš„å¯†ç 
 bool LoginManage::changePassword(const char *user,const char *password)
 {
     bool ret = 0,flag=1;
@@ -208,7 +208,7 @@ _CP_END_:
     return ret;
 }
 
-//¼ÆËãÃÜÂë²¢±£´æ
+//è®¡ç®—å¯†ç å¹¶ä¿å­˜
 bool LoginManage::changeDePassword(const char *user, const char *password)
 {
     char dePW[PASSWORD_LEN]={0};

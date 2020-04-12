@@ -1,4 +1,4 @@
-#ifndef QFMAIN_H
+﻿#ifndef QFMAIN_H
 #define QFMAIN_H
 
 #include <QWidget>
@@ -8,10 +8,14 @@
 #include "elementinterface.h"
 #include "querydata.h"
 #include "calibframe.h"
+#include "instructioneditor.h"
+#include "modbusmodule.h"
 
 namespace Ui {
 class QFMain;
 class SetUI;
+class Maintaince;
+class MeasureMode;
 }
 class QFMain : public QWidget
 {
@@ -20,6 +24,11 @@ class QFMain : public QWidget
 public:
     explicit QFMain(QWidget *parent = 0);
     ~QFMain();
+
+    void initSettings();
+    void initCalibration();
+    void initMaintaince();
+    void initQuery();
 
 public slots:
     void menuClicked(int i);
@@ -36,6 +45,8 @@ Q_SIGNALS:
 private:
     Ui::QFMain *ui;
     Ui::SetUI *setui;
+    Ui::Maintaince *maintaince;
+    Ui::MeasureMode *measuremode;
     QSignalMapper *signalMapper;
     QTimer *timer;
     ElementInterface *element;
@@ -46,7 +57,10 @@ private:
     QueryData *queryCalib;
     QueryData *queryError;
     QueryData *queryLog;
-    CalibFrameUser *calibframe;
+    CalibFrameUser *usercalib;
+    CalibFrameFactory *factorycalib;
+    InstructionEditor *editor;
+    ModbusModule *modbusframe;
 };
 
 #endif // QFMAIN_H

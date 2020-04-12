@@ -1,4 +1,4 @@
-#ifndef ITASK_H
+﻿#ifndef ITASK_H
 #define ITASK_H
 
 #include <QString>

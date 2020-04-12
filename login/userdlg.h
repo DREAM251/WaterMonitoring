@@ -1,4 +1,4 @@
-#ifndef USERDLG_H
+﻿#ifndef USERDLG_H
 #define USERDLG_H
 
 #include "loginmanage.h"

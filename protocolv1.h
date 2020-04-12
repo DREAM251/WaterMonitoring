@@ -1,4 +1,4 @@
-#ifndef PROTOCOLV1_H
+﻿#ifndef PROTOCOLV1_H
 #define PROTOCOLV1_H
 
 #include "iprotocol.h"

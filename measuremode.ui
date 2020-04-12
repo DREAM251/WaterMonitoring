@@ -1,0 +1,802 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MeasureMode</class>
+ <widget class="QFrame" name="MeasureMode">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>516</width>
+    <height>397</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Frame</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">#measureOption,#measureMode,#fixMode{background-color: lightGray;font: 75 12pt;}
+</string>
+  </property>
+  <property name="frameShape">
+   <enum>QFrame::StyledPanel</enum>
+  </property>
+  <property name="frameShadow">
+   <enum>QFrame::Raised</enum>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="margin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QLabel" name="measureOption">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>测量选项</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widget_3" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QLabel" name="label_16">
+        <property name="text">
+         <string>量程选择：</string>
+        </property>
+        <property name="buddy">
+         <cstring>Range1</cstring>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="Range1">
+        <property name="text">
+         <string>0-10mg/L</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="Range2">
+        <property name="text">
+         <string>0-50mg/L</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="Range3">
+        <property name="text">
+         <string>自定义</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="RangeLock">
+        <property name="text">
+         <string>锁定量程</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widget_4" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <widget class="QLabel" name="label_15">
+        <property name="text">
+         <string>取液管道：</string>
+        </property>
+        <property name="buddy">
+         <cstring>SamplePipe1</cstring>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="SamplePipe1">
+        <property name="text">
+         <string>水样</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="SamplePipe2">
+        <property name="text">
+         <string>标样</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="SamplePipe3">
+        <property name="text">
+         <string>零样</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="measureMode">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>工作模式</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widget_2" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_14">
+        <property name="text">
+         <string>模式选择：</string>
+        </property>
+        <property name="buddy">
+         <cstring>MeasureMode1</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QRadioButton" name="MeasureMode1">
+        <property name="text">
+         <string>周期模式</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QRadioButton" name="MeasureMode2">
+        <property name="text">
+         <string>手动模式</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="3">
+       <widget class="QStackedWidget" name="stackedWidget">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="page">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QLabel" name="label_12">
+            <property name="text">
+             <string>周期：</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="buddy">
+             <cstring>MeasurePeriod</cstring>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="MeasurePeriod"/>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_11">
+            <property name="text">
+             <string>分钟      开始时刻：</string>
+            </property>
+            <property name="buddy">
+             <cstring>MeasureStartTime</cstring>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTimeEdit" name="MeasureStartTime">
+            <property name="wrapping">
+             <bool>false</bool>
+            </property>
+            <property name="buttonSymbols">
+             <enum>QAbstractSpinBox::UpDownArrows</enum>
+            </property>
+            <property name="accelerated">
+             <bool>false</bool>
+            </property>
+            <property name="correctionMode">
+             <enum>QAbstractSpinBox::CorrectToPreviousValue</enum>
+            </property>
+            <property name="keyboardTracking">
+             <bool>true</bool>
+            </property>
+            <property name="calendarPopup">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_13">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="page_2">
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QPushButton" name="StartMeasure">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>开始</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="fixMode">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>校准模式</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widget" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="1" column="3">
+       <widget class="QSpinBox" name="AdjustPeriod2"/>
+      </item>
+      <item row="1" column="4">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>分钟      开始时刻：</string>
+        </property>
+        <property name="buddy">
+         <cstring>AdjustStartTime2</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QTimeEdit" name="AdjustStartTime2">
+        <property name="wrapping">
+         <bool>false</bool>
+        </property>
+        <property name="buttonSymbols">
+         <enum>QAbstractSpinBox::UpDownArrows</enum>
+        </property>
+        <property name="accelerated">
+         <bool>false</bool>
+        </property>
+        <property name="correctionMode">
+         <enum>QAbstractSpinBox::CorrectToPreviousValue</enum>
+        </property>
+        <property name="keyboardTracking">
+         <bool>true</bool>
+        </property>
+        <property name="displayFormat">
+         <string>HH:mm</string>
+        </property>
+        <property name="calendarPopup">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QSpinBox" name="AdjustPeriod1"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="AdjustEnable3">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="AdjustEnable2">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="AdjustTask3">
+        <item>
+         <property name="text">
+          <string>标样校准</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>零点校准</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>标样核查</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>零点核查</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>跨度核查</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>周期：</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="buddy">
+         <cstring>AdjustPeriod3</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="QSpinBox" name="AdjustPeriod3"/>
+      </item>
+      <item row="0" column="4">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>分钟      开始时刻：</string>
+        </property>
+        <property name="buddy">
+         <cstring>AdjustStartTime1</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>周期：</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="buddy">
+         <cstring>AdjustPeriod2</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>周期：</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="buddy">
+         <cstring>AdjustPeriod1</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="AdjustTask1">
+        <item>
+         <property name="text">
+          <string>标样校准</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>零点校准</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>标样核查</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>零点核查</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>跨度核查</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QTimeEdit" name="AdjustStartTime1">
+        <property name="wrapping">
+         <bool>false</bool>
+        </property>
+        <property name="buttonSymbols">
+         <enum>QAbstractSpinBox::UpDownArrows</enum>
+        </property>
+        <property name="accelerated">
+         <bool>false</bool>
+        </property>
+        <property name="correctionMode">
+         <enum>QAbstractSpinBox::CorrectToPreviousValue</enum>
+        </property>
+        <property name="keyboardTracking">
+         <bool>true</bool>
+        </property>
+        <property name="displayFormat">
+         <string>HH:mm</string>
+        </property>
+        <property name="calendarPopup">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="AdjustTask2">
+        <item>
+         <property name="text">
+          <string>标样校准</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>零点校准</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>标样核查</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>零点核查</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>跨度核查</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="2" column="4">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>分钟      开始时刻：</string>
+        </property>
+        <property name="buddy">
+         <cstring>AdjustStartTime3</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="AdjustEnable4">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>周期：</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="buddy">
+         <cstring>AdjustPeriod4</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="3">
+       <widget class="QSpinBox" name="AdjustPeriod4"/>
+      </item>
+      <item row="3" column="4">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>分钟      开始时刻：</string>
+        </property>
+        <property name="buddy">
+         <cstring>AdjustStartTime4</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="5">
+       <widget class="QTimeEdit" name="AdjustStartTime3">
+        <property name="wrapping">
+         <bool>false</bool>
+        </property>
+        <property name="buttonSymbols">
+         <enum>QAbstractSpinBox::UpDownArrows</enum>
+        </property>
+        <property name="accelerated">
+         <bool>false</bool>
+        </property>
+        <property name="correctionMode">
+         <enum>QAbstractSpinBox::CorrectToPreviousValue</enum>
+        </property>
+        <property name="keyboardTracking">
+         <bool>true</bool>
+        </property>
+        <property name="displayFormat">
+         <string>HH:mm</string>
+        </property>
+        <property name="calendarPopup">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QComboBox" name="AdjustTask5">
+        <item>
+         <property name="text">
+          <string>标样校准</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>零点校准</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>标样核查</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>零点核查</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>跨度核查</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="3" column="5">
+       <widget class="QTimeEdit" name="AdjustStartTime4">
+        <property name="wrapping">
+         <bool>false</bool>
+        </property>
+        <property name="buttonSymbols">
+         <enum>QAbstractSpinBox::UpDownArrows</enum>
+        </property>
+        <property name="accelerated">
+         <bool>false</bool>
+        </property>
+        <property name="correctionMode">
+         <enum>QAbstractSpinBox::CorrectToPreviousValue</enum>
+        </property>
+        <property name="keyboardTracking">
+         <bool>true</bool>
+        </property>
+        <property name="displayFormat">
+         <string>HH:mm</string>
+        </property>
+        <property name="calendarPopup">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="5">
+       <widget class="QTimeEdit" name="AdjustStartTime5">
+        <property name="wrapping">
+         <bool>false</bool>
+        </property>
+        <property name="buttonSymbols">
+         <enum>QAbstractSpinBox::UpDownArrows</enum>
+        </property>
+        <property name="accelerated">
+         <bool>false</bool>
+        </property>
+        <property name="correctionMode">
+         <enum>QAbstractSpinBox::CorrectToPreviousValue</enum>
+        </property>
+        <property name="keyboardTracking">
+         <bool>true</bool>
+        </property>
+        <property name="displayFormat">
+         <string>HH:mm</string>
+        </property>
+        <property name="calendarPopup">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QComboBox" name="AdjustTask4">
+        <item>
+         <property name="text">
+          <string>标样校准</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>零点校准</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>标样核查</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>零点核查</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>跨度核查</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="4" column="2">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>周期：</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="buddy">
+         <cstring>AdjustPeriod5</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="3">
+       <widget class="QSpinBox" name="AdjustPeriod5"/>
+      </item>
+      <item row="4" column="4">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>分钟      开始时刻：</string>
+        </property>
+        <property name="buddy">
+         <cstring>AdjustStartTime5</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QCheckBox" name="AdjustEnable5">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="AdjustEnable1">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>Range1</tabstop>
+  <tabstop>Range2</tabstop>
+  <tabstop>Range3</tabstop>
+  <tabstop>RangeLock</tabstop>
+  <tabstop>SamplePipe1</tabstop>
+  <tabstop>SamplePipe2</tabstop>
+  <tabstop>SamplePipe3</tabstop>
+  <tabstop>MeasureMode1</tabstop>
+  <tabstop>MeasureMode2</tabstop>
+  <tabstop>AdjustEnable1</tabstop>
+  <tabstop>AdjustEnable2</tabstop>
+  <tabstop>AdjustEnable3</tabstop>
+  <tabstop>AdjustEnable4</tabstop>
+  <tabstop>AdjustEnable5</tabstop>
+  <tabstop>AdjustTask1</tabstop>
+  <tabstop>AdjustTask2</tabstop>
+  <tabstop>AdjustTask3</tabstop>
+  <tabstop>AdjustTask4</tabstop>
+  <tabstop>AdjustTask5</tabstop>
+  <tabstop>AdjustPeriod1</tabstop>
+  <tabstop>AdjustPeriod2</tabstop>
+  <tabstop>AdjustPeriod3</tabstop>
+  <tabstop>AdjustPeriod4</tabstop>
+  <tabstop>AdjustPeriod5</tabstop>
+  <tabstop>AdjustStartTime1</tabstop>
+  <tabstop>AdjustStartTime2</tabstop>
+  <tabstop>AdjustStartTime3</tabstop>
+  <tabstop>AdjustStartTime4</tabstop>
+  <tabstop>AdjustStartTime5</tabstop>
+  <tabstop>StartMeasure</tabstop>
+  <tabstop>MeasurePeriod</tabstop>
+  <tabstop>MeasureStartTime</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,4 +1,4 @@
-#include "elementinterface.h"
+﻿#include "elementinterface.h"
 #include "profile.h"
 
 MeasureMode::MeasureMode(ElementType element) :

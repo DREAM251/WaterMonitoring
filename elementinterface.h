@@ -1,4 +1,4 @@
-#ifndef ELEMENTINTERFACE_H
+﻿#ifndef ELEMENTINTERFACE_H
 #define ELEMENTINTERFACE_H
 
 #include "elementfactory.h"

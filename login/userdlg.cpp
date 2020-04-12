@@ -1,4 +1,4 @@
-#include <QFile>
+ï»¿#include <QFile>
 #include "userdlg.h"
 #include "ui_userdlg.h"
 #include <QMessageBox>
@@ -61,7 +61,7 @@ void UserDlg::on_pbLogin_clicked()
     QString sPassword = ui->lePassword->text();
     if(iUser==1){
         if(sPassword == "934526"){
-            QMessageBox::about(this,tr("ÌáÊ¾"),tr("µÇÂ¼³É¹¦£¡"));
+            QMessageBox::about(this,tr("æç¤º"),tr("ç™»å½•æˆåŠŸï¼"));
             loginLevel = al_supper;
             emit login(loginLevel);
             ui->lePassword->clear();
@@ -73,7 +73,7 @@ void UserDlg::on_pbLogin_clicked()
     QString strPassword = ui->lePassword->text();
 
     if(gpLoginManage->check(strUser.toAscii().data(),strPassword.toAscii().data())){
-        QMessageBox::about(this,tr("ÌáÊ¾"),tr("µÇÂ¼³É¹¦£¡"));
+        QMessageBox::about(this,tr("æç¤º"),tr("ç™»å½•æˆåŠŸï¼"));
         if(strUser == "admin")
             loginLevel = al_admin;
         else if(strUser == "guest")
@@ -81,7 +81,7 @@ void UserDlg::on_pbLogin_clicked()
         emit login(loginLevel);
         hide();
     }else
-        QMessageBox::warning(this,tr("¾¯¸æ"),tr("µÇÂ¼Ê§°Ü£¬ÓÃ»§Ãû»òÕßÃÜÂë´íÎó£¡"));
+        QMessageBox::warning(this,tr("è­¦å‘Š"),tr("ç™»å½•å¤±è´¥ï¼Œç”¨æˆ·åæˆ–è€…å¯†ç é”™è¯¯ï¼"));
 
 
     ui->lePassword->clear();
@@ -95,14 +95,14 @@ void UserDlg::on_pbChangePW_clicked()
     QString strNewPassword2 = ui->leCPW_Password2->text();
 
     if(strNewPassword1!=strNewPassword2){
-        QMessageBox::warning(this,tr("¾¯¸æ"),tr("ÃÜÂë²»Ò»ÖÂ£¬ÇëÖØĞÂÊäÈë£¡"));
+        QMessageBox::warning(this,tr("è­¦å‘Š"),tr("å¯†ç ä¸ä¸€è‡´ï¼Œè¯·é‡æ–°è¾“å…¥ï¼"));
         return;
     }
     if(gpLoginManage->modify(strUser.toAscii().data(),strPassword.toAscii().data()
                   ,strNewPassword1.toAscii().data()))
-        QMessageBox::about(this,tr("ÌáÊ¾"),tr("ĞŞ¸Ä³É¹¦£¡"));
+        QMessageBox::about(this,tr("æç¤º"),tr("ä¿®æ”¹æˆåŠŸï¼"));
     else
-        QMessageBox::warning(this,tr("¾¯¸æ"),tr("ÃÜÂë´íÎó£¡"));
+        QMessageBox::warning(this,tr("è­¦å‘Š"),tr("å¯†ç é”™è¯¯ï¼"));
 }
 
 void UserDlg::on_pbForgetPW_clicked()
@@ -110,11 +110,11 @@ void UserDlg::on_pbForgetPW_clicked()
     QString strCode = ui->leFPW_Decode->text();
     int i = strCode.toInt();
     if(gpLoginManage->checkVerificationCode(i)){
-        QMessageBox::about(this,tr("ÌáÊ¾"),tr("ÃÜÂëÖØÖÃ³É¹¦£¡"));
+        QMessageBox::about(this,tr("æç¤º"),tr("å¯†ç é‡ç½®æˆåŠŸï¼"));
         ui->lbFPW_Code->setText(QString("%1").arg(gpLoginManage->getMacCode()));
     }
     else
-        QMessageBox::warning(this,tr("¾¯¸æ"),tr("ÃÜÂëÖØÖÃÊ§°Ü£¡"));
+        QMessageBox::warning(this,tr("è­¦å‘Š"),tr("å¯†ç é‡ç½®å¤±è´¥ï¼"));
 }
 
 void UserDlg::slot_showMain()

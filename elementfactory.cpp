@@ -1,4 +1,4 @@
-#include "elementfactory.h"
+﻿#include "elementfactory.h"
 #include "defines.h"
 
 ElementFactory::ElementFactory(ElementType type) :

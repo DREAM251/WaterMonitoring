@@ -1,4 +1,4 @@
-#ifndef IPROTOCOL_H
+﻿#ifndef IPROTOCOL_H
 #define IPROTOCOL_H
 
 #include <QObject>
@@ -7,7 +7,7 @@
 #include <qcoreevent.h>
 #include <qextserialport.h>
 
-// ��ʱ��
+// ¼ÆÊ±Æ÷
 class ProtocolCounter : public QObject
 {
     Q_OBJECT

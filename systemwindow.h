@@ -1,4 +1,4 @@
-#ifndef SYSTEMWINDOW_H
+﻿#ifndef SYSTEMWINDOW_H
 #define SYSTEMWINDOW_H
 
 #include <QWidget>
@@ -14,6 +14,12 @@ class SystemWindow : public QWidget
 public:
     explicit SystemWindow(QWidget *parent = 0);
     ~SystemWindow();
+
+public slots:
+    void screenCalibration();
+    void platformSelect();
+    void updateProgram();
+    void setTime();
 
 private:
     Ui::SystemWindow *ui;

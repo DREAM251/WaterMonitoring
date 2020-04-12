@@ -18,5 +18,6 @@
         <file>queryw.png</file>
         <file>LedGreen.ico</file>
         <file>LedRed.ico</file>
+        <file>logo.jpg</file>
     </qresource>
 </RCC>

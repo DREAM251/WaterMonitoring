@@ -45,17 +45,13 @@
        <property name="verticalSpacing">
         <number>2</number>
        </property>
+       <item row="1" column="0" colspan="5">
+        <widget class="QTableView" name="tvShowData"/>
+       </item>
        <item row="2" column="3">
         <widget class="QPushButton" name="pbNextPage">
          <property name="text">
           <string>下一页</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="4">
-        <widget class="QPushButton" name="pbFinalPage">
-         <property name="text">
-          <string>尾页</string>
          </property>
         </widget>
        </item>
@@ -66,17 +62,10 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="0" colspan="5">
-        <widget class="QTableView" name="tvShowData">
-         <property name="styleSheet">
-          <string notr="true">font:10pt;
-</string>
-         </property>
-         <property name="autoScroll">
-          <bool>false</bool>
-         </property>
-         <property name="selectionMode">
-          <enum>QAbstractItemView::ExtendedSelection</enum>
+       <item row="2" column="4">
+        <widget class="QPushButton" name="pbFinalPage">
+         <property name="text">
+          <string>尾页</string>
          </property>
         </widget>
        </item>

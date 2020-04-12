@@ -11,8 +11,9 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 include(hardwareinterface/hardwareinterface.pri)
 include(modbus/modbus.pri)
 include(env.pri)
-#DEFINES += NO_PROFILE
-TARGET = cmplatform1
+
+DESTDIR = $${PWD}/dist
+TARGET = cmplat
 TEMPLATE = app
 
 
@@ -35,7 +36,10 @@ SOURCES += main.cpp\
     querydata.cpp \
     calibframe.cpp \
     datafit.cpp \
-    calibframe.cpp
+    keyboard/keyboardenter.cpp \
+    keyboard/keyboard.cpp \
+    screensaver.cpp
+
 HEADERS  += systemwindow.h \
     iprotocol.h \
     itask.h \
@@ -55,7 +59,9 @@ HEADERS  += systemwindow.h \
     querydata.h \
     calibframe.h \
     datafit.h \
-    calibframe.h
+    keyboard/keyboardenter.h \
+    keyboard/keyboard.h \
+    screensaver.h
 
 FORMS    += systemwindow.ui \
     qfmain.ui \
@@ -64,6 +70,10 @@ FORMS    += systemwindow.ui \
     setui.ui \
     querydata.ui \
     calibframe.ui \
-    calibframe.ui
+    maintaince.ui \
+    measuremode.ui \
+    keyboard/keyboard.ui \
+    screensaver.ui \
+    lightvoltage.ui
 
 RESOURCES += res/qtres.qrc

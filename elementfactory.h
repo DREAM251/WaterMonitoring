@@ -1,4 +1,4 @@
-#ifndef ELEMENTFACTORY_H
+﻿#ifndef ELEMENTFACTORY_H
 #define ELEMENTFACTORY_H
 
 #include "iprotocol.h"

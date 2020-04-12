@@ -1,8 +1,9 @@
-#include "itask.h"
+ï»¿#include "itask.h"
 #include "defines.h"
 #include "profile.h"
 #include <QDebug>
 #include <QFile>
+#include <math.h>
 
 ITask::ITask() :
     protocol(NULL),
@@ -71,7 +72,7 @@ void ITask::recvEvent()
 {
     if (protocol && protocol->recvNewData())
     {        
-        // ¼ÓÈÈÅĞ¶¨
+        // åŠ çƒ­åˆ¤å®š
         if (protocol->getSender().heatReachStep())
         {
             if (protocol->getReceiver().heatTemp() >= protocol->getSender().heatTemp())
@@ -86,7 +87,7 @@ void ITask::recvEvent()
             protocol->skipCurrentStep();
         }
 
-        // ½µÎÂÅĞ¶¨
+        // é™æ¸©åˆ¤å®š
         if (protocol->getSender().coolReachStep())
         {
             if (protocol->getReceiver().heatTemp() <= protocol->getSender().heatTemp())
@@ -102,7 +103,7 @@ void ITask::recvEvent()
         }
 
 
-        // ÒºÎ»ÅĞ¶¨
+        // æ¶²ä½åˆ¤å®š
         if (protocol->getSender().waterLevelReachStep())
         {
             if (protocol->getSender().waterLevel() == protocol->getReceiver().waterLevel())
@@ -143,7 +144,7 @@ void ITask::saveParameters()
 void ITask::fixCommands(const QStringList &sources)
 {
     QStringList tempList;
-    // Ñ­»·´¦Àí
+    // å¾ªç¯å¤„ç†
     int loopStart = -1;
     int loopEnd = -1;
     int loopCount = 1;
@@ -184,8 +185,8 @@ void ITask::fixCommands(const QStringList &sources)
     if (!loopList.isEmpty())
         tempList += loopList;
 
-    // Ê±¼ä¹ØÁª
-    // ¼ÓÈÈ½µÎÂ¹ØÁª
+    // æ—¶é—´å…³è”
+    // åŠ çƒ­é™æ¸©å…³è”
     commandList.clear();
     for (int i = 0; i < tempList.count(); i++)
     {
@@ -229,7 +230,7 @@ bool MeasureTask::start(IProtocol *protocol)
     return false;
 }
 
-// ¿Õ°×Öµ²É¼¯
+// ç©ºç™½å€¼é‡‡é›†
 bool MeasureTask::collectBlankValues()
 {
     const int sampleMaxTimes = 10;
@@ -279,7 +280,7 @@ void MeasureTask::recvEvent()
     ITask::recvEvent();
     if (protocol && protocol->recvNewData())
     {
-        // ¿Õ°×¼ì²â
+        // ç©ºç™½æ£€æµ‹
         if (protocol->getSender().blankStep())
         {
             bool finished = collectBlankValues();
@@ -295,7 +296,7 @@ void MeasureTask::recvEvent()
             }
         }
 
-        // ÏÔÉ«¼ì²â
+        // æ˜¾è‰²æ£€æµ‹
         else if (protocol->getSender().colorStep())
         {
             bool finished = collectColorValues();

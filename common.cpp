@@ -1,4 +1,4 @@
-#include "common.h"
+ï»¿#include "common.h"
 #include <QFile>
 #include <QtSql>
 #include <QSqlDatabase>
@@ -6,6 +6,23 @@
 #include <QSqlRecord>
 #include <QMessageBox>
 #include <QSettings>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+
+#if defined(Q_OS_UNIX)
+#include <time.h>
+#include <termios.h>
+#include <unistd.h>
+#include <sys/time.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#elif defined(Q_OS_WIN)
+#include <windows.h>
+#endif
 
 QString Int2Hex(int a , int b)
 {
@@ -20,73 +37,11 @@ QString Int2Hex(int a , int b)
 
     return sa + sb;
 }
-/**
- * @brief Reclog ¼ÇÂ¼ĞÅÏ¢µ½ÎÄ¼ş£¬Èç¹û¼ÇÂ¼µÄĞÅÏ¢´óÓÚMAX_FILE_SIZE£¬Ôò½«Êı¾İ±¸·İµ½
- *                 Log/rec.bakÎÄ¼şµ±ÖĞ£¬È»ºóÖØĞÂ¼ÇÂ¼
- * @param Msg ĞèÒª¼ÇÂ¼µÄĞÅÏ¢
- */
-void Reclog(QString Msg)
-{
-    const qint64 MAX_FILE_SIZE = 10*1024*1024;//10MB
-    const QString filename = "logs/log.log";
-    const QString filebak = "logs/log.bak";
-
-    QFile recfile(filename);
-    if(recfile.open(QIODevice::Append))
-    {
-        //¼ÇÂ¼ĞÅÏ¢µ½ÎÄ¼ş
-        QDateTime dt = QDateTime::currentDateTime();
-        QString strREC = dt.toString("yyyy-MM-dd hh:mm:ss zzz\t") + Msg + "\r\n";
-        recfile.write(strREC.toLatin1());
-
-        //¸ù¾İÎÄ¼ş´óĞ¡£¬È·¶¨ÊÇ·ñ±¸·İ²¢ÖØĞÂ¼ÇÂ¼
-        if(recfile.size() > MAX_FILE_SIZE)
-        {
-            if(QFile::exists(filebak)) QFile::remove(filebak);
-            recfile.rename(filebak);
-        }
-
-        recfile.close();
-    }
-}
-
-/*
- *º¯ÊıÃû£ºvoid RecordTemp(int temp , QString strPath)
- *¹¦ÄÜ£ºÒÔÎÄ±¾¸ñÊ½¼ÇÂ¼ÎÂ¶ÈÊı¾İ£¬ÎÄ¼ş´æÈëstrPathÄ¿Â¼ÏÂµÄtemp.logÖĞ
- *     ¸ñÊ½£ºÊ±¼ä+"\t\t"+ÎÂ¶È+"\r\n"
- */
-void RecordTemp(QString temp , QString strPath)
-{
-    const qint64 MAX_FILE_SIZE = 20*1024*1024;//20MB
-#if defined (Q_OS_WIN)
-    const QString filebak = QString("D:/logs/%1.bak").arg( strPath );
-#else
-    const QString filebak = QString("logs/%1.bak").arg( strPath );
-#endif
-    QFile file("logs/"+strPath);   //ÄÚÈİĞ´ÈëÎÄ¼ş
-    if(!file.open(QIODevice::WriteOnly|QIODevice::Append))
-    {
-        qDebug() << "Open file failed!";
-        return;
-    }
-    QTextStream tfile(&file);
-    QDateTime dt = QDateTime::currentDateTime();
-    tfile<<dt.toString("yy-MM-dd hh:mm:ss:zzz")<<"\t"<<temp<<"\r\n";
-
-    //¸ù¾İÎÄ¼ş´óĞ¡£¬È·¶¨ÊÇ·ñ±¸·İ²¢ÖØĞÂ¼ÇÂ¼
-    if(file.size() > MAX_FILE_SIZE)
-    {
-        if(QFile::exists(filebak))
-            QFile::remove(filebak);
-        file.rename(filebak);
-    }
-    file.close();
-}
 
 
 int CRC16( char* pchMsg,  int wDataLen)
 {
-    //Ëã·¨Ğ£Ñé
+    //ç®—æ³•æ ¡éªŒ
     int code=0xffff;
     for(int i=0;i<wDataLen;i++)
     {
@@ -113,7 +68,7 @@ bool copyFiles(QString file,QString tagFile)
     return true;
 }
 
-/*0.0-99999.0Ö®¼äµÄÊı±£ÁôËÄÎ»ÓĞĞ§Êı×Ö*/
+/*0.0-99999.0ä¹‹é—´çš„æ•°ä¿ç•™å››ä½æœ‰æ•ˆæ•°å­—*/
 QString Float4(float value)
 {
     QString strRet;
@@ -148,79 +103,44 @@ void print_callstack()
 }
 
 #if defined(Q_OS_UNIX)
-struct linux_rtc_time {
-    int tm_sec;
-    int tm_min;
-    int tm_hour;
-    int tm_mday;
-    int tm_mon;
-    int tm_year;
-    int tm_wday;
-    int tm_yday;
-    int tm_isdst;
-};
-#define RTC_SET_TIME    _IOW('p', 0x0a, struct linux_rtc_time) /* Set RTC time    */
-int from_sys_clock()
+int setSystemTime(const char *time_string)
 {
+//    struct rtc_time ;
+    struct tm _tm, tm;
     struct timeval tv;
-    struct tm tm_time;
-    gettimeofday(&tv, NULL);
-    time_t t = tv.tv_sec;/* Prepare tm_time */
-    localtime_r(&t, &tm_time);
-    tm_time.tm_isdst = 0;
+    time_t timep;
+    sscanf(time_string, "%d-%d-%d %d:%d:%d", &tm.tm_year,
+        &tm.tm_mon, &tm.tm_mday,&tm.tm_hour,
+        &tm.tm_min, &tm.tm_sec);
+    _tm.tm_sec = tm.tm_sec;
+    _tm.tm_min = tm.tm_min;
+    _tm.tm_hour = tm.tm_hour;
+    _tm.tm_mday = tm.tm_mday;
+    _tm.tm_mon = tm.tm_mon - 1;
+    _tm.tm_year = tm.tm_year - 1900;
 
-    int rtc;
-    rtc = open("/dev/rtc", O_WRONLY);
-    if(rtc != -1){
-        int err = 0;
-        if(ioctl(rtc, RTC_SET_TIME, &tm_time) == -1)
-            err = -1;
-        if(close(rtc) == -1)
-            err  = -2;
-        return err;
-    }else{
-        return -3;
-    }
+    timep = mktime(&_tm);
+    tv.tv_sec = timep;
+    tv.tv_usec = 0;
+    if(settimeofday(&tv, (struct timezone *) 0) < 0)
+        return -1;
+    return 0;
 }
 #elif defined(Q_WS_WIN)
-int set_local_time(const char *time_string)
+int setSystemTime(const char *time_string)
 {
     SYSTEMTIME system_time;
-    char year[4 + 1] = {0};
-    char month[2 + 1] = {0};
-    char day[2 + 1] = {0};
-    char hour[2 + 1] = {0};
-    char minute[2 + 1] = {0};
-    char second[2 + 1] = {0};
-    int index = 0;
-
-    strncpy(year, time_string + index, 4);
-    index += 4;
-    strncpy(month, time_string + index, 2);
-    index += 2;
-    strncpy(day, time_string + index, 2);
-    index += 2;
-    strncpy(hour, time_string + index, 2);
-    index += 2;
-    strncpy(minute, time_string + index, 2);
-    index += 2;
-    strncpy(second, time_string + index, 2);
-    index += 2;
-
     GetLocalTime(&system_time);
 
-    system_time.wYear = atoi(year);
-    system_time.wMonth = atoi(month);
-    system_time.wDay = atoi(day);
-    system_time.wHour = atoi(hour);
-    system_time.wMinute = atoi(minute);
-    system_time.wSecond = atoi(second);
+    sscanf(time_string, "%d-%d-%d %d:%d:%d", system_time.wYear,
+                       system_time.wMonth,
+                       system_time.wDay,
+                       system_time.wHour,
+                       system_time.wMinute,
+                      system_time.wSecond);
 
-    if (0 == SetLocalTime(&system_time))
-    {
+    if (!SetLocalTime(&system_time))
         return -1;
-    }
-
     return 0;
 }
 #endif
@@ -275,8 +195,8 @@ bool isInf(double f)
     }
 }
 
-// n > 0 Ê±°´ÕÕ±£ÁônÎ»Ğ¡ÊıÎ»ÊıµÄ·½Ê½È·¶¨¾«¶È
-// n < 0 Ê±°´ÕÕ-nÎ»ÓĞĞ§Êı¾İµÄ·½Ê½È·¶¨¾«¶È
+// n > 0 æ—¶æŒ‰ç…§ä¿ç•™nä½å°æ•°ä½æ•°çš„æ–¹å¼ç¡®å®šç²¾åº¦
+// n < 0 æ—¶æŒ‰ç…§-nä½æœ‰æ•ˆæ•°æ®çš„æ–¹å¼ç¡®å®šç²¾åº¦
 float setPrecision(float v, int n, QString *pshow)
 {
     if (n >= 0)
@@ -288,7 +208,7 @@ float setPrecision(float v, int n, QString *pshow)
     }
     else
     {
-         // È·¶¨±£ÁôĞ¡ÊıµÄÎ»Êı
+         // ç¡®å®šä¿ç•™å°æ•°çš„ä½æ•°
         int x = floor(v);
         int m = 0;
         while(x > 0)
@@ -319,7 +239,7 @@ bool readSqlValues(QSqlDatabase *sqldb, const QString &table, QStringList &value
         return false;
     QSqlQuery query(strquery, *sqldb);
 
-    //ÏÔÊ¾µ±Ç°Ò³ÌõÄ¿
+    //æ˜¾ç¤ºå½“å‰é¡µæ¡ç›®
     int i = 1;
     int column = query.record().count();
     while (query.next())
@@ -366,3 +286,271 @@ bool saveCommandFile(const QStringList &lines, const QString &filePath)
     else
         return false;
 }
+
+
+void addErrorMsg(QString strMsg, int level)
+{
+    const QString dbuserdata = "UserData.db";
+    QSqlDatabase sqlitedb = QSqlDatabase::database(dbuserdata);
+
+    if (!sqlitedb.isValid()) {
+        sqlitedb = QSqlDatabase::addDatabase("QSQLITE", dbuserdata);
+        sqlitedb.setDatabaseName(dbuserdata);
+    }
+
+    //SQLITECIPHER
+    //profileDB.setPassword("934526");
+    if (!sqlitedb.isOpen())
+    {
+        if (!sqlitedb.open())
+        {
+            qDebug() << sqlitedb.lastError() << dbuserdata;
+            return;
+        }
+    }
+
+    QString TimeID = QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
+    QString Time = QDateTime::currentDateTime().toString("yy-MM-dd hh:mm");
+
+    QSqlQuery sqlquery(sqlitedb);
+    QString sqlstr = QString("'%1','%2','%3','%4','%5','%6','%7','%8','%9',")
+            .arg(Time)
+            .arg(level?QString("è­¦å‘Š"):QString("æç¤º"))
+            .arg(strMsg)
+            .arg(0)
+            .arg(0)
+            .arg(0)
+            .arg(0)
+            .arg(0)
+            .arg(0)
+            +QString("'0','0','0','0','0','0','0','0','0'");
+    sqlquery.exec(QString("INSERT INTO Error(ID,TimeID,"
+                          "A1,A2,A3,A4,A5,A6,A7,A8,A9,"
+                          "B1,B2,B3,B4,B5,B6,B7,B8,B9)"
+                          "VALUES(NULL,'%1',%2);").arg(TimeID).arg(sqlstr));
+    sqlquery.clear();
+}
+
+
+DriverSelectionDialog::DriverSelectionDialog(QWidget *parent) :
+    QDialog(parent)
+{
+    setWindowTitle(tr("æ•°æ®å¯¼å‡º"));
+    setWindowFlags(Qt::WindowTitleHint | Qt::CustomizeWindowHint);
+    setFixedWidth(400);
+
+    QPushButton *btOk = new QPushButton(tr("ç¡®å®š"));
+    QPushButton *btCancel = new QPushButton(tr("å–æ¶ˆ"));
+    QGroupBox *group = new QGroupBox(tr("è¯·é€‰æ‹©éœ€è¦å¯¼å‡ºçš„ç£ç›˜:"));
+    QGridLayout *mainLayout = new QGridLayout(this);
+    mainLayout->addWidget(group,0,0,1,3);
+    mainLayout->addWidget(btOk,1,1,1,1);
+    mainLayout->addWidget(btCancel,1,2,1,1);
+    layout = new QVBoxLayout(group);
+
+    connect(btOk , SIGNAL(clicked()) , this , SLOT(ok()));
+    connect(btCancel , SIGNAL(clicked()) , this , SLOT(cancel()));
+}
+
+int DriverSelectionDialog::showModule()
+{
+    dir.clear();
+    info.clear();
+    DriverSelectionDialog::GetDrives(dir , info, exclusives);
+    for(int i=0;i<dir.count();i++)
+    {
+        QRadioButton *rbtn = new QRadioButton(tr("%1(%2)").arg(info[i]).arg(dir[i]));
+        layout->addWidget(rbtn);
+        btnList << rbtn;
+    }
+    if (btnList.count() > 0)
+        btnList.last()->setChecked(true);
+
+    return exec();
+}
+
+QString DriverSelectionDialog::getSelectedDriver()
+{
+    int i=0;
+    for(;i<btnList.count();i++)
+    {
+        if(btnList.at(i)->isChecked())
+            break;
+    }
+
+    return dir[i];
+}
+
+void DriverSelectionDialog::addExclusiveDriver(const QString &dri)
+{
+    exclusives <<  dri;
+}
+
+void DriverSelectionDialog::ok()
+{
+    this->accept();
+}
+
+void DriverSelectionDialog::cancel()
+{
+    this->reject();
+}
+
+#if defined(Q_OS_WIN)
+void DriverSelectionDialog::GetDrives(QStringList &driverDir, QStringList &driverInfo, QStringList &)
+{
+    char rootPath[10] = {0};
+    UINT nType;
+
+    for(char a = 'A'; a <= 'Z'; a++)
+    {
+        sprintf(rootPath, "%c:\\", a);
+        nType = GetDriveTypeA(rootPath);
+        if(nType != DRIVE_NO_ROOT_DIR)// DRIVE_NO_ROOT_DIR: è·¯å¾„æ— æ•ˆ
+        {
+            driverDir << QString(rootPath);
+            switch(nType)
+            {
+            case DRIVE_FIXED:
+                driverInfo << tr("ç¡¬ç›˜");
+                break;
+            case DRIVE_REMOVABLE:
+                driverInfo << tr("å¯ç§»åŠ¨ç£ç›˜");
+                break;
+            case DRIVE_CDROM:
+                driverInfo << tr("å…‰ç›˜");
+                break;
+            case DRIVE_RAMDISK:
+                driverInfo << tr("RAMç›˜");
+                break;
+            case DRIVE_REMOTE:
+                driverInfo << tr("Remote(Network) drive ç½‘ç»œç£ç›˜");
+                break;
+            case DRIVE_UNKNOWN:
+            default:
+                driverInfo << tr("æœªçŸ¥ç›˜");
+                break;
+            }
+        }
+    }
+}
+#elif defined(Q_OS_UNIX)
+void DriverSelectionDialog::GetDrives(QStringList &driverDir, QStringList &driverInfo, QStringList &exclusive)
+{
+    QFile file("/proc/mounts");
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    char cLine[1024];
+    for(;;)
+    {
+        int count = file.readLine(cLine , 1024);
+        if(count <= 0){
+            file.close();
+            break;
+        }
+
+        QString strLine = QByteArray(cLine,count);
+        QStringList strSections = strLine.split(" ");
+        if(strSections.count() == 6)
+        {
+            QString devName = strSections.at(0) , mountPoint = strSections.at(1);
+
+            if (exclusive.contains(devName))
+                continue;
+
+            if(devName.startsWith("/dev/sd"))
+            {
+                driverInfo << tr("Uç›˜");
+                driverDir << mountPoint;
+            }
+            else if(devName.startsWith("/dev/mmc"))
+            {
+                driverInfo << tr("SDå¡");
+                driverDir << mountPoint;
+            }
+            else if(devName.startsWith("/dev/"))
+            {
+                driverInfo << tr("æœªçŸ¥è®¾å¤‡") + devName;
+                driverDir << mountPoint;
+            }
+        }
+    }
+}
+#endif
+
+
+LOG_WRITER::LOG_WRITER() : fcount(4) {}
+
+void LOG_WRITER::writeLog(QString Msg1, QString Msg2, QString prefix, int fcount)
+{
+    const qint64 maxFileSize = 5*1024*1024;//5MB
+    QFile recfile(prefix + ".log");
+    if(recfile.open(QIODevice::Append | QIODevice::Text))
+    {
+        //è®°å½•ä¿¡æ¯åˆ°æ–‡ä»¶
+        QString strREC = QString("{%1}[%2]%3\n")
+                .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz"))
+                .arg(Msg1).arg(Msg2);
+        recfile.write(strREC.toLocal8Bit());
+
+        //æ ¹æ®æ–‡ä»¶å¤§å°ï¼Œç¡®å®šæ˜¯å¦å¤‡ä»½å¹¶é‡æ–°è®°å½•
+        if(recfile.size() > maxFileSize)
+        {
+            for(int i=fcount-1;i>0;i--)
+            {
+                QString backupName = prefix+QString("%1.log").arg(i);
+                if(QFile::exists(backupName))
+                {
+                    if(i==fcount-1)
+                    {
+                        QFile::remove(backupName);
+                    }
+                    else
+                    {
+                        QString targetName = prefix + QString("%1.log").arg(i+1);
+                        QFile::rename(backupName , targetName);
+                    }
+                }
+            }
+            recfile.rename(prefix + "1.log");
+        }
+        recfile.close();
+    }
+}
+
+LOG_WRITER *LOG_WRITER::getObject(const QString &filePath)
+{
+    static LOG_WRITER *writer = NULL;
+    if(writer == NULL)
+        writer = new LOG_WRITER;
+    writer->filePath = filePath;
+    return writer;
+}
+
+void LOG_WRITER::notice(const QString &x)
+{
+    LOG_WRITER::writeLog("notice" , x , filePath , fcount);
+}
+
+void LOG_WRITER::info(const QString &x)
+{
+    LOG_WRITER::writeLog("info" , x , filePath , fcount);
+}
+
+void LOG_WRITER::debug(const QString &x)
+{
+    LOG_WRITER::writeLog("debug" , x , filePath , fcount );
+}
+
+void LOG_WRITER::error(const QString &x)
+{
+    LOG_WRITER::writeLog("error" , x , filePath , fcount );
+}
+
+void LOG_WRITER::fatal(const QString &x)
+{
+    LOG_WRITER::writeLog("fatal" , x , filePath , fcount );
+}
+
+void LOG_WRITER::setCount(int c) { fcount = c;}

@@ -3,7 +3,8 @@
 
 #include "mbdefines.h"
 #include <vector>
-//#include <stdlib.h>
+#include <stdlib.h>
+#include <string.h>
 
 // This structure is byte-aligned
 typedef struct {

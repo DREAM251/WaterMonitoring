@@ -1,6 +1,9 @@
-#include "qfmain.h"
+﻿#include "qfmain.h"
+#include "systemwindow.h"
 #include "ui_qfmain.h"
 #include "ui_setui.h"
+#include "ui_maintaince.h"
+#include "ui_measuremode.h"
 #include <QDebug>
 #include <QToolButton>
 
@@ -8,6 +11,8 @@ QFMain::QFMain(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::QFMain),
     setui(new Ui::SetUI),
+    maintaince(new Ui::Maintaince),
+    measuremode(new Ui::MeasureMode),
     signalMapper(new QSignalMapper(this)),
     timer(new QTimer(this)),
     element(new ElementInterface(ET_NH3N, this)),
@@ -15,136 +20,13 @@ QFMain::QFMain(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // calibraiton
-    calibframe = new CalibFrameUser;
-    ui->contentStackedWidget->addWidget(calibframe);
-
-    // set ui
-    QWidget *setw = new QWidget();
-    setui->setupUi(setw);
-    setui->tabWidget->setCurrentIndex(0);
-    ui->contentStackedWidget->addWidget(setw);
-    ui->contentStackedWidget->setCurrentIndex(0);
-    connect(setui->Save, SIGNAL(clicked()), this, SLOT(saveSettings()));
-
-    // query ui
-    QTabWidget *tabwidget = new QTabWidget();
-    ui->contentStackedWidget->addWidget(tabwidget);
-    {
-        int column1 = 9;
-        QString label = tr("�������ݲ�ѯ");
-        QString table1 = "Data";
-        QString items1 = "A1,A2,A3,A4,A5,B1,B2,A6,A8,A7";
-        QString name1[] = {
-            tr("ʱ��"),
-            tr("Ũ��(mg/L)"),
-            tr("�����"),
-            tr("�հ�ֵC1"),
-            tr("��ɫֵC1"),
-            tr("�հ�ֵC2"),
-            tr("��ɫֵC2"),
-            tr("�¶�"),
-            tr("��������"),
-            tr("ʪ��(%)")
-        };
-        //   int width1[] = {120,100,70,65,65,65,68,120};
-        int width1[] = {130,100,68,85,85,85,85,55,110,55};
-        queryData =  new QueryData(11, column1);
-        for(int i=0;i<column1;i++){
-            queryData->setColumnWidth(i,width1[i]);
-            queryData->setHeaderName(i,name1[i]);
-        }
-        queryData->setLabel(label);
-        queryData->setSqlString(table1,items1);
-        queryData->UpdateModel();
-        queryData->setSQLDatabase(userDB);
-        queryData->initFirstPageQuery();
-        tabwidget->addTab(queryData, tr("���ݲ�ѯ"));
-    }
-
-    {
-        int column1 = 9;
-        QString label = tr("�궨���ݲ�ѯ");
-        QString table1 = "Calibration";
-        QString items1 = "A1,A2,A3,A4,A5,B1,B2,A6,A8,A7";
-        QString name1[] = {
-            tr("ʱ��"),
-            tr("Ũ��(mg/L)"),
-            tr("�����"),
-            tr("�հ�ֵC1"),
-            tr("��ɫֵC1"),
-            tr("�հ�ֵC2"),
-            tr("��ɫֵC2"),
-            tr("�¶�"),
-            tr("��������"),
-            tr("ʪ��(%)")
-        };
-        //   int width1[] = {120,100,70,65,65,65,68,120};
-        int width1[] = {130,100,68,85,85,85,85,55,110,55};
-        queryCalib =  new QueryData(11, column1);
-        for(int i=0;i<column1;i++){
-            queryCalib->setColumnWidth(i,width1[i]);
-            queryCalib->setHeaderName(i,name1[i]);
-        }
-        queryCalib->setLabel(label);
-        queryCalib->setSqlString(table1,items1);
-        queryCalib->UpdateModel();
-        queryCalib->setSQLDatabase(userDB);
-        queryCalib->initFirstPageQuery();
-        tabwidget->addTab(queryCalib, tr("�궨����"));
-    }
-
-    {
-        int column1 = 3;
-        QString label = tr("������¼��ѯ");
-        QString table1 = "Error";
-        QString items1 = "A1,A2,A3";
-        QString name1[] = {
-            tr("ʱ��"),
-            tr("����"),
-            tr("��Ϣ")
-        };
-        int width1[] = {120,100,550};
-        queryError =  new QueryData(11, column1);
-        for(int i=0;i<column1;i++){
-            queryError->setColumnWidth(i,width1[i]);
-            queryError->setHeaderName(i,name1[i]);
-        }
-        queryError->setLabel(label);
-        queryError->setSqlString(table1,items1);
-        queryError->UpdateModel();
-        queryError->setSQLDatabase(userDB);
-        queryError->initFirstPageQuery();
-        tabwidget->addTab(queryError, tr("������¼"));
-    }
-
-    {
-        int column1 = 3;
-        QString label = tr("��־��¼��ѯ");
-        QString table1 = "Log";
-        QString items1 = "A1,A2,A3";
-        QString name1[] = {
-            tr("ʱ��"),
-            tr("���"),
-            tr("��Ϣ")
-        };
-        int width1[] = {120,100,550};
-        queryLog =  new QueryData(11, column1);
-        for(int i=0;i<column1;i++){
-            queryLog->setColumnWidth(i,width1[i]);
-            queryLog->setHeaderName(i,name1[i]);
-        }
-        queryLog->setLabel(label);
-        queryLog->setSqlString(table1,items1);
-        queryLog->UpdateModel();
-        queryLog->setSQLDatabase(userDB);
-        queryLog->initFirstPageQuery();
-        tabwidget->addTab(queryLog, tr("��־��¼"));
-    }
-
+    initCalibration();
+    initMaintaince();
+    initSettings();
+    initQuery();
 
     QToolButton *btns[] = {ui->statusButton, ui->measureButton, ui->calibrationButton,
-                          ui->maintenanceButton, ui->settingsButton,ui->queryButton/*, ui->loginButton*/};
+                           ui->maintenanceButton, ui->settingsButton,ui->queryButton/*, ui->loginButton*/};
     for (int i = 0; i < sizeof(btns)/sizeof(QToolButton *); ++i)
     {
         connect(btns[i], SIGNAL(clicked()), signalMapper, SLOT(map()));
@@ -162,6 +44,235 @@ QFMain::QFMain(QWidget *parent) :
 QFMain::~QFMain()
 {
     delete ui;
+}
+
+// set ui
+void QFMain::initSettings()
+{
+    QWidget *w = new QWidget();
+    setui->setupUi(w);
+    setui->tabWidget->addTab(new SystemWindow, tr("系统设置"));
+    setui->tabWidget->setCurrentIndex(0);
+    ui->contentStackedWidget->addWidget(w);
+    ui->contentStackedWidget->setCurrentIndex(0);
+    connect(setui->Save, SIGNAL(clicked()), this, SLOT(saveSettings()));
+}
+
+void QFMain::initCalibration()
+{
+    // calibraiton
+    QTabWidget *tabwidget = new QTabWidget();
+    usercalib = new CalibFrameUser;
+    usercalib->addPipeName(tr("零样"));
+    usercalib->addPipeName(tr("标样"));
+    usercalib->setRange(0, "0-10mg/L");
+    usercalib->setRange(1, "0-50mg/L");
+    usercalib->setRange(2, "0-200mg/L");
+    usercalib->setSampleLow(0, 10);
+    usercalib->setSampleHigh(5, 5);
+    usercalib->loadParams();
+    usercalib->renewUI();
+    factorycalib = new CalibFrameFactory;
+    factorycalib->addPipeName(tr("零样"));
+    factorycalib->addPipeName(tr("标样"));
+    factorycalib->setRange(0, "0-10mg/L");
+    factorycalib->setRange(1, "0-50mg/L");
+    factorycalib->setRange(2, "0-200mg/L");
+    factorycalib->setSampleLow(0, 10);
+    factorycalib->setSampleHigh(5, 5);
+    factorycalib->loadParams();
+    factorycalib->renewUI();
+    tabwidget->addTab(usercalib, tr("用户标定"));
+    tabwidget->addTab(factorycalib, tr("出厂标定"));
+    ui->contentStackedWidget->addWidget(tabwidget);
+
+}
+
+
+// maintaince
+void QFMain::initMaintaince()
+{
+    QWidget *w = new QWidget;
+    QFrame *f = new QFrame;
+    measuremode->setupUi(f);
+    maintaince->setupUi(w);
+    maintaince->tabWidget->addTab(f, tr("测量模式"));
+
+    struct ColumnInfo aa[] = {
+    {QObject::tr("起始位"),4,"#S00"},
+    {QObject::tr("通讯判断"),1,"0"},
+    {QObject::tr("十通阀"),1,"0", ColumnInfo::CDT_Combox, QObject::tr("关闭,标样,通道阀,...")},
+    {QObject::tr("后门磁"),1,"0"},
+    {QObject::tr("清洗液位1"),1,"0"},
+    {QObject::tr("清洗液位2"),1,"0"},
+    {QObject::tr("废液液位1"),1,"0"},
+    {QObject::tr("废液液位2"),1,"0"},
+    {QObject::tr("五参数液位"),1,"0"},
+    {QObject::tr("输入备留1"),1,"0"},
+    {QObject::tr("输入备留2"),1,"0"},
+    {QObject::tr("输入备留3"),1,"0"},
+    {QObject::tr("空调"),1,"0"},
+    {QObject::tr("水泵"),1,"0"},
+    {QObject::tr("气泵"),1,"0"},
+    {QObject::tr("水泵2"),1,"0"},
+    {QObject::tr("五参数"),1,"0"},
+    {QObject::tr("风机1"),1,"0"},
+    {QObject::tr("风机2"),1,"0"},
+    {QObject::tr("水样阀"),1,"0"},
+    {QObject::tr("清洗阀"),1,"0"},
+    {QObject::tr("气吹阀1"),1,"0"},
+    {QObject::tr("气吹阀2"),1,"0"},
+    {QObject::tr("气吹阀3"),1,"0"},
+    {QObject::tr("气吹阀4"),1,"0"},
+    {QObject::tr("输出开关量1"),1,"0"},
+    {QObject::tr("输出开关量2"),1,"0"},
+    {QObject::tr("输出备留"),1,"0"},
+    {QObject::tr("留样排阀"),1,"0"},
+    {QObject::tr("留样蠕动泵"),1,"0"},
+    {QObject::tr("保留"),34,"0000000000000000000000000000000000"},
+    {QObject::tr("单步时间"),4,"0000"},
+    {QObject::tr("温度"),4,"0000"},
+    {QObject::tr("湿度"),2,"00"},
+    {QObject::tr("校验"),2,"00"},
+    {QObject::tr("分隔符"),1,";"},
+    {QObject::tr("注释代码"),16,"0000000000000000", ColumnInfo::CDT_Combox, QObject::tr("无,清洗时间,测量时间")}};
+    QList<ColumnInfo> ci ;
+    int lines = sizeof(aa)/sizeof(struct ColumnInfo);
+    for(int i=0;i<lines;i++){
+        ci << aa[i];
+    }
+    CommondFileInfo bb[] = {{"cleaning1", "test-short.txt"}, {"emptying",  "test-long.txt"}};
+    QList<CommondFileInfo> cfi;
+    lines = sizeof(bb)/sizeof(struct CommondFileInfo);
+    for(int i=0;i<lines;i++){
+        cfi << bb[i];
+    }
+    editor = new InstructionEditor(ci, cfi);
+    maintaince->tabWidget->addTab(editor, tr("命令编辑"));
+
+    modbusframe = new ModbusModule();
+    maintaince->tabWidget->addTab(modbusframe, tr("数字通信"));
+
+    maintaince->tabWidget->setCurrentIndex(0);
+    ui->contentStackedWidget->addWidget(w);
+}
+
+// query ui
+void QFMain::initQuery()
+{
+    QTabWidget *tabwidget = new QTabWidget();
+    ui->contentStackedWidget->addWidget(tabwidget);
+    {
+        int column1 = 9;
+        QString label = tr("测量数据查询");
+        QString table1 = "Data";
+        QString items1 = "A1,A2,A3,A4,A5,B1,B2,A6,A8,A7";
+        QString name1[] = {
+            tr("时间"),
+            tr("浓度(mg/L)"),
+            tr("吸光度"),
+            tr("空白值C1"),
+            tr("显色值C1"),
+            tr("空白值C2"),
+            tr("显色值C2"),
+            tr("温度"),
+            tr("操作类型"),
+            tr("湿度(%)")
+        };
+        //   int width1[] = {120,100,70,65,65,65,68,120};
+        int width1[] = {130,100,68,85,85,85,85,55,110,55};
+        queryData =  new QueryData(11, column1);
+        for(int i=0;i<column1;i++){
+            queryData->setColumnWidth(i,width1[i]);
+            queryData->setHeaderName(i,name1[i]);
+        }
+        queryData->setLabel(label);
+        queryData->setSqlString(table1,items1);
+        queryData->UpdateModel();
+        queryData->setSQLDatabase(userDB);
+        queryData->initFirstPageQuery();
+        tabwidget->addTab(queryData, tr("数据查询"));
+    }
+
+    {
+        int column1 = 9;
+        QString label = tr("标定数据查询");
+        QString table1 = "Calibration";
+        QString items1 = "A1,A2,A3,A4,A5,B1,B2,A6,A8,A7";
+        QString name1[] = {
+            tr("时间"),
+            tr("浓度(mg/L)"),
+            tr("吸光度"),
+            tr("空白值C1"),
+            tr("显色值C1"),
+            tr("空白值C2"),
+            tr("显色值C2"),
+            tr("温度"),
+            tr("操作类型"),
+            tr("湿度(%)")
+        };
+        //   int width1[] = {120,100,70,65,65,65,68,120};
+        int width1[] = {130,100,68,85,85,85,85,55,110,55};
+        queryCalib =  new QueryData(11, column1);
+        for(int i=0;i<column1;i++){
+            queryCalib->setColumnWidth(i,width1[i]);
+            queryCalib->setHeaderName(i,name1[i]);
+        }
+        queryCalib->setLabel(label);
+        queryCalib->setSqlString(table1,items1);
+        queryCalib->UpdateModel();
+        queryCalib->setSQLDatabase(userDB);
+        queryCalib->initFirstPageQuery();
+        tabwidget->addTab(queryCalib, tr("标定数据"));
+    }
+
+    {
+        int column1 = 3;
+        QString label = tr("报警记录查询");
+        QString table1 = "Error";
+        QString items1 = "A1,A2,A3";
+        QString name1[] = {
+            tr("时间"),
+            tr("级别"),
+            tr("信息")
+        };
+        int width1[] = {120,100,550};
+        queryError =  new QueryData(11, column1);
+        for(int i=0;i<column1;i++){
+            queryError->setColumnWidth(i,width1[i]);
+            queryError->setHeaderName(i,name1[i]);
+        }
+        queryError->setLabel(label);
+        queryError->setSqlString(table1,items1);
+        queryError->UpdateModel();
+        queryError->setSQLDatabase(userDB);
+        queryError->initFirstPageQuery();
+        tabwidget->addTab(queryError, tr("报警记录"));
+    }
+
+    {
+        int column1 = 3;
+        QString label = tr("日志记录查询");
+        QString table1 = "Log";
+        QString items1 = "A1,A2,A3";
+        QString name1[] = {
+            tr("时间"),
+            tr("类别"),
+            tr("信息")
+        };
+        int width1[] = {120,100,550};
+        queryLog =  new QueryData(11, column1);
+        for(int i=0;i<column1;i++){
+            queryLog->setColumnWidth(i,width1[i]);
+            queryLog->setHeaderName(i,name1[i]);
+        }
+        queryLog->setLabel(label);
+        queryLog->setSqlString(table1,items1);
+        queryLog->UpdateModel();
+        queryLog->setSQLDatabase(userDB);
+        queryLog->initFirstPageQuery();
+        tabwidget->addTab(queryLog, tr("日志记录"));
+    }
 }
 
 void QFMain::menuClicked(int p)
