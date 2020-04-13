@@ -74,10 +74,7 @@ QPushButton:hover:pressed
 {
     background-color: rgb(0, 85, 255);
 }
-
-QLabel{
-    color: #CFCFCF;
-}</string>
+</string>
            </property>
            <property name="frameShape">
             <enum>QFrame::StyledPanel</enum>
@@ -156,14 +153,14 @@ QLabel{
               <item>
                <widget class="QLabel" name="lbChangePW">
                 <property name="text">
-                 <string>&lt;a href=forget password style=&quot;color:rgb(255,255,0)&quot;&gt;修改密码&lt;a&gt;</string>
+                 <string>&lt;a href=forget password style=&quot;color:rgb(0,0,255)&quot;&gt;修改密码&lt;a&gt;</string>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QLabel" name="lbForgetPW">
                 <property name="text">
-                 <string>&lt;a href=forget password style=&quot;color:rgb(255,255,0)&quot;&gt;忘记密码？&lt;a&gt;</string>
+                 <string>&lt;a href=forget password style=&quot;color:rgb(0,0,255)&quot;&gt;忘记密码？&lt;a&gt;</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

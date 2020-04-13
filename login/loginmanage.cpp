@@ -14,8 +14,8 @@ LoginManage::LoginManage()
     FILE *fl = fopen(pwfilename,"r");
     if(fl == NULL){
         fl = fopen(pwfilename,"w");
-        changeDePassword("admin","123456");
-        changeDePassword("guest","111111");
+        changeDePassword("admin","1111");
+        changeDePassword("guest","0000");
     }
     if(fl != NULL)
         fclose(fl);

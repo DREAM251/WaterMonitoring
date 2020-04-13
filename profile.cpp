@@ -15,7 +15,6 @@ DatabaseProfile::DatabaseProfile(const QString &name)
     }
 
     //SQLITECIPHER
-    //profileDB.setPassword("934526");
     if (!sqlitedb.isOpen())
     {
         if (!sqlitedb.open())

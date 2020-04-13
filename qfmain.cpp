@@ -4,7 +4,9 @@
 #include "ui_setui.h"
 #include "ui_maintaince.h"
 #include "ui_measuremode.h"
+#include "ui_lightvoltage.h"
 #include <QDebug>
+#include <QMessageBox>
 #include <QToolButton>
 
 QFMain::QFMain(QWidget *parent) :
@@ -13,10 +15,10 @@ QFMain::QFMain(QWidget *parent) :
     setui(new Ui::SetUI),
     maintaince(new Ui::Maintaince),
     measuremode(new Ui::MeasureMode),
+    lightVoltage(new Ui::LightVoltage),
     signalMapper(new QSignalMapper(this)),
     timer(new QTimer(this)),
-    element(new ElementInterface(ET_NH3N, this)),
-    userDB(NULL)
+    element(new ElementInterface(ET_NH3N, this))
 {
     ui->setupUi(this);
 
@@ -39,6 +41,11 @@ QFMain::QFMain(QWidget *parent) :
     timer->start(1000);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateStatus()));
     updateStatus();
+
+    connect(ui->OnlineOffline, SIGNAL(clicked()), this, SLOT(OnlineOffline()));
+    connect(ui->MeasureMethod, SIGNAL(clicked()), this, SLOT(MeasureMethod()));
+    connect(ui->Range, SIGNAL(clicked()), this, SLOT(Range()));
+    connect(ui->SamplePipe, SIGNAL(clicked()), this, SLOT(SamplePipe()));
 }
 
 QFMain::~QFMain()
@@ -52,10 +59,20 @@ void QFMain::initSettings()
     QWidget *w = new QWidget();
     setui->setupUi(w);
     setui->tabWidget->addTab(new SystemWindow, tr("系统设置"));
+
+    QFrame *f = new QFrame;
+    measuremode->setupUi(f);
+    setui->tabWidget->insertTab(0, f, tr("计划任务"));
+
     setui->tabWidget->setCurrentIndex(0);
     ui->contentStackedWidget->addWidget(w);
     ui->contentStackedWidget->setCurrentIndex(0);
+    connect(setui->Cancel, SIGNAL(clicked()), this, SLOT(loadSettings()));
     connect(setui->Save, SIGNAL(clicked()), this, SLOT(saveSettings()));
+
+
+
+    loadSettings();
 }
 
 void QFMain::initCalibration()
@@ -85,7 +102,6 @@ void QFMain::initCalibration()
     tabwidget->addTab(usercalib, tr("用户标定"));
     tabwidget->addTab(factorycalib, tr("出厂标定"));
     ui->contentStackedWidget->addWidget(tabwidget);
-
 }
 
 
@@ -93,10 +109,14 @@ void QFMain::initCalibration()
 void QFMain::initMaintaince()
 {
     QWidget *w = new QWidget;
-    QFrame *f = new QFrame;
-    measuremode->setupUi(f);
     maintaince->setupUi(w);
-    maintaince->tabWidget->addTab(f, tr("测量模式"));
+
+    modbusframe = new ModbusModule();
+    maintaince->tabWidget->addTab(modbusframe, tr("数字通信"));
+
+    QWidget *w1 = new QWidget;
+    lightVoltage->setupUi(w1);
+    maintaince->tabWidget->addTab(w1, tr("光源调节"));
 
     struct ColumnInfo aa[] = {
     {QObject::tr("起始位"),4,"#S00"},
@@ -150,9 +170,6 @@ void QFMain::initMaintaince()
     editor = new InstructionEditor(ci, cfi);
     maintaince->tabWidget->addTab(editor, tr("命令编辑"));
 
-    modbusframe = new ModbusModule();
-    maintaince->tabWidget->addTab(modbusframe, tr("数字通信"));
-
     maintaince->tabWidget->setCurrentIndex(0);
     ui->contentStackedWidget->addWidget(w);
 }
@@ -181,7 +198,7 @@ void QFMain::initQuery()
         };
         //   int width1[] = {120,100,70,65,65,65,68,120};
         int width1[] = {130,100,68,85,85,85,85,55,110,55};
-        queryData =  new QueryData(11, column1);
+        queryData =  new QueryData(column1);
         for(int i=0;i<column1;i++){
             queryData->setColumnWidth(i,width1[i]);
             queryData->setHeaderName(i,name1[i]);
@@ -189,7 +206,6 @@ void QFMain::initQuery()
         queryData->setLabel(label);
         queryData->setSqlString(table1,items1);
         queryData->UpdateModel();
-        queryData->setSQLDatabase(userDB);
         queryData->initFirstPageQuery();
         tabwidget->addTab(queryData, tr("数据查询"));
     }
@@ -213,7 +229,7 @@ void QFMain::initQuery()
         };
         //   int width1[] = {120,100,70,65,65,65,68,120};
         int width1[] = {130,100,68,85,85,85,85,55,110,55};
-        queryCalib =  new QueryData(11, column1);
+        queryCalib =  new QueryData(column1);
         for(int i=0;i<column1;i++){
             queryCalib->setColumnWidth(i,width1[i]);
             queryCalib->setHeaderName(i,name1[i]);
@@ -221,7 +237,6 @@ void QFMain::initQuery()
         queryCalib->setLabel(label);
         queryCalib->setSqlString(table1,items1);
         queryCalib->UpdateModel();
-        queryCalib->setSQLDatabase(userDB);
         queryCalib->initFirstPageQuery();
         tabwidget->addTab(queryCalib, tr("标定数据"));
     }
@@ -237,7 +252,7 @@ void QFMain::initQuery()
             tr("信息")
         };
         int width1[] = {120,100,550};
-        queryError =  new QueryData(11, column1);
+        queryError =  new QueryData(column1);
         for(int i=0;i<column1;i++){
             queryError->setColumnWidth(i,width1[i]);
             queryError->setHeaderName(i,name1[i]);
@@ -245,23 +260,21 @@ void QFMain::initQuery()
         queryError->setLabel(label);
         queryError->setSqlString(table1,items1);
         queryError->UpdateModel();
-        queryError->setSQLDatabase(userDB);
         queryError->initFirstPageQuery();
         tabwidget->addTab(queryError, tr("报警记录"));
     }
 
     {
-        int column1 = 3;
+        int column1 = 2;
         QString label = tr("日志记录查询");
         QString table1 = "Log";
-        QString items1 = "A1,A2,A3";
+        QString items1 = "A1,A2";
         QString name1[] = {
             tr("时间"),
-            tr("类别"),
             tr("信息")
         };
-        int width1[] = {120,100,550};
-        queryLog =  new QueryData(11, column1);
+        int width1[] = {120,550};
+        queryLog =  new QueryData(column1);
         for(int i=0;i<column1;i++){
             queryLog->setColumnWidth(i,width1[i]);
             queryLog->setHeaderName(i,name1[i]);
@@ -269,7 +282,6 @@ void QFMain::initQuery()
         queryLog->setLabel(label);
         queryLog->setSqlString(table1,items1);
         queryLog->UpdateModel();
-        queryLog->setSQLDatabase(userDB);
         queryLog->initFirstPageQuery();
         tabwidget->addTab(queryLog, tr("日志记录"));
     }
@@ -296,8 +308,16 @@ void QFMain::menuClicked(int p)
 
     switch (p)
     {
-    case 2: loadSettings();break;
+    case 0: break;
+    case 1: break;
+    case 2: usercalib->loadParams();
+        usercalib->renewUI();
+        factorycalib->loadParams();
+        factorycalib->renewUI();
+        break;
     case 3: break;
+    case 4: loadSettings();break;
+    case 5: break;
     default:
         break;
     }
@@ -312,8 +332,10 @@ void QFMain::updateStatus()
     ui->lightVoltage->setText(QString("%1").arg(re.lightVoltage1()));
 }
 
+//用户登陆权限管理
 void QFMain::login(int level)
 {
+    qDebug() << "login:" << level;
 }
 
 void QFMain::loadSettings()
@@ -346,6 +368,26 @@ void QFMain::loadSettings()
         setui->BlankErrorThreshold->setValue(profile.value("BlankErrorThreshold", 0).toInt());
 
         setui->SmoothOffset->setValue(profile.value("SmoothOffset", 0).toInt());
+    }
+
+    if (profile.beginSection("measuremode"))
+    {
+        const int c = 5;
+        QCheckBox *enables[c] = {measuremode->AdjustEnable1,measuremode->AdjustEnable2,measuremode->AdjustEnable3,measuremode->AdjustEnable4,measuremode->AdjustEnable5};
+        QComboBox *tasks[c] = {measuremode->AdjustTask1,measuremode->AdjustTask2,measuremode->AdjustTask3,measuremode->AdjustTask4,measuremode->AdjustTask5};
+        QSpinBox *periods[c] = {measuremode->AdjustPeriod1,measuremode->AdjustPeriod2,measuremode->AdjustPeriod3,measuremode->AdjustPeriod4,measuremode->AdjustPeriod5};
+        QTimeEdit *startTimes[c] = {measuremode->AdjustStartTime1,measuremode->AdjustStartTime2,measuremode->AdjustStartTime3,measuremode->AdjustStartTime4,measuremode->AdjustStartTime5};
+
+        for (int i = 0; i < c; i++)
+        {
+            enables[i]->setChecked(profile.value(QString("enable%1").arg(i), false).toBool());
+            tasks[i]->setCurrentIndex(profile.value(QString("task%1").arg(i), 0).toBool());
+            periods[i]->setValue(profile.value(QString("period%1").arg(i), 1).toBool());
+            startTimes[i]->setTime(profile.value(QString("startTime%1").arg(i), QTime::currentTime()).toTime());
+        }
+
+        measuremode->MeasurePeriod->setValue(profile.value("MeasurePeriod", 60).toInt());
+        measuremode->MeasureStartTime->setTime(profile.value("MeasureStartTime", QTime::currentTime()).toTime());
     }
 }
 
@@ -380,4 +422,57 @@ void QFMain::saveSettings()
 
         profile.setValue("SmoothOffset",setui->SmoothOffset->value());
     }
+
+    if (profile.beginSection("measuremode"))
+    {
+        const int c = 5;
+        QCheckBox *enables[c] = {measuremode->AdjustEnable1,measuremode->AdjustEnable2,measuremode->AdjustEnable3,measuremode->AdjustEnable4,measuremode->AdjustEnable5};
+        QComboBox *tasks[c] = {measuremode->AdjustTask1,measuremode->AdjustTask2,measuremode->AdjustTask3,measuremode->AdjustTask4,measuremode->AdjustTask5};
+        QSpinBox *periods[c] = {measuremode->AdjustPeriod1,measuremode->AdjustPeriod2,measuremode->AdjustPeriod3,measuremode->AdjustPeriod4,measuremode->AdjustPeriod5};
+        QTimeEdit *startTimes[c] = {measuremode->AdjustStartTime1,measuremode->AdjustStartTime2,measuremode->AdjustStartTime3,measuremode->AdjustStartTime4,measuremode->AdjustStartTime5};
+
+        for (int i = 0; i < c; i++)
+        {
+            profile.setValue(QString("enable%1").arg(i), enables[i]->isChecked());
+            profile.setValue(QString("task%1").arg(i), tasks[i]->currentIndex());
+            profile.setValue(QString("period%1").arg(i), periods[i]->value());
+            profile.setValue(QString("startTime%1").arg(i), startTimes[i]->time());
+        }
+
+        profile.setValue("MeasurePeriod", measuremode->MeasurePeriod->value());
+        profile.setValue("MeasureStartTime", measuremode->MeasureStartTime->time());
+    }
+    QMessageBox::information(NULL, tr("提示"), tr("保存成功"));
+}
+
+void QFMain::OnlineOffline()
+{
+    QString name;
+    switch (ui->OnlineOffline->property("value").toInt())
+    {
+    case 0:
+        name = tr("离线测量");
+        ui->OnlineOffline->setProperty("value", 1);
+        break;
+    default:
+        name = tr("在线测量");
+        ui->OnlineOffline->setProperty("value", 0);
+        break;
+    }
+    ui->OnlineOffline->setText(name);
+}
+
+void QFMain::MeasureMethod()
+{
+
+}
+
+void QFMain::Range()
+{
+
+}
+
+void QFMain::SamplePipe()
+{
+
 }

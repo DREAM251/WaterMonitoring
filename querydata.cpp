@@ -1,9 +1,10 @@
 ﻿#include "querydata.h"
+#include "common.h"
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QStandardItemModel>
 
-QueryData::QueryData(int urow, int ucolumn, QWidget* parent) :
+QueryData::QueryData(int ucolumn, int urow, QWidget* parent) :
     QWidget(parent , Qt::FramelessWindowHint) , row(urow)
 {
     this->setParent(parent);
@@ -18,14 +19,13 @@ QueryData::QueryData(int urow, int ucolumn, QWidget* parent) :
     itemcount = 0;
     curpage = 1;
     queryItemsEndID = 0;
-    sqldb = NULL;
     endDate->setDate(QDate::currentDate());
     InitModel();
     InitSlots();
     cwDateSel->setSelectedDate(QDate::currentDate());
     swPageSel->setCurrentIndex(0);
     swSearch->setCurrentIndex(0);
-//    hidePrinterBut(true);
+    //    hidePrinterBut(true);
 }
 
 QueryData::~QueryData()
@@ -62,7 +62,6 @@ void QueryData::hidePrinterBut(bool level)
 }
 void QueryData::setSQLDatabase(QSqlDatabase *db)
 {
-    sqldb = db;
 }
 /**
  * @brief QueryData::setColumnIsHidden
@@ -147,17 +146,19 @@ void QueryData::slot_cbSearch(int index)
 
 void QueryData::slot_QueryDateChange(QDate)
 {
-    if(sqldb == NULL){
+    QSqlDatabase sqldb;
+    if (!getUserDataBase(sqldb)){
         lbPages->setText(tr("未连接数据库！"));
         return ;
     }
+
     QString timeID1 = endDate->date().toString("yyyyMMdd")+"999999";
     QString strquery = QString("SELECT %1 FROM %2 WHERE TimeID < %3")
             .arg(items)
             .arg(table)
             .arg(timeID1);
 
-    QSqlQuery query(strquery,*sqldb);
+    QSqlQuery query(strquery,sqldb);
     query.last();
     int currentItemCnt = query.at() + 1;
     curpage = getTotalPages(itemcount, row) - currentItemCnt/row;
@@ -171,13 +172,15 @@ void QueryData::slot_QueryDateChange(QDate)
  */
 void QueryData::getQueryTotalItemCountAndEndId()
 {
-    if(sqldb == NULL){
+    QSqlDatabase sqldb;
+    if (!getUserDataBase(sqldb)){
         lbPages->setText(tr("未连接数据库！"));
         return ;
     }
+
     QString strquery;
     strquery = QString("SELECT ID,%1 FROM %2").arg(items).arg(table);
-    QSqlQuery query(strquery,*sqldb);
+    QSqlQuery query(strquery,sqldb);
     query.last();
 
     itemcount = query.at() + 1;
@@ -214,9 +217,10 @@ int QueryData::getTotalPages(int totalItemCnt, int row)
  */
 void QueryData::queryData(int page)
 {
-    if(sqldb == NULL){
+    QSqlDatabase sqldb;
+    if (!getUserDataBase(sqldb)){
         lbPages->setText(tr("未连接数据库！"));
-        return;
+        return ;
     }
     int totalPagesCnt = getTotalPages(itemcount, row);
     if( page < 1 )
@@ -232,7 +236,7 @@ void QueryData::queryData(int page)
             .arg(table)
             .arg(queryStartID)
             .arg(queryEndID);
-    QSqlQuery query(strquery,*sqldb);
+    QSqlQuery query(strquery,sqldb);
 
     //清除所有条目防止下一页的条目数目小于row数从而显示上一页的相对应条目
     for(int i=0;i<row;i++)

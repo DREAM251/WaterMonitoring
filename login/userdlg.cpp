@@ -5,7 +5,6 @@
 #include <QDebug>
 #include "loginmanage.h"
 
-
 UserDlg::UserDlg(QWidget *parent) :
     QFrame(parent),
     ui(new Ui::UserDlg),
@@ -60,7 +59,7 @@ void UserDlg::on_pbLogin_clicked()
     int iUser = ui->cbUser->currentIndex();
     QString sPassword = ui->lePassword->text();
     if(iUser==1){
-        if(sPassword == "934526"){
+        if(sPassword == "1210"){
             QMessageBox::about(this,tr("提示"),tr("登录成功！"));
             loginLevel = al_supper;
             emit login(loginLevel);

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>674</width>
+    <width>647</width>
     <height>443</height>
    </rect>
   </property>
@@ -15,15 +15,15 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="margin">
-    <number>6</number>
+    <number>0</number>
    </property>
    <property name="spacing">
-    <number>3</number>
+    <number>0</number>
    </property>
    <item row="0" column="1">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tabWidgetPage1">
       <attribute name="title">
@@ -54,7 +54,7 @@
        <item row="0" column="3">
         <widget class="QPushButton" name="pushButton_4">
          <property name="text">
-          <string>指控样测试</string>
+          <string>质控样测试</string>
          </property>
         </widget>
        </item>
@@ -65,8 +65,8 @@
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>261</width>
-           <height>178</height>
+           <width>0</width>
+           <height>0</height>
           </size>
          </property>
         </spacer>
@@ -78,8 +78,8 @@
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>598</width>
-           <height>189</height>
+           <width>0</width>
+           <height>0</height>
           </size>
          </property>
         </spacer>
@@ -91,6 +91,83 @@
        <string>单步调试</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_5">
+       <item row="2" column="0">
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>加热温度：</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QSpinBox" name="spinBox">
+           <property name="buttonSymbols">
+            <enum>QAbstractSpinBox::NoButtons</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>℃</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>执行时间：</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QSpinBox" name="spinBox_2">
+           <property name="buttonSymbols">
+            <enum>QAbstractSpinBox::NoButtons</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>秒</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="4" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>208</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_26">
+           <property name="text">
+            <string>执行</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_27">
+           <property name="text">
+            <string>停止</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
        <item row="0" column="0">
         <layout class="QGridLayout" name="gridLayout_3">
          <item row="0" column="0">
@@ -102,7 +179,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>PushButton</string>
+            <string>阀1</string>
            </property>
           </widget>
          </item>
@@ -115,7 +192,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>PushButton</string>
+            <string>阀2</string>
            </property>
           </widget>
          </item>
@@ -128,7 +205,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>PushButton</string>
+            <string>阀3</string>
            </property>
           </widget>
          </item>
@@ -141,7 +218,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>PushButton</string>
+            <string>阀4</string>
            </property>
           </widget>
          </item>
@@ -154,7 +231,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>PushButton</string>
+            <string>阀5</string>
            </property>
           </widget>
          </item>
@@ -167,7 +244,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>PushButton</string>
+            <string>阀6</string>
            </property>
           </widget>
          </item>
@@ -180,7 +257,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>PushButton</string>
+            <string>阀7</string>
            </property>
           </widget>
          </item>
@@ -193,7 +270,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>PushButton</string>
+            <string>阀8</string>
            </property>
           </widget>
          </item>
@@ -206,7 +283,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>PushButton</string>
+            <string>阀9</string>
            </property>
           </widget>
          </item>
@@ -219,7 +296,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>PushButton</string>
+            <string>阀10</string>
            </property>
           </widget>
          </item>
@@ -445,74 +522,18 @@
          </item>
         </layout>
        </item>
-       <item row="2" column="0">
-        <layout class="QGridLayout" name="gridLayout_4">
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>加热温度：</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QSpinBox" name="spinBox"/>
-         </item>
-         <item row="0" column="2">
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>℃</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string>执行时间：</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QSpinBox" name="spinBox_2"/>
-         </item>
-         <item row="1" column="2">
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string>秒</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
        <item row="3" column="0">
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>208</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_26">
-           <property name="text">
-            <string>执行</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_27">
-           <property name="text">
-            <string>停止</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>
@@ -520,6 +541,139 @@
       <attribute name="title">
        <string>模拟量校准</string>
       </attribute>
+      <widget class="QPushButton" name="pb420mACar">
+       <property name="geometry">
+        <rect>
+         <x>350</x>
+         <y>290</y>
+         <width>127</width>
+         <height>42</height>
+        </rect>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>35</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>标定</string>
+       </property>
+      </widget>
+      <widget class="QWidget" name="layoutWidget">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>471</width>
+         <height>266</height>
+        </rect>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_6">
+        <item row="3" column="0">
+         <widget class="QPushButton" name="pb15mA">
+          <property name="text">
+           <string>15mA</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QSpinBox" name="le10mA">
+          <property name="buttonSymbols">
+           <enum>QAbstractSpinBox::NoButtons</enum>
+          </property>
+          <property name="maximum">
+           <number>3000</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QPushButton" name="pb5mA">
+          <property name="text">
+           <string>5mA</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QSpinBox" name="le5mA">
+          <property name="buttonSymbols">
+           <enum>QAbstractSpinBox::NoButtons</enum>
+          </property>
+          <property name="maximum">
+           <number>3000</number>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QPushButton" name="pb19mA">
+          <property name="text">
+           <string>19mA</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QSpinBox" name="le15mA">
+          <property name="buttonSymbols">
+           <enum>QAbstractSpinBox::NoButtons</enum>
+          </property>
+          <property name="maximum">
+           <number>3000</number>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QPushButton" name="pb10mA">
+          <property name="text">
+           <string>10mA</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QSpinBox" name="le19mA">
+          <property name="buttonSymbols">
+           <enum>QAbstractSpinBox::NoButtons</enum>
+          </property>
+          <property name="maximum">
+           <number>3000</number>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="lb420Pipe">
+          <property name="text">
+           <string>4-20mA通道选择</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="cb420PipeSel">
+          <item>
+           <property name="text">
+            <string>A</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>B</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QLabel" name="label_49">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>270</y>
+         <width>331</width>
+         <height>91</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;*注：数采仪上对应模拟口上下限&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;设定为4.00-20.00方可进行标定。&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
      </widget>
     </widget>
    </item>

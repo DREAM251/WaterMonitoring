@@ -36,6 +36,8 @@ float setPrecision(float v, int n, QString *pshow=NULL);
 // 提取数据库中某一条数据，index仿python用法，-1代码最后一条数据
 bool readSqlValues(QSqlDatabase *db, const QString &table, QStringList &value, int index = -1);
 void addErrorMsg(QString strMsg, int level);
+void addLogger(QString strMsg);
+bool getUserDataBase(QSqlDatabase &db);
 
 class DriverSelectionDialog : protected QDialog
 {

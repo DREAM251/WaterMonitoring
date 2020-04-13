@@ -8,7 +8,12 @@
 //板子供货商
 #define VENDER_WEIQIAN //微嵌
 
-
+#if defined (Q_WS_WIN)
+#define DTU_PORT      "com0"
+#define EXT_PORT      "com1"
+#define UL_PORT       "com2"
+#define PROBE_PORT    "com3"
+#else
 #ifndef Q_WS_X11
     #if defined VENDER_WEIQIAN
         #define DTU_PORT      "/dev/ttyAMA1"
@@ -22,13 +27,11 @@
     #define UL_PORT         "/dev/ttyS2"
     #define PROBE_PORT      "/dev/ttyS1"
 #endif
-
-
+#endif
 #define     processLogger()     (LOG_WRITER::getObject("logs/process"))
 #define     probeLogger()       (LOG_WRITER::getObject("logs/probe"))
 #define     systemLogger()      (LOG_WRITER::getObject("logs/system"))
 #define     mcuLogger()         (LOG_WRITER::getObject("logs/mcu"))
 #define     modbusLogger()      (LOG_WRITER::getObject("logs/modbus"))
 #define     logger()            (LOG_WRITER::getObject("logs/debug"))
-
 #endif

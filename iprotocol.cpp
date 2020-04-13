@@ -2,6 +2,7 @@
 #include <QStringList>
 #include <QDebug>
 #include "defines.h"
+#include "common.h"
 
 #define PACKET_MAX_LENGTH  7
 #define PACKET_HEAD_LENGTH 4
@@ -171,7 +172,7 @@ IProtocol::IProtocol(const QString &portParamter, QObject *parent) :
                 timer->start(100);
         } else {
             timer->stop();
-            qDebug() << "com port open failed";
+            addErrorMsg(QString("上下位机通信端口打开失败%1").arg(port->portName()), 1);
         }
     }
     else

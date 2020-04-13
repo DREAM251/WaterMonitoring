@@ -12,7 +12,7 @@ class QueryData : public QWidget ,public Ui_QueryData
     Q_OBJECT
     
 public:
-    explicit QueryData( int row = 12, int column = 8, QWidget* parent = NULL);
+    explicit QueryData(int column = 8, int row = 11, QWidget* parent = NULL);
     ~QueryData();
 
 private:
@@ -46,7 +46,6 @@ private:
     QList<int> width;
     QString table;
     QString items;
-    QSqlDatabase *sqldb;
     int queryItemsEndID;    /*检索方式的最终ID序号*/
     QList<QString> printerPageData;
     QList<QString> printerData;

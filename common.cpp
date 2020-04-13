@@ -288,46 +288,55 @@ bool saveCommandFile(const QStringList &lines, const QString &filePath)
 }
 
 
-void addErrorMsg(QString strMsg, int level)
+bool getUserDataBase(QSqlDatabase &sqlitedb)
 {
     const QString dbuserdata = "UserData.db";
-    QSqlDatabase sqlitedb = QSqlDatabase::database(dbuserdata);
+    sqlitedb = QSqlDatabase::database(dbuserdata);
 
     if (!sqlitedb.isValid()) {
         sqlitedb = QSqlDatabase::addDatabase("QSQLITE", dbuserdata);
         sqlitedb.setDatabaseName(dbuserdata);
     }
 
-    //SQLITECIPHER
-    //profileDB.setPassword("934526");
-    if (!sqlitedb.isOpen())
-    {
-        if (!sqlitedb.open())
-        {
-            qDebug() << sqlitedb.lastError() << dbuserdata;
-            return;
-        }
+    if (!sqlitedb.isOpen() && !sqlitedb.open()) {
+        qDebug() << sqlitedb.lastError() << dbuserdata;
+        return false;
     }
+    return true;
+}
+
+
+void addErrorMsg(QString strMsg, int level)
+{
+    QSqlDatabase sqlitedb;
+    if (!getUserDataBase(sqlitedb))
+        return;
 
     QString TimeID = QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
     QString Time = QDateTime::currentDateTime().toString("yy-MM-dd hh:mm");
 
     QSqlQuery sqlquery(sqlitedb);
-    QString sqlstr = QString("'%1','%2','%3','%4','%5','%6','%7','%8','%9',")
-            .arg(Time)
-            .arg(level?QString("警告"):QString("提示"))
-            .arg(strMsg)
-            .arg(0)
-            .arg(0)
-            .arg(0)
-            .arg(0)
-            .arg(0)
-            .arg(0)
-            +QString("'0','0','0','0','0','0','0','0','0'");
-    sqlquery.exec(QString("INSERT INTO Error(ID,TimeID,"
-                          "A1,A2,A3,A4,A5,A6,A7,A8,A9,"
-                          "B1,B2,B3,B4,B5,B6,B7,B8,B9)"
-                          "VALUES(NULL,'%1',%2);").arg(TimeID).arg(sqlstr));
+    if (!sqlquery.exec(QString("INSERT INTO Error(ID,TimeID,A1,A2,A3,A4,A5,A6,A7,A8,A9,B1,B2,B3,B4,B5,B6,B7,B8,B9)"
+                               "VALUES(NULL,'%1','%2','%3','%4','','','','','','','','','','','','','','','');")
+                       .arg(TimeID).arg(Time).arg(level?QObject::tr("警告"):QObject::tr("提示")).arg(strMsg)))
+        qDebug() << sqlitedb.lastError();
+    sqlquery.clear();
+}
+
+void addLogger(QString strMsg)
+{
+    QSqlDatabase sqlitedb;
+    if (!getUserDataBase(sqlitedb))
+        return;
+
+    QString TimeID = QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
+    QString Time = QDateTime::currentDateTime().toString("yy-MM-dd hh:mm");
+
+    QSqlQuery sqlquery(sqlitedb);
+    if (!sqlquery.exec(QString("INSERT INTO Log(ID,TimeID,A1,A2,A3,A4,A5,A6,A7,A8,A9,B1,B2,B3,B4,B5,B6,B7,B8,B9)"
+                          "VALUES(NULL,'%1','%2','%3','','','','','','','','','','','','','','','','');")
+                  .arg(TimeID).arg(Time).arg(strMsg)))
+        qDebug() << sqlitedb.lastError();
     sqlquery.clear();
 }
 
@@ -554,3 +563,4 @@ void LOG_WRITER::fatal(const QString &x)
 }
 
 void LOG_WRITER::setCount(int c) { fcount = c;}
+

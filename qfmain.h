@@ -16,6 +16,7 @@ class QFMain;
 class SetUI;
 class Maintaince;
 class MeasureMode;
+class LightVoltage;
 }
 class QFMain : public QWidget
 {
@@ -38,6 +39,11 @@ public slots:
     void loadSettings();
     void saveSettings();
 
+    void OnlineOffline();
+    void MeasureMethod();
+    void Range();
+    void SamplePipe();
+
 Q_SIGNALS:
     void systemTrigger();
     void userTrigger();
@@ -47,12 +53,12 @@ private:
     Ui::SetUI *setui;
     Ui::Maintaince *maintaince;
     Ui::MeasureMode *measuremode;
+    Ui::LightVoltage *lightVoltage;
     QSignalMapper *signalMapper;
     QTimer *timer;
     ElementInterface *element;
     int loginLevel;
 
-    QSqlDatabase *userDB;
     QueryData *queryData;
     QueryData *queryCalib;
     QueryData *queryError;

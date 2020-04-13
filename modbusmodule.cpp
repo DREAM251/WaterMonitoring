@@ -45,8 +45,7 @@ bool ModbusProcesser::OpenPort()
 
     if (!Start())
     {
-        QVector<QString> vs;
-        vs << tr("警告") << tr("对外通信串口(%1)不存在或者被其他应用程序占用").arg(EXT_PORT);
+        addErrorMsg(tr("对外通信串口(%1)不存在或者被其他应用程序占用").arg(EXT_PORT), 0);
         return false;
     }
     return true;
