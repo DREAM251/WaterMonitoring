@@ -89,10 +89,12 @@ public:
     int valve5();
     int valve6();
     int valve7();
+    int valve8();
     int extValve();
     int extControl1();
     int extControl2();
     int extControl3();
+    int _420mA();
     int fun();
     int waterLevel();
     int heatTemp();
@@ -125,10 +127,12 @@ public:
     void setValve5(int i);
     void setValve6(int i);
     void setValve7(int i);
+    void setValve8(int i);
     void setExtValve(int i);
     void setExtControl1(int i);
     void setExtControl2(int i);
     void setExtControl3(int i);
+    void set420mA(int i);
     void setFun(int i);
     void setWaterLevel(int i);
     void setHeatTemp(int i);

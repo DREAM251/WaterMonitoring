@@ -79,6 +79,8 @@ QFMain::QFMain(QWidget *parent) :
     connect(ui->MeasureMethod, SIGNAL(clicked()), this, SLOT(MeasureMethod()));
     connect(ui->Range, SIGNAL(clicked()), this, SLOT(Range()));
     connect(ui->SamplePipe, SIGNAL(clicked()), this, SLOT(SamplePipe()));
+
+
 }
 
 QFMain::~QFMain()
@@ -164,10 +166,12 @@ void QFMain::initMaintaince()
     {QObject::tr("阀5"),1,"0"},
     {QObject::tr("阀6"),1,"0"},
     {QObject::tr("阀7"),1,"0"},
+    {QObject::tr("阀8"),1,"0"},
     {QObject::tr("水泵"),1,"0"},
-    {QObject::tr("外部控制1"),1,"0"},
-    {QObject::tr("外部控制2"),1,"0"},
-    {QObject::tr("外部控制3"),1,"0"},
+    {QObject::tr("模拟量"),4,"0000"},
+    {QObject::tr("外控1"),1,"0"},
+    {QObject::tr("外控2"),1,"0"},
+    {QObject::tr("外控3"),1,"0"},
     {QObject::tr("风扇"),1,"0"},
     {QObject::tr("液位"),1,"0"},
     {QObject::tr("加热温度"),4,"0000"},
@@ -208,6 +212,11 @@ void QFMain::initMaintaince()
 
     maintaince->tabWidget->setCurrentIndex(0);
     ui->contentStackedWidget->addWidget(w);
+
+    connect(maintaince->SampleMeasure, SIGNAL(clicked()), this, SLOT(SampleMeasure()));
+    connect(maintaince->ZeroMeasure, SIGNAL(clicked()), this, SLOT(ZeroMeasure()));
+    connect(maintaince->StandardMeasure, SIGNAL(clicked()), this, SLOT(StandardMeasure()));
+    connect(maintaince->QCMeasure, SIGNAL(clicked()), this, SLOT(QCMeasure()));
 }
 
 // query ui
@@ -537,4 +546,27 @@ void QFMain::SamplePipe()
     DatabaseProfile profile;
     if (profile.beginSection("measure"))
         profile.setValue("SamplePipe", value);
+}
+
+void QFMain::SampleMeasure()
+{
+    int ret = element->startTask(TT_Measure);
+
+    if (ret != 0)
+        QMessageBox::warning(this, tr("警告"), tr("执行失败，代号：%1").arg(ret));
+}
+
+void QFMain::ZeroMeasure()
+{
+
+}
+
+void QFMain::StandardMeasure()
+{
+
+}
+
+void QFMain::QCMeasure()
+{
+
 }

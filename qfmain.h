@@ -44,6 +44,11 @@ public slots:
     void Range();
     void SamplePipe();
 
+    void SampleMeasure();
+    void ZeroMeasure();
+    void StandardMeasure();
+    void QCMeasure();
+
 Q_SIGNALS:
     void systemTrigger();
     void userTrigger();

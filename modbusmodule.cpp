@@ -45,7 +45,7 @@ bool ModbusProcesser::OpenPort()
 
     if (!Start())
     {
-        addErrorMsg(tr("对外通信串口(%1)不存在或者被其他应用程序占用").arg(EXT_PORT), 0);
+        addErrorMsg(tr("Modbus通信串口(%1)不存在或者被其他应用程序占用").arg(EXT_PORT), 1);
         return false;
     }
     return true;

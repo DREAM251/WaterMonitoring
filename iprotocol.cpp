@@ -41,27 +41,31 @@ int Sender::valve4(){return sent.mid(17, 1).toInt();}
 int Sender::valve5(){return sent.mid(18, 1).toInt();}
 int Sender::valve6(){return sent.mid(19, 1).toInt();}
 int Sender::valve7(){return sent.mid(20, 1).toInt();}
-int Sender::extValve(){return sent.mid(21, 1).toInt();}
-int Sender::extControl1(){return sent.mid(22, 1).toInt();}
-int Sender::extControl2(){return sent.mid(23, 1).toInt();}
-int Sender::extControl3(){return sent.mid(24, 1).toInt();}
-int Sender::fun(){return sent.mid(25, 1).toInt();}
-int Sender::waterLevel(){return sent.mid(26, 1).toInt();}
-int Sender::heatTemp(){return sent.mid(27, 4).toInt();}
+int Sender::valve8(){return sent.mid(21, 1).toInt();}
+int Sender::extValve(){return sent.mid(22, 1).toInt();}
+int Sender::extControl1(){return sent.mid(23, 1).toInt();}
+int Sender::extControl2(){return sent.mid(24, 1).toInt();}
+int Sender::extControl3(){return sent.mid(25, 1).toInt();}
+int Sender::_420mA(){return sent.mid(26, 4).toInt();}
+int Sender::fun(){return sent.mid(30, 1).toInt();}
+int Sender::waterLevel(){return sent.mid(31, 1).toInt();}
+int Sender::heatTemp(){return sent.mid(32, 4).toInt();}
+//int Sender::reserve(){return sent.mid(36, 4).toInt();}
+//int Sender:::(){return sent.mid(40, 1).toInt();}
 
-int Sender::timeFix(){return sent.mid(36, 2).toInt();}
-int Sender::timeAddFix(){return sent.mid(38, 4).toInt();}
-int Sender::tempFix(){return sent.mid(42, 2).toInt();}
-int Sender::loopFix(){return sent.mid(44, 2).toInt();}
-bool Sender::waterLevelReachStep(){return sent.mid(46, 1).toInt() == 1;}
-bool Sender::waterLevelJudgeStep(){return sent.mid(46, 1).toInt() == 2;}
-bool Sender::heatReachStep(){return sent.mid(46, 1).toInt() == 3;}
-bool Sender::heatJudgeStep(){return sent.mid(46, 1).toInt() == 4;}
-bool Sender::coolReachStep(){return sent.mid(46, 1).toInt() == 5;}
-bool Sender::coolJudgeStep(){return sent.mid(46, 1).toInt() == 6;}
-bool Sender::blankStep(){return sent.mid(47, 1).toInt() == 1;}
-bool Sender::colorStep(){return sent.mid(47, 1).toInt() == 2;}
-int Sender::explainCode(){return sent.mid(48, 2).toInt();}
+int Sender::timeFix(){return sent.mid(41, 2).toInt();}
+int Sender::timeAddFix(){return sent.mid(43, 4).toInt();}
+int Sender::tempFix(){return sent.mid(47, 2).toInt();}
+int Sender::loopFix(){return sent.mid(49, 2).toInt();}
+bool Sender::waterLevelReachStep(){return sent.mid(51, 1).toInt() == 1;}
+bool Sender::waterLevelJudgeStep(){return sent.mid(51, 1).toInt() == 2;}
+bool Sender::heatReachStep(){return sent.mid(51, 1).toInt() == 3;}
+bool Sender::heatJudgeStep(){return sent.mid(51, 1).toInt() == 4;}
+bool Sender::coolReachStep(){return sent.mid(51, 1).toInt() == 5;}
+bool Sender::coolJudgeStep(){return sent.mid(51, 1).toInt() == 6;}
+bool Sender::blankStep(){return sent.mid(52, 1).toInt() == 1;}
+bool Sender::colorStep(){return sent.mid(52, 1).toInt() == 2;}
+int Sender::explainCode(){return sent.mid(53, 2).toInt();}
 
 void Sender::setStep(int i){sent.replace(0, 4, QString("0000%1").arg(i).right(4).toLatin1());}
 void Sender::setStepTime(int i){sent.replace(4, 4, QString("0000%1").arg(i).right(4).toLatin1());}
@@ -77,13 +81,15 @@ void Sender::setValve4(int i){sent.replace(17, 1, QString("0000%1").arg(i).right
 void Sender::setValve5(int i){sent.replace(18, 1, QString("0000%1").arg(i).right(1).toLatin1());}
 void Sender::setValve6(int i){sent.replace(19, 1, QString("0000%1").arg(i).right(1).toLatin1());}
 void Sender::setValve7(int i){sent.replace(20, 1, QString("0000%1").arg(i).right(1).toLatin1());}
-void Sender::setExtValve(int i){sent.replace(21, 1, QString("0000%1").arg(i).right(1).toLatin1());}
-void Sender::setExtControl1(int i){sent.replace(22, 1, QString("0000%1").arg(i).right(1).toLatin1());}
-void Sender::setExtControl2(int i){sent.replace(23, 1, QString("0000%1").arg(i).right(1).toLatin1());}
-void Sender::setExtControl3(int i){sent.replace(24, 1, QString("0000%1").arg(i).right(1).toLatin1());}
-void Sender::setFun(int i){sent.replace(25, 1, QString("0000%1").arg(i).right(1).toLatin1());}
-void Sender::setWaterLevel(int i){sent.replace(26, 1, QString("0000%1").arg(i).right(1).toLatin1());}
-void Sender::setHeatTemp(int i){sent.replace(27, 4, QString("0000%1").arg(i).right(4).toLatin1());}
+void Sender::setValve8(int i){sent.replace(21, 1, QString("0000%1").arg(i).right(1).toLatin1());}
+void Sender::setExtValve(int i){sent.replace(22, 1, QString("0000%1").arg(i).right(1).toLatin1());}
+void Sender::setExtControl1(int i){sent.replace(23, 1, QString("0000%1").arg(i).right(1).toLatin1());}
+void Sender::setExtControl2(int i){sent.replace(24, 1, QString("0000%1").arg(i).right(1).toLatin1());}
+void Sender::setExtControl3(int i){sent.replace(25, 1, QString("0000%1").arg(i).right(1).toLatin1());}
+void Sender::set420mA(int i){sent.replace(26, 4, QString("0000%1").arg(i).right(4).toLatin1());}
+void Sender::setFun(int i){sent.replace(30, 1, QString("0000%1").arg(i).right(1).toLatin1());}
+void Sender::setWaterLevel(int i){sent.replace(31, 1, QString("0000%1").arg(i).right(1).toLatin1());}
+void Sender::setHeatTemp(int i){sent.replace(32, 4, QString("0000%1").arg(i).right(4).toLatin1());}
 
 
 
@@ -128,13 +134,13 @@ int Receiver::extControl3()   {return recv.mid(PACKET_HEAD_LENGTH + 10, 1).toInt
 int Receiver::_420mA()        {return recv.mid(PACKET_HEAD_LENGTH + 11, 4).toInt();}
 int Receiver::waterLevel()    {return recv.mid(PACKET_HEAD_LENGTH + 15, 1).toInt();}
 int Receiver::heatTemp()      {return recv.mid(PACKET_HEAD_LENGTH + 16, 4).toInt();}
-int Receiver::mcu1Temp()      {return recv.mid(PACKET_HEAD_LENGTH + 20, 3).toInt();}
-int Receiver::mcu2Temp()      {return recv.mid(PACKET_HEAD_LENGTH + 23, 3).toInt();}
-int Receiver::lightVoltage1() {return recv.mid(PACKET_HEAD_LENGTH + 26, 5).toInt();}
-int Receiver::lightVoltage2() {return recv.mid(PACKET_HEAD_LENGTH + 31, 5).toInt();}
-int Receiver::lightVoltage3() {return recv.mid(PACKET_HEAD_LENGTH + 36, 5).toInt();}
-int Receiver::measureSignal1(){return recv.mid(PACKET_HEAD_LENGTH + 41, 5).toInt();}
-int Receiver::measureSignal2(){return recv.mid(PACKET_HEAD_LENGTH + 46, 5).toInt();}
+int Receiver::mcu1Temp()      {return recv.mid(PACKET_HEAD_LENGTH + 20, 2).toInt();}
+int Receiver::mcu2Temp()      {return recv.mid(PACKET_HEAD_LENGTH + 22, 2).toInt();}
+int Receiver::lightVoltage1() {return recv.mid(PACKET_HEAD_LENGTH + 24, 5).toInt();}
+int Receiver::lightVoltage2() {return recv.mid(PACKET_HEAD_LENGTH + 29, 5).toInt();}
+int Receiver::lightVoltage3() {return recv.mid(PACKET_HEAD_LENGTH + 34, 5).toInt();}
+int Receiver::measureSignal1(){return recv.mid(PACKET_HEAD_LENGTH + 39, 5).toInt();}
+int Receiver::measureSignal2(){return recv.mid(PACKET_HEAD_LENGTH + 44, 5).toInt();}
 
 
 
@@ -214,6 +220,8 @@ void IProtocol::sendData(const QString &cmd)
         counter->start(dataSender.stepTime());
         counter->lock();
         timeCount = 0;
+
+        mcuLogger()->info("send:" + dataSender.data());
     }
 }
 

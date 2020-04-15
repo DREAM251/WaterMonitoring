@@ -347,6 +347,7 @@ QStringList MeasureTask::loadCommands()
 
     for (int i = 0; i < paths.count(); i++)
         commands += loadCommandFileLines(paths[i]);
+
     return commands;
 }
 
