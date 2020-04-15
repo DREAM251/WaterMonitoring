@@ -67,6 +67,12 @@ private:
     CalibFrameFactory *factorycalib;
     InstructionEditor *editor;
     ModbusModule *modbusframe;
+
+    QStringList nameOnlineOffline;
+    QStringList nameMeasureMethod;
+    QStringList nameRange;
+    QStringList nameSamplePipe;
+
 };
 
 #endif // QFMAIN_H

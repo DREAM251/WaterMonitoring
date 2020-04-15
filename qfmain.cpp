@@ -27,6 +27,39 @@ QFMain::QFMain(QWidget *parent) :
     initSettings();
     initQuery();
 
+    nameMeasureMethod <<  tr("单次测量") <<  tr("受控测量") <<  tr("周期测量");
+    nameRange <<  tr("0-10mg/L") <<  tr("0-50mg/L") <<  tr("0-200mg/L");
+    nameSamplePipe <<  tr("水样") <<  tr("标样") <<  tr("零样");
+    nameOnlineOffline <<  tr("在线测量") <<  tr("离线测量");
+
+    DatabaseProfile profile;
+    if (profile.beginSection("measure")) {
+        int x1 = profile.value("MeasureMethod", 0).toInt();
+        if (x1 < 0 || x1 >= nameMeasureMethod.count())
+            x1 = 0;
+        int x2 = profile.value("Range", 0).toInt();
+        if (x2 < 0 || x2 >= nameRange.count())
+            x2 = 0;
+        int x3 = profile.value("SamplePipe", 0).toInt();
+        if (x3 < 0 || x3 >= nameSamplePipe.count())
+            x3 = 0;
+        int x4 = profile.value("OnlineOffline", 0).toInt();
+        if (x4 < 0 || x4 >= nameOnlineOffline.count())
+            x4 = 0;
+
+        ui->MeasureMethod->setProperty("value", x1);
+        ui->MeasureMethod->setText(nameMeasureMethod[x1]);
+
+        ui->Range->setProperty("value", x2);
+        ui->Range->setText(nameRange[x2]);
+
+        ui->SamplePipe->setProperty("value", x3);
+        ui->SamplePipe->setText(nameSamplePipe[x3]);
+
+        ui->OnlineOffline->setProperty("value", x4);
+        ui->OnlineOffline->setText(nameOnlineOffline[x4]);
+    }
+
     QToolButton *btns[] = {ui->statusButton, ui->measureButton, ui->calibrationButton,
                            ui->maintenanceButton, ui->settingsButton,ui->queryButton/*, ui->loginButton*/};
     for (int i = 0; i < sizeof(btns)/sizeof(QToolButton *); ++i)
@@ -69,8 +102,6 @@ void QFMain::initSettings()
     ui->contentStackedWidget->setCurrentIndex(0);
     connect(setui->Cancel, SIGNAL(clicked()), this, SLOT(loadSettings()));
     connect(setui->Save, SIGNAL(clicked()), this, SLOT(saveSettings()));
-
-
 
     loadSettings();
 }
@@ -119,49 +150,54 @@ void QFMain::initMaintaince()
     maintaince->tabWidget->addTab(w1, tr("光源调节"));
 
     struct ColumnInfo aa[] = {
-    {QObject::tr("起始位"),4,"#S00"},
-    {QObject::tr("通讯判断"),1,"0"},
-    {QObject::tr("十通阀"),1,"0", ColumnInfo::CDT_Combox, QObject::tr("关闭,标样,通道阀,...")},
-    {QObject::tr("后门磁"),1,"0"},
-    {QObject::tr("清洗液位1"),1,"0"},
-    {QObject::tr("清洗液位2"),1,"0"},
-    {QObject::tr("废液液位1"),1,"0"},
-    {QObject::tr("废液液位2"),1,"0"},
-    {QObject::tr("五参数液位"),1,"0"},
-    {QObject::tr("输入备留1"),1,"0"},
-    {QObject::tr("输入备留2"),1,"0"},
-    {QObject::tr("输入备留3"),1,"0"},
-    {QObject::tr("空调"),1,"0"},
+    {QObject::tr("编号"),4,"1000"},
+    {QObject::tr("执行时间"),4,"0005"},
+    {QObject::tr("蠕动泵"),1,"0"},
+    {QObject::tr("蠕动泵转速"),2,"20"},
+    {QObject::tr("泵2"),1,"0"},
+    {QObject::tr("十通阀1"),1,"0"},
+    {QObject::tr("十通阀2"),1,"0"},
+    {QObject::tr("阀1"),1,"0"},
+    {QObject::tr("阀2"),1,"0"},
+    {QObject::tr("阀3"),1,"0"},
+    {QObject::tr("阀4"),1,"0"},
+    {QObject::tr("阀5"),1,"0"},
+    {QObject::tr("阀6"),1,"0"},
+    {QObject::tr("阀7"),1,"0"},
     {QObject::tr("水泵"),1,"0"},
-    {QObject::tr("气泵"),1,"0"},
-    {QObject::tr("水泵2"),1,"0"},
-    {QObject::tr("五参数"),1,"0"},
-    {QObject::tr("风机1"),1,"0"},
-    {QObject::tr("风机2"),1,"0"},
-    {QObject::tr("水样阀"),1,"0"},
-    {QObject::tr("清洗阀"),1,"0"},
-    {QObject::tr("气吹阀1"),1,"0"},
-    {QObject::tr("气吹阀2"),1,"0"},
-    {QObject::tr("气吹阀3"),1,"0"},
-    {QObject::tr("气吹阀4"),1,"0"},
-    {QObject::tr("输出开关量1"),1,"0"},
-    {QObject::tr("输出开关量2"),1,"0"},
-    {QObject::tr("输出备留"),1,"0"},
-    {QObject::tr("留样排阀"),1,"0"},
-    {QObject::tr("留样蠕动泵"),1,"0"},
-    {QObject::tr("保留"),34,"0000000000000000000000000000000000"},
-    {QObject::tr("单步时间"),4,"0000"},
-    {QObject::tr("温度"),4,"0000"},
-    {QObject::tr("湿度"),2,"00"},
-    {QObject::tr("校验"),2,"00"},
-    {QObject::tr("分隔符"),1,";"},
-    {QObject::tr("注释代码"),16,"0000000000000000", ColumnInfo::CDT_Combox, QObject::tr("无,清洗时间,测量时间")}};
+    {QObject::tr("外部控制1"),1,"0"},
+    {QObject::tr("外部控制2"),1,"0"},
+    {QObject::tr("外部控制3"),1,"0"},
+    {QObject::tr("风扇"),1,"0"},
+    {QObject::tr("液位"),1,"0"},
+    {QObject::tr("加热温度"),4,"0000"},
+    {QObject::tr("保留"),4,"0000"},
+    {QObject::tr("分隔符"),1,":"},
+    {QObject::tr("时间关联"),2,"00", ColumnInfo::CDT_Combox,
+                QObject::tr("无,时间1,时间2")},
+    {QObject::tr("额外时间"),4,"0000"},
+    {QObject::tr("温度关联"),2,"0", ColumnInfo::CDT_Combox,
+                QObject::tr("无,温度1,温度2")},
+    {QObject::tr("循环"),2,"0", ColumnInfo::CDT_Combox,
+                QObject::tr("无,循环1开始,循环1结束,循环2开始,循环2结束,循环3开始,循环3结束,循环4开始,循环4结束")},
+    {QObject::tr("流程判定"),1,"0", ColumnInfo::CDT_Combox,
+                QObject::tr("无,液位到达判定,液位检测,温度到达判断,温度检测,降温到达判定,降温检测")},
+    {QObject::tr("信号采集"),1,"0", ColumnInfo::CDT_Combox,
+                QObject::tr("无,空白值采集,显示值采集")},
+    {QObject::tr("注释代码"),2,"00", ColumnInfo::CDT_Combox,
+                QObject::tr("无,进样,排空")}};
     QList<ColumnInfo> ci ;
     int lines = sizeof(aa)/sizeof(struct ColumnInfo);
     for(int i=0;i<lines;i++){
         ci << aa[i];
     }
-    CommondFileInfo bb[] = {{"cleaning1", "test-short.txt"}, {"emptying",  "test-long.txt"}};
+    CommondFileInfo bb[] = {{tr("测量"), "measure.txt"},
+                            {tr("停止"), "stop.txt"},
+                            {tr("异常处理"), "error.txt"},
+                            {tr("调试"), "test.txt"},
+                            {tr("清洗"), "wash.txt"},
+                            {tr("排空"), "drain.txt"},
+                            {tr("初始化"), "poweron.txt"}};
     QList<CommondFileInfo> cfi;
     lines = sizeof(bb)/sizeof(struct CommondFileInfo);
     for(int i=0;i<lines;i++){
@@ -447,32 +483,58 @@ void QFMain::saveSettings()
 
 void QFMain::OnlineOffline()
 {
-    QString name;
-    switch (ui->OnlineOffline->property("value").toInt())
-    {
-    case 0:
-        name = tr("离线测量");
-        ui->OnlineOffline->setProperty("value", 1);
-        break;
-    default:
-        name = tr("在线测量");
-        ui->OnlineOffline->setProperty("value", 0);
-        break;
-    }
-    ui->OnlineOffline->setText(name);
+    QPushButton *button = ui->OnlineOffline;
+
+    int value = button->property("value").toInt();
+    if (++value >= nameOnlineOffline.count())
+        value = 0;
+    button->setProperty("value", value);
+    button->setText(nameOnlineOffline[value]);
+
+    DatabaseProfile profile;
+    if (profile.beginSection("measure"))
+        profile.setValue("OnlineOffline", value);
 }
 
 void QFMain::MeasureMethod()
 {
+    QPushButton *button = ui->MeasureMethod;
 
+    int value = button->property("value").toInt();
+    if (++value >= nameMeasureMethod.count())
+        value = 0;
+    button->setProperty("value", value);
+    button->setText(nameMeasureMethod[value]);
+
+    DatabaseProfile profile;
+    if (profile.beginSection("measure"))
+        profile.setValue("MeasureMethod", value);
 }
 
 void QFMain::Range()
 {
+    QPushButton *button = ui->Range;
+    int value = button->property("value").toInt();
+    if (++value >= nameRange.count())
+        value = 0;
+    button->setProperty("value", value);
+    button->setText(nameRange[value]);
 
+    DatabaseProfile profile;
+    if (profile.beginSection("measure"))
+        profile.setValue("Range", value);
 }
 
 void QFMain::SamplePipe()
 {
+    QPushButton *button = ui->SamplePipe;
+    int value = button->property("value").toInt();
+    if (++value >= nameSamplePipe.count())
+        value = 0;
+    button->setProperty("value", value);
+    button->setText(nameSamplePipe[value]);
 
+    DatabaseProfile profile;
+    if (profile.beginSection("measure"))
+        profile.setValue("SamplePipe", value);
 }

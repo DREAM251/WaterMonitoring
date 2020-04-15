@@ -158,4 +158,10 @@ public:
 };
 
 
+class InitialTask : public ITask
+{
+public:
+    virtual QStringList loadCommands();
+};
+
 #endif // ITASK_H

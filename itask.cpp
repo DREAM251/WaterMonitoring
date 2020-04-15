@@ -350,38 +350,27 @@ QStringList MeasureTask::loadCommands()
     return commands;
 }
 
-//
-//
-//
-//
-//
-//
-
 QStringList CleaningTask::loadCommands()
 {
-    return loadCommandFileLines("cleaning1.txt");
+    return loadCommandFileLines("wash.txt");
 }
-
-//
-//
-//
-//
-//
-//
 
 QStringList StopTask::loadCommands()
 {
     return loadCommandFileLines("stop.txt");
 }
 
-//
-//
-//
-//
-//
-//
-
 QStringList ErrorTask::loadCommands()
 {
     return loadCommandFileLines("error.txt");
+}
+
+QStringList EmptyTask::loadCommands()
+{
+    return loadCommandFileLines("drain.txt");
+}
+
+QStringList InitialTask::loadCommands()
+{
+    return loadCommandFileLines("poweron.txt");
 }

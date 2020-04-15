@@ -86,7 +86,7 @@ InstructionEditor::InstructionEditor(const QList<ColumnInfo> &h,
     pasteBtn = new QPushButton(tr("粘贴"));
     updateBtn = new QPushButton(tr("更换命令"));
     okBtn = new QPushButton(tr("保存"));
-    cancelBtn = new QPushButton(tr("放弃更改"));
+    cancelBtn = new QPushButton(tr("刷新"));
 
     QGridLayout *gridLayout = new QGridLayout;
     gridLayout->addWidget(tableView,0,0,1,10);
