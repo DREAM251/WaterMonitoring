@@ -16,6 +16,10 @@ DESTDIR = $${PWD}/dist
 TARGET = cmplat
 TEMPLATE = app
 
+win32 {
+DEFINES += NO_CHECK_STEP
+}
+
 
 SOURCES += main.cpp\
     systemwindow.cpp \

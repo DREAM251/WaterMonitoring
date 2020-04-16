@@ -211,6 +211,11 @@ void IProtocol::reset()
     counter->stop();
 }
 
+bool IProtocol::portIsOpened()
+{
+    return port->isOpen();
+}
+
 
 void IProtocol::sendData(const QString &cmd)
 {
@@ -246,12 +251,20 @@ void IProtocol::onReadyRead()
         else if (ret == 0)
         {
             dataReceiver = tempr;
+
+#ifndef NO_CHECK_STEP
             if (dataReceiver.step() == dataSender.step()) {
+#endif
                 newDataFlag = true;
                 timeoutFlag = false;
                 counter->unlock();
+#ifndef NO_CHECK_STEP
             }
-            mcuLogger()->info("receiver:" + recvTemp);
+#endif
+
+            // 只记录工作状态下接收的数据
+            if (!isIdle())
+                mcuLogger()->info("recv:" + recvTemp);
             recvTemp.clear();
         }
         else if (ret > 0)
@@ -275,7 +288,45 @@ void IProtocol::onCounterTimeout()
         else if (mod == 0)
         {
             port->write(dataSender.data());
+            mcuLogger()->info("resd:" + dataSender.data());
         }
     }
 }
 
+
+
+ProtocolCounter::ProtocolCounter(QObject *parent) :
+    QObject(parent),
+    timerid(0),
+    counts(0),
+    max(0),
+    islock(false)
+{}
+
+void ProtocolCounter::start(int seconds)
+{
+    stop();
+    timerid = startTimer(1000);
+    counts = 0;
+    max = seconds;
+}
+
+void ProtocolCounter::stop()
+{
+    islock = false;
+    if(timerid)
+        killTimer(timerid);
+    timerid = 0;
+    counts = max;
+}
+
+void ProtocolCounter::timerEvent(QTimerEvent *event)
+{
+    if(event->timerId() == timerid && !islock) {
+        counts++;
+        if (counts >= max) {
+            stop();
+        }
+    }
+    emit timing();
+}

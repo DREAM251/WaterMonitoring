@@ -204,12 +204,6 @@ void ITask::fixCommands(const QStringList &sources)
     }
 }
 
-//
-//
-//
-//
-//
-//
 
 MeasureTask::MeasureTask() :
     blankValue(0),
@@ -374,4 +368,9 @@ QStringList EmptyTask::loadCommands()
 QStringList InitialTask::loadCommands()
 {
     return loadCommandFileLines("poweron.txt");
+}
+
+QStringList DebugTask::loadCommands()
+{
+    return loadCommandFileLines("test.txt");
 }

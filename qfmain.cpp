@@ -27,7 +27,7 @@ QFMain::QFMain(QWidget *parent) :
     initSettings();
     initQuery();
 
-    nameMeasureMethod <<  tr("单次测量") <<  tr("受控测量") <<  tr("周期测量");
+    nameMeasureMethod <<  tr("单次测量") <<  tr("受控测量") <<  tr("周期测量") << tr("连续测量");
     nameRange <<  tr("0-10mg/L") <<  tr("0-50mg/L") <<  tr("0-200mg/L");
     nameSamplePipe <<  tr("水样") <<  tr("标样") <<  tr("零样");
     nameOnlineOffline <<  tr("在线测量") <<  tr("离线测量");
@@ -180,9 +180,9 @@ void QFMain::initMaintaince()
     {QObject::tr("时间关联"),2,"00", ColumnInfo::CDT_Combox,
                 QObject::tr("无,时间1,时间2")},
     {QObject::tr("额外时间"),4,"0000"},
-    {QObject::tr("温度关联"),2,"0", ColumnInfo::CDT_Combox,
+    {QObject::tr("温度关联"),2,"00", ColumnInfo::CDT_Combox,
                 QObject::tr("无,温度1,温度2")},
-    {QObject::tr("循环"),2,"0", ColumnInfo::CDT_Combox,
+    {QObject::tr("循环"),2,"00", ColumnInfo::CDT_Combox,
                 QObject::tr("无,循环1开始,循环1结束,循环2开始,循环2结束,循环3开始,循环3结束,循环4开始,循环4结束")},
     {QObject::tr("流程判定"),1,"0", ColumnInfo::CDT_Combox,
                 QObject::tr("无,液位到达判定,液位检测,温度到达判断,温度检测,降温到达判定,降温检测")},
@@ -217,6 +217,12 @@ void QFMain::initMaintaince()
     connect(maintaince->ZeroMeasure, SIGNAL(clicked()), this, SLOT(ZeroMeasure()));
     connect(maintaince->StandardMeasure, SIGNAL(clicked()), this, SLOT(StandardMeasure()));
     connect(maintaince->QCMeasure, SIGNAL(clicked()), this, SLOT(QCMeasure()));
+
+    connect(maintaince->Drain, SIGNAL(clicked()), this, SLOT(Drain()));
+    connect(maintaince->Stop, SIGNAL(clicked()), this, SLOT(Stop()));
+    connect(maintaince->Clean, SIGNAL(clicked()), this, SLOT(Clean()));
+    connect(maintaince->OneStepExec, SIGNAL(clicked()), this, SLOT(OneStepExec()));
+    connect(maintaince->FuncExec, SIGNAL(clicked()), this, SLOT(FuncExec()));
 }
 
 // query ui
@@ -553,20 +559,72 @@ void QFMain::SampleMeasure()
     int ret = element->startTask(TT_Measure);
 
     if (ret != 0)
-        QMessageBox::warning(this, tr("警告"), tr("执行失败，代号：%1").arg(ret));
+        QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
 }
 
 void QFMain::ZeroMeasure()
 {
+    int ret = element->startTask(TT_ZeroCheck);
 
+    if (ret != 0)
+        QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
 }
 
 void QFMain::StandardMeasure()
 {
+    int ret = element->startTask(TT_SampleCheck);
 
+    if (ret != 0)
+        QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
 }
 
 void QFMain::QCMeasure()
 {
+    int ret = element->startTask(TT_SpikedCheck);
 
+    if (ret != 0)
+        QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
+}
+
+void QFMain::Drain()
+{
+    int ret = element->startTask(TT_Drain);
+
+    if (ret != 0)
+        QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
+}
+
+void QFMain::Stop()
+{
+    if (element->getCurrentTask() <= TT_ErrorProc &&
+            QMessageBox::question(this, tr("提示"), tr("当前正在执行其他任务，是否确定停止？"),
+                                     QMessageBox::Yes|QMessageBox::No)
+                    == QMessageBox::No)
+        return;
+
+    element->stopTasks();
+}
+
+void QFMain::Clean()
+{
+    int ret = element->startTask(TT_Clean);
+
+    if (ret != 0)
+        QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
+}
+
+void QFMain::OneStepExec()
+{
+    int ret = element->startTask(TT_Debug);
+
+    if (ret != 0)
+        QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
+}
+
+void QFMain::FuncExec()
+{
+    int ret = element->startTask(TT_Func);
+
+    if (ret != 0)
+        QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
 }

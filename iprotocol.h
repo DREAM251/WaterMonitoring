@@ -7,64 +7,6 @@
 #include <qcoreevent.h>
 #include <qextserialport.h>
 
-// ¼ÆÊ±Æ÷
-class ProtocolCounter : public QObject
-{
-    Q_OBJECT
-
-public:
-    ProtocolCounter(QObject *parent = NULL) :
-        QObject(parent),
-        timerid(0),
-        counts(0),
-        max(0),
-        islock(false)
-    {}
-
-    void start(int seconds)
-    {
-        stop();
-        timerid = startTimer(1000);
-        counts = 0;
-        max = seconds;
-    }
-
-    void stop()
-    {
-        islock = false;
-        if(timerid)
-            killTimer(timerid);
-        timerid = 0;
-        counts = max;
-    }
-
-    void lock(){islock = true;}
-    void unlock(){islock = false;}
-    bool locked() {return islock;}
-
-    bool isIdle() {return counts >= max;}
-    int getCounts() {return counts;}
-
-Q_SIGNALS:
-    void timing();
-
-protected:
-    void timerEvent(QTimerEvent *event)
-    {
-        if(event->timerId() == timerid && !islock) {
-            counts++;
-            if (counts >= max)
-                stop();
-        }
-        emit timing();
-    }
-
-    int timerid;
-    int counts;
-    int max;
-    bool islock;
-};
-
 class Sender
 {
 public:
@@ -201,6 +143,38 @@ private:
     QByteArray recv;
 };
 
+
+// ¼ÆÊ±Æ÷
+class ProtocolCounter : public QObject
+{
+    Q_OBJECT
+
+public:
+    ProtocolCounter(QObject *parent = NULL);
+
+    void start(int seconds);
+    void stop();
+
+    void lock(){islock = true;}
+    void unlock(){islock = false;}
+    bool locked() {return islock;}
+
+    bool isIdle() {return counts >= max;}
+    int getCounts() {return counts;}
+
+Q_SIGNALS:
+    void timing();
+
+protected:
+    void timerEvent(QTimerEvent *event);
+
+    int timerid;
+    int counts;
+    int max;
+    bool islock;
+};
+
+
 class IProtocol : public QObject
 {
     Q_OBJECT
@@ -213,6 +187,7 @@ public:
     bool isTimeOut(){return timeoutFlag;}
     bool isIdle(){return counter->isIdle();}
     void reset();
+    bool portIsOpened();
 
     void sendData(const QString &cmd);
     void skipCurrentStep();
@@ -232,7 +207,6 @@ protected:
     QByteArray recvTemp;
     QTimer *timer;
     ProtocolCounter *counter;
-    ProtocolCounter *timeoutCounter;
     QextSerialPort *port;
 
     Sender dataSender;

@@ -61,6 +61,9 @@ bool DatabaseProfile::setValue(const QString &section, const QString &name, cons
 
 bool DatabaseProfile::setValue(const QString &name, const QVariant &value)
 {
+    if (this->value(name) == value)
+        return true;
+
     return updateValue(sectionName, name, value);
 }
 

@@ -531,8 +531,17 @@ void LOG_WRITER::writeLog(QString Msg1, QString Msg2, QString prefix, int fcount
 LOG_WRITER *LOG_WRITER::getObject(const QString &filePath)
 {
     static LOG_WRITER *writer = NULL;
-    if(writer == NULL)
+    if(writer == NULL) {
         writer = new LOG_WRITER;
+
+        QDir dir("logs");
+        if (!dir.exists())
+        {
+            dir.setPath("");
+            if (!dir.mkdir("logs"))
+                qDebug() << "mkdir logs failed!";
+        }
+    }
     writer->filePath = filePath;
     return writer;
 }

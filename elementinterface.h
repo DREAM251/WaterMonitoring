@@ -50,6 +50,9 @@ public:
     int getCurrentWorkTime();
     Receiver getReceiver();
 
+    TaskType getCurrentTask() {return currentTaskType;}
+
+    QString translateStartCode(int);
     int startTask(TaskType type);
     void stopTasks();
 

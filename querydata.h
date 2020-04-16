@@ -12,7 +12,7 @@ class QueryData : public QWidget ,public Ui_QueryData
     Q_OBJECT
     
 public:
-    explicit QueryData(int column = 8, int row = 11, QWidget* parent = NULL);
+    explicit QueryData(int column = 8, int row = 12, QWidget* parent = NULL);
     ~QueryData();
 
 private:
@@ -37,18 +37,18 @@ private slots:
     void slot_PrinterData(QModelIndex);
     void slot_PrinterSelectUi();
 signals:
-    void sigPrinterData(QList<QString>);
-    void sigPrinterPageData(QList<QString>);
+    void sigPrinterData(QStringList);
+    void sigPrinterPageData(QStringList);
 protected:
     void paintEvent(QPaintEvent *);
 private:
-    QList<QString> name;
+    QStringList name;
     QList<int> width;
     QString table;
     QString items;
     int queryItemsEndID;    /*检索方式的最终ID序号*/
-    QList<QString> printerPageData;
-    QList<QString> printerData;
+    QStringList printerPageData;
+    QStringList printerData;
 public:
     void setHeaderName(int i , const QString &name);
     void setColumnWidth(int i,int nwidth);

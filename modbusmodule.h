@@ -35,7 +35,7 @@ protected:
 class ModbusModule : public QFrame
 {
     Q_OBJECT
-    
+
 public:
     explicit ModbusModule(QFrame *parent = 0);
     ~ModbusModule();

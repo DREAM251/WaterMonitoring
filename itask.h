@@ -1,14 +1,13 @@
 ﻿#ifndef ITASK_H
 #define ITASK_H
 
+#include <QObject>
 #include <QString>
 #include <QStringList>
 #include <QTimer>
 #include <QVariant>
 #include "iprotocol.h"
 #include "profile.h"
-#include <QObject>
-
 
 enum TaskType
 {
@@ -20,8 +19,13 @@ enum TaskType
     TT_SampleCheck,
     TT_SpikedCheck,
     TT_ErrorProc,
+
     TT_Stop,
     TT_Clean,
+    TT_Drain,
+    TT_Initial,
+    TT_Debug,
+    TT_Func,
 
     TT_END /*end flag, don't use*/
 };

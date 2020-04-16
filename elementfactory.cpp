@@ -21,6 +21,10 @@ ITask *ElementFactory::getTask(TaskType type)
     case TT_ErrorProc:it = static_cast<ITask *>(new ErrorTask());break;
     case TT_Stop:it = static_cast<ITask *>(new StopTask());break;
     case TT_Clean:it = static_cast<ITask *>(new CleaningTask());break;
+    case TT_Drain:it = static_cast<ITask *>(new EmptyTask());break;
+    case TT_Initial:it = static_cast<ITask *>(new InitialTask());break;
+    case TT_Debug:it = static_cast<ITask *>(new DebugTask());break;
+    case TT_Func:break;
     default:
         break;
     }

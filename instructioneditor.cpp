@@ -324,6 +324,7 @@ QString InstructionEditor::combineOneLine(const QStringList &misc)
     QString str;
     int c = misc.count();
 
+
     for (int i = 0; i < header.count(); i++)
     {
         QString itemData;

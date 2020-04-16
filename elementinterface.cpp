@@ -11,7 +11,8 @@ MeasureMode::~MeasureMode()
 {
 }
 
-bool MeasureMode::startAutoMeasure(MeasureMode::AutoMeasureMode mode, const QString &parameter)
+bool MeasureMode::startAutoMeasure(MeasureMode::AutoMeasureMode mode,
+                                   const QString &parameter)
 {
     return true;
 }
@@ -32,10 +33,7 @@ QDateTime MeasureMode::getNextPoint()
     return QDateTime::currentDateTime();
 }
 
-
-
 /////////
-
 
 
 ElementInterface::ElementInterface(ElementType element, QObject *parent) :
@@ -60,6 +58,8 @@ ElementInterface::ElementInterface(ElementType element, QObject *parent) :
 
     timer->start(100);
     connect(timer, SIGNAL(timeout()), this, SLOT(TimerEvent()));
+
+    startTask(TT_Initial);
 }
 
 ElementInterface::~ElementInterface()
@@ -80,19 +80,45 @@ int ElementInterface::getCurrentWorkTime()
 
 Receiver ElementInterface::getReceiver(){return protocol->getReceiver();}
 
+QString ElementInterface::translateStartCode(int i)
+{
+    QString str;
+    switch (i)
+    {
+    case 1:
+        str = tr("设备忙");
+        break;
+    case 2:
+        str = tr("通信端口未打开");
+        break;
+    case 3:
+        str = tr("业务不存在");
+        break;
+    case 4:
+        str = tr("启动业务失败");
+        break;
+    default:
+        break;
+    }
+    return str;
+}
+
 int ElementInterface::startTask(TaskType type)
 {
-    if (currentTaskType != TT_Idle || !flowTable.contains(type))
+    ITask *task = NULL;
+    if (currentTaskType != TT_Idle)
         return 1;
 
-    ITask *task = flowTable.value(type);
-    if (task)
-        currentTask = task;
-    else
+    if (!protocol->portIsOpened())
         return 2;
 
-    if (!currentTask->start(protocol))
+    if (flowTable.contains(type) && (task = flowTable.value(type)) != 0)
+        currentTask = task;
+    else
         return 3;
+
+    if (!currentTask->start(protocol))
+        return 4;
 
     currentTaskType = type;
     return 0;
@@ -107,8 +133,7 @@ void ElementInterface::stopTasks()
     ITask *task = flowTable.value(TT_Stop);
     if (task) {
         currentTask = task;
-        if (currentTask->start(protocol))
-        {
+        if (currentTask->start(protocol)){
             currentTaskType = TT_Stop;
         }
     }
@@ -120,8 +145,7 @@ void ElementInterface::TimerEvent()
 
     if (counter % 5 == 0)
     {
-        if (currentTask && currentTaskType != TT_Idle)
-        {
+        if (currentTask && currentTaskType != TT_Idle){
             currentTask->recvEvent();
         }
     }
@@ -130,8 +154,6 @@ void ElementInterface::TimerEvent()
         MMTimerEvent();
 
         if (currentTask) {
-            currentTask->timeEvent();
-
             if (currentTask->isError() != EF_NoError) {
                 currentTaskType = TT_Idle;
                 currentTask = NULL;
@@ -145,6 +167,9 @@ void ElementInterface::TimerEvent()
             }
         }
     }
+
+    if (currentTask)
+        currentTask->timeEvent();
 }
 
 void ElementInterface::externTriggerMeasure()

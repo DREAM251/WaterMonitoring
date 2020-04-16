@@ -48,6 +48,11 @@ public slots:
     void ZeroMeasure();
     void StandardMeasure();
     void QCMeasure();
+    void Drain();
+    void Stop();
+    void Clean();
+    void OneStepExec();
+    void FuncExec();
 
 Q_SIGNALS:
     void systemTrigger();
