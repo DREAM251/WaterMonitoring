@@ -17,7 +17,7 @@
    <string notr="true">/*#QFMain{background: rgba(79,149,229,255);}*/
 #QFMain{background: gray;}
 
-QTabBar::tab{height:30px;color: black;background: rgb(200, 200, 200);min-width:90px;max-width:90px;}
+QTabBar::tab{min-height:45px;color: black;background: rgb(200, 200, 200);min-width:120px;}
 QTabBar::tab:selected{background: white;}
 QTabBar::scroller{width:60;}
 QTabWidget{background:rgba(255,255,255,255);border:none;}
@@ -76,7 +76,7 @@ QTabWidget{background:rgba(255,255,255,255);border:none;}
          </font>
         </property>
         <property name="text">
-         <string>VLWS-509型在线监测仪</string>
+         <string>ZS-VS01型化学需氧量（CODcr）在线监测仪</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -106,7 +106,8 @@ QDoubleSpinBox{min-height:26px;}
 QTimeEdit{min-height:26px;}
 QDateTimeEdit{min-height:26px;}
 QCheckBox{min-width:26px;min-height:26px;}
-QCheckBox::indicator{min-width:24px;min-height:24px;}</string>
+QCheckBox::indicator{min-width:24px;min-height:24px;}
+QRadioButton::indicator{min-width:24px;min-height:24px;}</string>
      </property>
      <property name="currentIndex">
       <number>0</number>
@@ -924,7 +925,7 @@ QToolButton::checked{background-color:white; color:black;}</string>
          </size>
         </property>
         <property name="pixmap">
-         <pixmap resource="res/qtres.qrc">:/logo.png</pixmap>
+         <pixmap resource="res/qtres.qrc">:/logo.jpg</pixmap>
         </property>
         <property name="scaledContents">
          <bool>true</bool>

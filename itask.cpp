@@ -374,3 +374,126 @@ QStringList DebugTask::loadCommands()
 {
     return loadCommandFileLines("test.txt");
 }
+
+void DebugTask::loadParameters()
+{
+    if (commandList.count() > 0) {
+        Sender sender(commandList[0].toLatin1());
+        DatabaseProfile profile;
+        if (profile.beginSection("pumpTest"))
+        {
+            int tv1 =  profile.value("TV1", 0).toInt();
+            int tv2 =  profile.value("TV2", 0).toInt();
+            int valve[12];
+            for (int i = 0; i < 12; i++)
+                valve[i] = profile.value(QString("valve%1").arg(i), 0).toInt();
+            int workTime = profile.value("WorkTime", 100).toInt();
+            int temp = profile.value("Temp", 0).toInt();
+            int pump = profile.value("PumpRotate", 0).toInt();
+            int speed = profile.value("Speed", 20).toInt();
+
+            sender.setTCValve1(tv1);
+            sender.setTCValve2(tv2);
+            sender.setStepTime(workTime);
+            sender.setHeatTemp(temp);
+
+            sender.setPeristalticPump(pump);
+            sender.setPeristalticPumpSpeed(speed);
+
+            sender.setPump2(valve[0]);
+            sender.setValve1(valve[1]);
+            sender.setValve2(valve[2]);
+            sender.setValve3(valve[3]);
+            sender.setValve4(valve[4]);
+            sender.setValve5(valve[5]);
+            sender.setValve6(valve[6]);
+            sender.setValve7(valve[7]);
+            sender.setValve8(valve[8]);
+            sender.setExtValve(valve[9]);
+            //            sender.setExtControl1(valve[10]);
+            //            sender.setExtControl2(valve[11]);
+            //            sender.setExtControl3(valve[12]);
+            sender.setFun(valve[10]);
+            sender.setWaterLevel(valve[11]);
+        }
+        commandList[0] = sender.rawData();
+    }
+}
+
+bool DebugTask::start(IProtocol *sp)
+{
+    if (sp)
+    {
+        protocol = sp;
+        protocol->reset();
+        cmdIndex = 0;
+        workFlag = true;
+        errorFlag = EF_NoError;
+        cmd.clear();
+
+        commandList = loadCommands();
+        loadParameters();
+        return true;
+    }
+    else
+        return false;
+}
+
+bool DeviceConfigTask::start(IProtocol *sp)
+{
+    if (sp)
+    {
+        protocol = sp;
+        protocol->reset();
+        cmdIndex = 1;
+        workFlag = true;
+        errorFlag = EF_NoError;
+        loadParameters();
+        return true;
+    }
+    else
+        return false;
+}
+
+void DeviceConfigTask::stop()
+{
+    if (protocol)
+        protocol->reset();
+    protocol = NULL;
+    workFlag = false;
+}
+
+void DeviceConfigTask::loadParameters()
+{
+    DatabaseProfile profile;
+    if (profile.beginSection("settings"))
+    {
+        // sender.set420mA1(1);
+        // ...
+    }
+}
+
+void DeviceConfigTask::timeEvent()
+{
+    if (!protocol || !workFlag)
+        return;
+
+    // send next command
+    if (protocol->isTimeOut())
+    {
+        stop();
+    }
+    else if (protocol->isIdle())
+    {
+        if (cmdIndex-- > 0)
+        {
+            protocol->sendConfig(sender);
+        }
+        else
+            stop();
+    }
+}
+
+void DeviceConfigTask::recvEvent()
+{
+}

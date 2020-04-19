@@ -9,9 +9,9 @@
 #define VENDER_WEIQIAN //微嵌
 
 #if defined (Q_WS_WIN)
-#define DTU_PORT      "com2"
-#define EXT_PORT      "com3"
-#define UL_PORT       "com4"
+#define UL_PORT       "com2"
+#define DTU_PORT      "com3"
+#define EXT_PORT      "com4"
 #define PROBE_PORT    "com5"
 #else
 #ifndef Q_WS_X11
@@ -19,7 +19,7 @@
         #define DTU_PORT      "/dev/ttyAMA1"
         #define EXT_PORT      "/dev/ttyAMA2"
         #define UL_PORT       "/dev/ttyAMA3"
-        #define PROBE_PORT    "/dev/ttyAMA5"
+        #define PROBE_PORT    "/dev/ttyAMA4"
     #endif
 #else
     #define EXT_PORT        "/dev/ttyS0"

@@ -143,6 +143,8 @@ void InstructionEditor::FileIndexChanged(int idx)
                 tableModel->setItem(i, j, new QStandardItem(cc[j]));
             }
         }
+
+        tableView->selectionModel()->clear();
     }
 }
 

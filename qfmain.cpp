@@ -1,5 +1,6 @@
 ﻿#include "qfmain.h"
 #include "systemwindow.h"
+#include "profile.h"
 #include "ui_qfmain.h"
 #include "ui_setui.h"
 #include "ui_maintaince.h"
@@ -79,8 +80,6 @@ QFMain::QFMain(QWidget *parent) :
     connect(ui->MeasureMethod, SIGNAL(clicked()), this, SLOT(MeasureMethod()));
     connect(ui->Range, SIGNAL(clicked()), this, SLOT(Range()));
     connect(ui->SamplePipe, SIGNAL(clicked()), this, SLOT(SamplePipe()));
-
-
 }
 
 QFMain::~QFMain()
@@ -615,6 +614,35 @@ void QFMain::Clean()
 
 void QFMain::OneStepExec()
 {
+    DatabaseProfile profile;
+    if (profile.beginSection("pumpTest"))
+    {
+        QRadioButton *rb1[] = {maintaince->EC1Close, maintaince->TV1_1, maintaince->TV1_2, maintaince->TV1_3, maintaince->TV1_4,
+                               maintaince->TV1_5, maintaince->TV1_6, maintaince->TV1_7, maintaince->TV1_8, maintaince->TV1_9, maintaince->TV1_10};
+        QRadioButton *rb2[] = {maintaince->EC2Close, maintaince->TV2_1, maintaince->TV2_2, maintaince->TV2_3, maintaince->TV2_4,
+                               maintaince->TV2_5, maintaince->TV2_6, maintaince->TV2_7, maintaince->TV2_8, maintaince->TV2_9, maintaince->TV2_10};
+        QCheckBox *cb[] = {maintaince->valve1, maintaince->valve2, maintaince->valve3, maintaince->valve4, maintaince->valve5, maintaince->valve6,
+                           maintaince->valve7, maintaince->valve8, maintaince->valve9, maintaince->valve10, maintaince->valve11, maintaince->valve12};
+
+        int tv1 = 0, tv2 = 0;
+        for (int i = 0; i < 11; i++) {
+            if (rb1[i]->isChecked())
+                tv1 = i;
+            if (rb2[i]->isChecked())
+                tv2 = i;
+        }
+
+        profile.setValue("TV1", tv1);
+        profile.setValue("TV2", tv2);
+
+        for (int i = 0; i < 12; i++)
+            profile.setValue(QString("valve%1").arg(i), cb[i]->isChecked()?1:0);
+        profile.setValue("WorkTime", maintaince->WorkTime->value());
+        profile.setValue("Temp", maintaince->Temp->value());
+        profile.setValue("Speed", maintaince->Speed->value());
+        profile.setValue("PumpRotate", maintaince->PumpRotate->currentIndex());
+    }
+
     int ret = element->startTask(TT_Debug);
 
     if (ret != 0)

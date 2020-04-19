@@ -3,8 +3,9 @@
 #include <QDebug>
 #include "defines.h"
 #include "common.h"
+#include "profile.h"
 
-#define PACKET_MAX_LENGTH  7
+#define PACKET_MIN_LENGTH  7
 #define PACKET_HEAD_LENGTH 4
 
 QByteArray checkSum(const QByteArray &by)
@@ -23,7 +24,7 @@ QByteArray Sender::data()
     if (index < 0)
         index = sent.length();
 
-    QByteArray da = "#" + QString("00%1").arg(index + PACKET_MAX_LENGTH).right(2).toLatin1() + "1" + sent.left(index);
+    QByteArray da = "#" + QString("00%1").arg(index + PACKET_MIN_LENGTH).right(2).toLatin1() + "1" + sent.left(index);
     return da + checkSum(da) + '!';
 }
 
@@ -93,7 +94,64 @@ void Sender::setHeatTemp(int i){sent.replace(32, 4, QString("0000%1").arg(i).rig
 
 
 
+ConfigSender::ConfigSender(const QByteArray &src) :
+    sent(src)
+{}
 
+
+ConfigSender::ConfigSender()
+{
+    sent = "000111111001001001000200033118000000";
+}
+
+QByteArray ConfigSender::data()
+{
+    QByteArray length = QString("00%1").arg(sent.length() + PACKET_MIN_LENGTH).right(2).toLatin1();
+    QByteArray da = "#" + length + "1" + sent;
+    return da + checkSum(da) + '!';
+}
+
+void ConfigSender::setWaterLevelAlwaysOn(int i)
+{sent.replace(4, 1, QString("0000%1").arg(i).right(1).toLatin1());}
+
+void ConfigSender::setLedAlwaysOn(int i )
+{sent.replace(5, 1, QString("0000%1").arg(i).right(1).toLatin1());}
+
+void ConfigSender::setWaterLevelRealTimeCheck(int i)
+{sent.replace(6, 1, QString("0000%1").arg(i).right(1).toLatin1());}
+
+void ConfigSender::setWasteWaterRealTimeCheck(int i)
+{sent.replace(7, 1, QString("0000%1").arg(i).right(1).toLatin1());}
+
+void ConfigSender::setWaterLevelLed1Current(int i)
+{sent.replace(8, 3, QString("0000%1").arg(i).right(3).toLatin1());}
+
+void ConfigSender::setWaterLevelLed23Current(int i)
+{sent.replace(11, 3, QString("0000%1").arg(i).right(3).toLatin1());}
+
+void ConfigSender::setLed1Current(int i)
+{sent.replace(14, 3, QString("0000%1").arg(i).right(3).toLatin1());}
+
+void ConfigSender::setLed2Current(int i)
+{sent.replace(17, 3, QString("0000%1").arg(i).right(3).toLatin1());}
+
+void ConfigSender::set420mA1(int i)
+{sent.replace(20, 1, QString("0000%1").arg(i).right(1).toLatin1());}
+
+void ConfigSender::set420mA2(int i)
+{sent.replace(21, 4, QString("0000%1").arg(i).right(4).toLatin1());}
+
+void ConfigSender::setPD1Incred(int i)
+{sent.replace(25, 1, QString("0000%1").arg(i).right(1).toLatin1());}
+
+void ConfigSender::setPD2Incred(int i)
+{sent.replace(26, 1, QString("0000%1").arg(i).right(1).toLatin1());}
+
+void ConfigSender::setTempFixBit(int i)
+{sent.replace(27, 1, QString("0000%1").arg(i).right(1).toLatin1());}
+
+void ConfigSender::setTempFixValue(int i)
+{sent.replace(28, 4, QString("0000%1").arg(i).right(4).toLatin1());}
 
 
 int Receiver::check()
@@ -102,11 +160,11 @@ int Receiver::check()
         return -1;
 
     int dataLen = recv.length();
-    if (dataLen < PACKET_MAX_LENGTH)
+    if (dataLen < PACKET_MIN_LENGTH)
         return 1;
 
     int len = recv.mid(1,2).toInt();
-    if (len < PACKET_MAX_LENGTH)
+    if (len < PACKET_MIN_LENGTH)
         return -2;
 
     if (dataLen < len)
@@ -230,6 +288,18 @@ void IProtocol::sendData(const QString &cmd)
     }
 }
 
+void IProtocol::sendConfig(const ConfigSender &sender)
+{
+    if (port->isOpen()) {
+        configSender = sender;
+        port->write(configSender.data());
+        counter->start(1);
+        counter->lock();
+
+        mcuLogger()->info("conf:" + configSender.data());
+    }
+}
+
 void IProtocol::skipCurrentStep()
 {
     counter->stop();
@@ -330,3 +400,4 @@ void ProtocolCounter::timerEvent(QTimerEvent *event)
     }
     emit timing();
 }
+

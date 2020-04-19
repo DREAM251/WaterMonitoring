@@ -91,12 +91,27 @@ private:
 class ConfigSender
 {
 public:
-    ConfigSender(const QByteArray &src) :sent(src) {}
-    ConfigSender(){}
+    ConfigSender(const QByteArray &src);
+    ConfigSender();
 
     // data section
     QByteArray data();
     QByteArray rawData() {return sent;}
+
+    void setWaterLevelAlwaysOn(int);
+    void setLedAlwaysOn(int);
+    void setWaterLevelRealTimeCheck(int);
+    void setWasteWaterRealTimeCheck(int);
+    void setWaterLevelLed1Current(int);
+    void setWaterLevelLed23Current(int);
+    void setLed1Current(int);
+    void setLed2Current(int);
+    void set420mA1(int);
+    void set420mA2(int);
+    void setPD1Incred(int);
+    void setPD2Incred(int);
+    void setTempFixBit(int);
+    void setTempFixValue(int);
 
 private:
     // sent data format
@@ -190,6 +205,7 @@ public:
     bool portIsOpened();
 
     void sendData(const QString &cmd);
+    void sendConfig(const ConfigSender &sender);
     void skipCurrentStep();
 
     Sender getSender(){return dataSender;}

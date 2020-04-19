@@ -26,6 +26,7 @@ enum TaskType
     TT_Initial,
     TT_Debug,
     TT_Func,
+    TT_Config,
 
     TT_END /*end flag, don't use*/
 };
@@ -159,6 +160,8 @@ class DebugTask : public ITask
 {
 public:
     virtual QStringList loadCommands();
+    void loadParameters();
+    bool start(IProtocol *sp);
 };
 
 
@@ -166,6 +169,19 @@ class InitialTask : public ITask
 {
 public:
     virtual QStringList loadCommands();
+};
+
+class DeviceConfigTask : public ITask
+{
+public:
+    virtual bool start(IProtocol *protocol);
+    void stop();
+    void loadParameters();
+    void timeEvent();
+    void recvEvent();
+
+protected:
+    ConfigSender sender;
 };
 
 #endif // ITASK_H

@@ -25,6 +25,7 @@ ITask *ElementFactory::getTask(TaskType type)
     case TT_Initial:it = static_cast<ITask *>(new InitialTask());break;
     case TT_Debug:it = static_cast<ITask *>(new DebugTask());break;
     case TT_Func:break;
+    case TT_Config:it = static_cast<ITask *>(new DeviceConfigTask());break;
     default:
         break;
     }
