@@ -1,15 +1,28 @@
 ﻿#include "instructioneditor.h"
+#include  "common.h"
 #include <QMessageBox>
 #include <QFile>
 #include <QStandardItemModel>
 #include <QFile>
 #include <QApplication>
 #include <QClipboard>
+#include <QProcess>
 
 ComboBoxDelegate::ComboBoxDelegate(const QString &itemList, QObject* parent):
     QStyledItemDelegate(parent)
 {
     curItemStrList = itemList.split(",");
+    for (int i = 0; i < curItemStrList.count(); i++)
+    {
+        QStringList list = curItemStrList[i].split("-");
+        if (list.count() >= 2)
+        {
+            explainList << list[1];
+            curItemStrList[i] = list[0];
+        }
+        else
+            explainList << QString::number(i);
+    }
 }
 
 QWidget *ComboBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &) const
@@ -38,7 +51,9 @@ void ComboBoxDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, 
 
     if(curComboBox)
     {
-        model->setData(index, curComboBox->currentIndex());
+        int i = curComboBox->currentIndex();
+        if (i < explainList.count())
+            model->setData(index, explainList[i]);
     }
 }
 
@@ -260,6 +275,25 @@ void InstructionEditor::Remove()
 
 void InstructionEditor::UpdateFile()
 {
+#if !defined(Q_WS_WIN)
+    DriverSelectionDialog dsd;
+    dsd.addExclusiveDriver("/dev/root");
+    dsd.addExclusiveDriver("/dev/mmcblk0p3");
+    dsd.addExclusiveDriver("/dev/mmcblk0p7");
+
+    if(dsd.showModule())
+    {
+        QString strTargetDir = dsd.getSelectedDriver();
+
+        if(QFile::exists(strTargetDir))
+        {
+            system(QString("cp %1/*.txt .").arg(strTargetDir).toLatin1().data());
+
+            QMessageBox::information(NULL, tr("提示"),tr("更新成功！"));
+        }
+    }
+#endif
+
 }
 
 ////////////////////////////////////////////////////////////////////////////

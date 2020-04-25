@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>480</height>
+    <height>502</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -117,7 +117,7 @@ QRadioButton::indicator{min-width:24px;min-height:24px;}</string>
        <string notr="true"/>
       </property>
       <layout class="QGridLayout" name="gridLayout_5">
-       <item row="2" column="0">
+       <item row="3" column="0">
         <widget class="QLabel" name="label_3">
          <property name="text">
           <string>当前流程： 进试剂</string>
@@ -127,11 +127,11 @@ QRadioButton::indicator{min-width:24px;min-height:24px;}</string>
        <item row="0" column="0" colspan="2">
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="page">
           <layout class="QGridLayout" name="gridLayout_4">
-           <item row="0" column="1" colspan="2">
+           <item row="1" column="1" colspan="2">
             <widget class="QFrame" name="measureInfo">
              <property name="maximumSize">
               <size>
@@ -201,7 +201,7 @@ QLabel{color:white;}</string>
              </layout>
             </widget>
            </item>
-           <item row="0" column="3">
+           <item row="1" column="3">
             <widget class="QLabel" name="label_2">
              <property name="text">
               <string>下次测量：
@@ -209,7 +209,7 @@ QLabel{color:white;}</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
+           <item row="2" column="0">
             <widget class="QPushButton" name="OnlineOffline">
              <property name="font">
               <font>
@@ -224,7 +224,7 @@ QLabel{color:white;}</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
+           <item row="2" column="1">
             <widget class="QPushButton" name="SamplePipe">
              <property name="font">
               <font>
@@ -239,7 +239,7 @@ QLabel{color:white;}</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="2">
+           <item row="2" column="2">
             <widget class="QPushButton" name="MeasureMethod">
              <property name="font">
               <font>
@@ -254,7 +254,7 @@ QLabel{color:white;}</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="3">
+           <item row="2" column="3">
             <widget class="QPushButton" name="Range">
              <property name="font">
               <font>
@@ -269,6 +269,21 @@ QLabel{color:white;}</string>
              </property>
             </widget>
            </item>
+           <item row="0" column="3">
+            <widget class="QPushButton" name="Stop">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>紧急停止</string>
+             </property>
+             <property name="value" stdset="0">
+              <number>0</number>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
          <widget class="QWidget" name="page_2">
@@ -276,7 +291,7 @@ QLabel{color:white;}</string>
            <item>
             <layout class="QGridLayout" name="gridLayout_2">
              <item row="1" column="2">
-              <widget class="QLabel" name="label_31">
+              <widget class="QLabel" name="measureVoltage1">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
@@ -288,7 +303,7 @@ QLabel{color:white;}</string>
               </widget>
              </item>
              <item row="2" column="1">
-              <widget class="QLabel" name="label_24">
+              <widget class="QLabel" name="waterVoltage">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
@@ -300,7 +315,7 @@ QLabel{color:white;}</string>
               </widget>
              </item>
              <item row="2" column="2">
-              <widget class="QLabel" name="label_32">
+              <widget class="QLabel" name="waterVoltage1">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
@@ -312,7 +327,7 @@ QLabel{color:white;}</string>
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLabel" name="label_25">
+              <widget class="QLabel" name="measureVoltage">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
@@ -324,7 +339,7 @@ QLabel{color:white;}</string>
               </widget>
              </item>
              <item row="3" column="1">
-              <widget class="QLabel" name="label_26">
+              <widget class="QLabel" name="waterLevel">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
@@ -403,7 +418,7 @@ QLabel{color:white;}</string>
                 </font>
                </property>
                <property name="text">
-                <string>排液阀：</string>
+                <string>排液泵：</string>
                </property>
               </widget>
              </item>
@@ -444,7 +459,7 @@ QLabel{color:white;}</string>
               </widget>
              </item>
              <item row="6" column="1">
-              <widget class="QLabel" name="label_28">
+              <widget class="QLabel" name="TV1">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
@@ -456,7 +471,7 @@ QLabel{color:white;}</string>
               </widget>
              </item>
              <item row="5" column="1">
-              <widget class="QLabel" name="label_29">
+              <widget class="QLabel" name="deviceTemp">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
@@ -468,7 +483,7 @@ QLabel{color:white;}</string>
               </widget>
              </item>
              <item row="4" column="1">
-              <widget class="QLabel" name="label_22">
+              <widget class="QLabel" name="temp">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
@@ -487,12 +502,12 @@ QLabel{color:white;}</string>
                 </font>
                </property>
                <property name="text">
-                <string>进样阀：</string>
+                <string>进样泵：</string>
                </property>
               </widget>
              </item>
              <item row="8" column="1">
-              <widget class="QLabel" name="label_23">
+              <widget class="QLabel" name="pump2">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
@@ -504,7 +519,7 @@ QLabel{color:white;}</string>
               </widget>
              </item>
              <item row="2" column="3">
-              <widget class="QLabel" name="label_33">
+              <widget class="QLabel" name="waterVoltage2">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
@@ -516,7 +531,7 @@ QLabel{color:white;}</string>
               </widget>
              </item>
              <item row="4" column="2">
-              <widget class="QLabel" name="label_34">
+              <widget class="QLabel" name="setTemp">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
@@ -540,7 +555,7 @@ QLabel{color:white;}</string>
               </widget>
              </item>
              <item row="7" column="1">
-              <widget class="QLabel" name="label_36">
+              <widget class="QLabel" name="pump1">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
@@ -556,92 +571,92 @@ QLabel{color:white;}</string>
            <item>
             <layout class="QGridLayout" name="gridLayout_3">
              <item row="0" column="5">
-              <widget class="QLabel" name="label_47">
+              <widget class="QLabel" name="led3">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
                 </font>
                </property>
+               <property name="styleSheet">
+                <string notr="true">image: url(:/LedRed.ico);</string>
+               </property>
                <property name="text">
                 <string/>
-               </property>
-               <property name="pixmap">
-                <pixmap resource="res/qtres.qrc">:/LedGreen.ico</pixmap>
                </property>
               </widget>
              </item>
              <item row="0" column="7">
-              <widget class="QLabel" name="label_48">
+              <widget class="QLabel" name="led4">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
                 </font>
                </property>
+               <property name="styleSheet">
+                <string notr="true">image: url(:/LedRed.ico);</string>
+               </property>
                <property name="text">
                 <string/>
-               </property>
-               <property name="pixmap">
-                <pixmap resource="res/qtres.qrc">:/LedGreen.ico</pixmap>
                </property>
               </widget>
              </item>
              <item row="1" column="3">
-              <widget class="QLabel" name="label_50">
+              <widget class="QLabel" name="led6">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
                 </font>
                </property>
+               <property name="styleSheet">
+                <string notr="true">image: url(:/LedRed.ico);</string>
+               </property>
                <property name="text">
                 <string/>
-               </property>
-               <property name="pixmap">
-                <pixmap resource="res/qtres.qrc">:/LedRed.ico</pixmap>
                </property>
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLabel" name="label_49">
+              <widget class="QLabel" name="led5">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
                 </font>
                </property>
+               <property name="styleSheet">
+                <string notr="true">image: url(:/LedRed.ico);</string>
+               </property>
                <property name="text">
                 <string/>
-               </property>
-               <property name="pixmap">
-                <pixmap resource="res/qtres.qrc">:/LedRed.ico</pixmap>
                </property>
               </widget>
              </item>
              <item row="1" column="5">
-              <widget class="QLabel" name="label_51">
+              <widget class="QLabel" name="led7">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
                 </font>
                </property>
+               <property name="styleSheet">
+                <string notr="true">image: url(:/LedRed.ico);</string>
+               </property>
                <property name="text">
                 <string/>
-               </property>
-               <property name="pixmap">
-                <pixmap resource="res/qtres.qrc">:/LedRed.ico</pixmap>
                </property>
               </widget>
              </item>
              <item row="0" column="3">
-              <widget class="QLabel" name="label_46">
+              <widget class="QLabel" name="led2">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
                 </font>
                </property>
+               <property name="styleSheet">
+                <string notr="true">image: url(:/LedRed.ico);</string>
+               </property>
                <property name="text">
                 <string/>
-               </property>
-               <property name="pixmap">
-                <pixmap resource="res/qtres.qrc">:/LedGreen.ico</pixmap>
                </property>
               </widget>
              </item>
@@ -706,17 +721,17 @@ QLabel{color:white;}</string>
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLabel" name="label_45">
+              <widget class="QLabel" name="led1">
                <property name="font">
                 <font>
                  <pointsize>12</pointsize>
                 </font>
                </property>
+               <property name="styleSheet">
+                <string notr="true">image: url(:/LedRed.ico);</string>
+               </property>
                <property name="text">
                 <string/>
-               </property>
-               <property name="pixmap">
-                <pixmap resource="res/qtres.qrc">:/LedGreen.ico</pixmap>
                </property>
               </widget>
              </item>
@@ -778,23 +793,43 @@ QLabel{color:white;}</string>
                </property>
               </spacer>
              </item>
+             <item row="1" column="7">
+              <widget class="QLabel" name="led8">
+               <property name="font">
+                <font>
+                 <pointsize>12</pointsize>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">image: url(:/LedRed.ico);</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="6">
+              <widget class="QLabel" name="label_43">
+               <property name="font">
+                <font>
+                 <pointsize>12</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>电磁阀8：</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
             </layout>
            </item>
           </layout>
          </widget>
         </widget>
        </item>
-       <item row="2" column="1">
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>剩余时间：40分钟</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0" colspan="2">
+       <item row="4" column="0" colspan="2">
         <widget class="QProgressBar" name="progressBar">
          <property name="font">
           <font>
@@ -806,6 +841,28 @@ QLabel{color:white;}</string>
          </property>
          <property name="textVisible">
           <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>剩余时间：40分钟</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QLabel" name="Recv">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string/>
          </property>
         </widget>
        </item>
@@ -847,7 +904,7 @@ QLabel{color:white;}</string>
          <string notr="true"/>
         </property>
         <property name="text">
-         <string>与主控制板通信失败！</string>
+         <string/>
         </property>
        </widget>
       </item>

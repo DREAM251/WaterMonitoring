@@ -40,13 +40,17 @@ public:
     int fun();
     int waterLevel();
     int heatTemp();
+    int waterLedControl();
+    int measureLedControl();
 
     int timeFix();
     int timeAddFix();
     int tempFix();
     int loopFix();
+    int judgeStep();
     bool waterLevelReachStep();
-    bool waterLevelJudgeStep();
+    bool waterLevelReachStep2();
+    bool waterLevelReachStep3();
     bool heatReachStep();
     bool heatJudgeStep();
     bool coolReachStep();
@@ -139,6 +143,7 @@ public:
     int extControl2();
     int extControl3();
     int _420mA();
+    int pumpStatus();
     int waterLevel();
     int heatTemp();
     int mcu1Temp();
@@ -149,6 +154,7 @@ public:
     int measureSignal1();
     int measureSignal2();
 
+    void setStep(int i);
 private:
     //recv data format
     //  header              data               gap  control

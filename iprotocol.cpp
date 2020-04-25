@@ -5,6 +5,9 @@
 #include "common.h"
 #include "profile.h"
 
+extern QString recvComData;
+
+
 #define PACKET_MIN_LENGTH  7
 #define PACKET_HEAD_LENGTH 4
 
@@ -51,30 +54,46 @@ int Sender::_420mA(){return sent.mid(26, 4).toInt();}
 int Sender::fun(){return sent.mid(30, 1).toInt();}
 int Sender::waterLevel(){return sent.mid(31, 1).toInt();}
 int Sender::heatTemp(){return sent.mid(32, 4).toInt();}
+int Sender::waterLedControl(){return sent.mid(36, 1).toInt();}
+int Sender::measureLedControl(){return sent.mid(37, 1).toInt();}
 //int Sender::reserve(){return sent.mid(36, 4).toInt();}
 //int Sender:::(){return sent.mid(40, 1).toInt();}
 
-int Sender::timeFix(){return sent.mid(41, 2).toInt();}
-int Sender::timeAddFix(){return sent.mid(43, 4).toInt();}
-int Sender::tempFix(){return sent.mid(47, 2).toInt();}
-int Sender::loopFix(){return sent.mid(49, 2).toInt();}
-bool Sender::waterLevelReachStep(){return sent.mid(51, 1).toInt() == 1;}
-bool Sender::waterLevelJudgeStep(){return sent.mid(51, 1).toInt() == 2;}
-bool Sender::heatReachStep(){return sent.mid(51, 1).toInt() == 3;}
-bool Sender::heatJudgeStep(){return sent.mid(51, 1).toInt() == 4;}
-bool Sender::coolReachStep(){return sent.mid(51, 1).toInt() == 5;}
-bool Sender::coolJudgeStep(){return sent.mid(51, 1).toInt() == 6;}
-bool Sender::blankStep(){return sent.mid(52, 1).toInt() == 1;}
-bool Sender::colorStep(){return sent.mid(52, 1).toInt() == 2;}
-int Sender::explainCode(){return sent.mid(53, 2).toInt();}
+int Sender::timeFix(){return sent.mid(43, 2).toInt();}
+int Sender::timeAddFix(){return sent.mid(45, 4).toInt();}
+int Sender::tempFix(){return sent.mid(49, 2).toInt();}
+int Sender::loopFix(){return sent.mid(51, 2).toInt();}
+int Sender::judgeStep(){return sent.mid(53, 1).toInt();}
+bool Sender::waterLevelReachStep(){return judgeStep() == 1;}
+bool Sender::waterLevelReachStep2(){return judgeStep() == 2;}
+bool Sender::waterLevelReachStep3(){return judgeStep() == 3;}
+bool Sender::heatReachStep(){return judgeStep() == 4;}
+bool Sender::heatJudgeStep(){return judgeStep() == 5;}
+bool Sender::coolReachStep(){return judgeStep() == 6;}
+bool Sender::coolJudgeStep(){return judgeStep() == 7;}
+bool Sender::blankStep(){return sent.mid(54, 1).toInt() == 1;}
+bool Sender::colorStep(){return sent.mid(54, 1).toInt() == 2;}
+int Sender::explainCode(){return sent.mid(55, 2).toInt();}
 
 void Sender::setStep(int i){sent.replace(0, 4, QString("0000%1").arg(i).right(4).toLatin1());}
 void Sender::setStepTime(int i){sent.replace(4, 4, QString("0000%1").arg(i).right(4).toLatin1());}
 void Sender::setPeristalticPump(int i){sent.replace(8, 1, QString("0000%1").arg(i).right(1).toLatin1());}
 void Sender::setPeristalticPumpSpeed(int i){sent.replace(9, 2, QString("0000%1").arg(i).right(2).toLatin1());}
 void Sender::setPump2(int i){sent.replace(11, 1, QString("0000%1").arg(i).right(1).toLatin1());}
-void Sender::setTCValve1(int i){sent.replace(12, 1, QString("0000%1").arg(i).right(1).toLatin1());}
-void Sender::setTCValve2(int i){sent.replace(13, 1, QString("0000%1").arg(i).right(1).toLatin1());}
+void Sender::setTCValve1(int i)
+{
+    if (i >= 10)
+        sent[12] = 'A';
+    else
+        sent.replace(12, 1, QString("0000%1").arg(i).right(1).toLatin1());
+}
+void Sender::setTCValve2(int i)
+{
+    if (i >= 10)
+        sent[13] = 'A';
+    else
+        sent.replace(13, 1, QString("0000%1").arg(i).right(1).toLatin1());
+}
 void Sender::setValve1(int i){sent.replace(14, 1, QString("0000%1").arg(i).right(1).toLatin1());}
 void Sender::setValve2(int i){sent.replace(15, 1, QString("0000%1").arg(i).right(1).toLatin1());}
 void Sender::setValve3(int i){sent.replace(16, 1, QString("0000%1").arg(i).right(1).toLatin1());}
@@ -171,11 +190,16 @@ int Receiver::check()
         return 2;
 
     //    QByteArray ver = recv.mid(3,1);
+#ifndef NO_CHECK_STEP
     QByteArray cs = recv.mid(len - 3, 2);
     if (checkSum(recv.left(len - 3)) == cs) {
         return 0;
     }else
         mcuLogger()->error("checksum error :" + cs);
+#else
+    return 0;
+#endif
+
     return -3;
 }
 
@@ -190,16 +214,18 @@ int Receiver::extControl1()   {return recv.mid(PACKET_HEAD_LENGTH + 8, 1).toInt(
 int Receiver::extControl2()   {return recv.mid(PACKET_HEAD_LENGTH + 9, 1).toInt();}
 int Receiver::extControl3()   {return recv.mid(PACKET_HEAD_LENGTH + 10, 1).toInt();}
 int Receiver::_420mA()        {return recv.mid(PACKET_HEAD_LENGTH + 11, 4).toInt();}
-int Receiver::waterLevel()    {return recv.mid(PACKET_HEAD_LENGTH + 15, 1).toInt();}
-int Receiver::heatTemp()      {return recv.mid(PACKET_HEAD_LENGTH + 16, 4).toInt();}
-int Receiver::mcu1Temp()      {return recv.mid(PACKET_HEAD_LENGTH + 20, 2).toInt();}
-int Receiver::mcu2Temp()      {return recv.mid(PACKET_HEAD_LENGTH + 22, 2).toInt();}
-int Receiver::lightVoltage1() {return recv.mid(PACKET_HEAD_LENGTH + 24, 5).toInt();}
-int Receiver::lightVoltage2() {return recv.mid(PACKET_HEAD_LENGTH + 29, 5).toInt();}
-int Receiver::lightVoltage3() {return recv.mid(PACKET_HEAD_LENGTH + 34, 5).toInt();}
-int Receiver::measureSignal1(){return recv.mid(PACKET_HEAD_LENGTH + 39, 5).toInt();}
-int Receiver::measureSignal2(){return recv.mid(PACKET_HEAD_LENGTH + 44, 5).toInt();}
+int Receiver::pumpStatus()    {return recv.mid(PACKET_HEAD_LENGTH + 15, 1).toInt();}
+int Receiver::waterLevel()    {return recv.mid(PACKET_HEAD_LENGTH + 16, 1).toInt();}
+int Receiver::heatTemp()      {return recv.mid(PACKET_HEAD_LENGTH + 17, 4).toInt();}
+int Receiver::mcu1Temp()      {return recv.mid(PACKET_HEAD_LENGTH + 21, 2).toInt();}
+int Receiver::mcu2Temp()      {return recv.mid(PACKET_HEAD_LENGTH + 23, 2).toInt();}
+int Receiver::lightVoltage1() {return recv.mid(PACKET_HEAD_LENGTH + 25, 5).toInt();}
+int Receiver::lightVoltage2() {return recv.mid(PACKET_HEAD_LENGTH + 30, 5).toInt();}
+int Receiver::lightVoltage3() {return recv.mid(PACKET_HEAD_LENGTH + 35, 5).toInt();}
+int Receiver::measureSignal1(){return recv.mid(PACKET_HEAD_LENGTH + 40, 5).toInt();}
+int Receiver::measureSignal2(){return recv.mid(PACKET_HEAD_LENGTH + 45, 5).toInt();}
 
+void Receiver::setStep(int i)          {recv.replace(PACKET_HEAD_LENGTH, 4, QString("0000%1").arg(i).right(4).toLatin1());}
 
 
 IProtocol::IProtocol(const QString &portParamter, QObject *parent) :
@@ -263,6 +289,9 @@ bool IProtocol::recvNewData()
 
 void IProtocol::reset()
 {
+    dataSender = Sender();
+    configSender = ConfigSender();
+    dataReceiver = Receiver();
     timeoutFlag = false;
     newDataFlag = false;
     timeCount = 0;
@@ -322,19 +351,20 @@ void IProtocol::onReadyRead()
         {
             dataReceiver = tempr;
 
-#ifndef NO_CHECK_STEP
-            if (dataReceiver.step() == dataSender.step()) {
+#ifdef NO_CHECK_STEP
+            dataReceiver.setStep(dataSender.step());
 #endif
+            if (dataReceiver.step() == dataSender.step()) {
                 newDataFlag = true;
                 timeoutFlag = false;
                 counter->unlock();
-#ifndef NO_CHECK_STEP
             }
-#endif
 
             // 只记录工作状态下接收的数据
             if (!isIdle())
                 mcuLogger()->info("recv:" + recvTemp);
+
+            recvComData = dataReceiver.data();
             recvTemp.clear();
         }
         else if (ret > 0)

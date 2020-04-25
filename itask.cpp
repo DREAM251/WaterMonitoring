@@ -60,6 +60,20 @@ void ITask::timeEvent()
     {
         if (cmdIndex < commandList.count())
         {
+            // 液位抽取是否成功判定
+            if (protocol->getSender().waterLevelReachStep() ||
+                    protocol->getSender().waterLevelReachStep2() ||
+                    protocol->getSender().waterLevelReachStep3())
+            {
+                if (protocol->getSender().judgeStep() > protocol->getReceiver().pumpStatus())
+                {
+                    addErrorMsg(QObject::tr("试剂抽取失败，请检查"), 1);
+                    errorFlag = EF_SamplingError;
+                    stop();
+                    return;
+                }
+            }
+
             cmd = commandList[cmdIndex++];
             protocol->sendData(cmd);
         }
@@ -103,20 +117,19 @@ void ITask::recvEvent()
         }
 
 
-        // 液位判定
-        if (protocol->getSender().waterLevelReachStep())
+        // 液位到达判定
+        if (protocol->getSender().waterLevelReachStep() ||
+                protocol->getSender().waterLevelReachStep2() ||
+                protocol->getSender().waterLevelReachStep3())
         {
-            if (protocol->getSender().waterLevel() == protocol->getReceiver().waterLevel())
+            if (protocol->getSender().judgeStep() <= protocol->getReceiver().pumpStatus())
                 protocol->skipCurrentStep();
         }
-        else if (protocol->getSender().waterLevelJudgeStep())
-        {
-            if (protocol->getReceiver().waterLevel() != protocol->getSender().waterLevel()) {
-                errorFlag = EF_SamplingError;
-                stop();
-            }
+
+        // 定量结束判定
+        if (protocol->getSender().waterLevel() > 0 &&
+                protocol->getReceiver().waterLevel() < protocol->getSender().waterLevel())
             protocol->skipCurrentStep();
-        }
     }
 }
 
@@ -352,6 +365,7 @@ QStringList CleaningTask::loadCommands()
 
 QStringList StopTask::loadCommands()
 {
+    qDebug() << "stop";
     return loadCommandFileLines("stop.txt");
 }
 
@@ -375,6 +389,11 @@ QStringList DebugTask::loadCommands()
     return loadCommandFileLines("test.txt");
 }
 
+QStringList InitialLoadTask::loadCommands()
+{
+    return loadCommandFileLines("initialize.txt");
+}
+
 void DebugTask::loadParameters()
 {
     if (commandList.count() > 0) {
@@ -389,7 +408,8 @@ void DebugTask::loadParameters()
                 valve[i] = profile.value(QString("valve%1").arg(i), 0).toInt();
             int workTime = profile.value("WorkTime", 100).toInt();
             int temp = profile.value("Temp", 0).toInt();
-            int pump = profile.value("PumpRotate", 0).toInt();
+            int pump1 = profile.value("PumpRotate1", 0).toInt();
+            int pump2 = profile.value("PumpRotate2", 0).toInt();
             int speed = profile.value("Speed", 20).toInt();
 
             sender.setTCValve1(tv1);
@@ -397,10 +417,10 @@ void DebugTask::loadParameters()
             sender.setStepTime(workTime);
             sender.setHeatTemp(temp);
 
-            sender.setPeristalticPump(pump);
+            sender.setPeristalticPump(pump1);
             sender.setPeristalticPumpSpeed(speed);
+            sender.setPump2(pump2);
 
-            sender.setPump2(valve[0]);
             sender.setValve1(valve[1]);
             sender.setValve2(valve[2]);
             sender.setValve3(valve[3]);
@@ -497,3 +517,4 @@ void DeviceConfigTask::timeEvent()
 void DeviceConfigTask::recvEvent()
 {
 }
+

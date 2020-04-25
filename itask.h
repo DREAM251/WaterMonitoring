@@ -25,6 +25,7 @@ enum TaskType
     TT_Drain,
     TT_Initial,
     TT_Debug,
+    TT_Initload,
     TT_Func,
     TT_Config,
 
@@ -162,6 +163,12 @@ public:
     virtual QStringList loadCommands();
     void loadParameters();
     bool start(IProtocol *sp);
+};
+
+class InitialLoadTask : public ITask
+{
+public:
+    virtual QStringList loadCommands();
 };
 
 

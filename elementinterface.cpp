@@ -79,6 +79,7 @@ int ElementInterface::getCurrentWorkTime()
 }
 
 Receiver ElementInterface::getReceiver(){return protocol->getReceiver();}
+Sender ElementInterface::getSender(){return protocol->getSender();}
 
 QString ElementInterface::translateStartCode(int i)
 {

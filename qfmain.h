@@ -53,6 +53,7 @@ public slots:
     void Clean();
     void OneStepExec();
     void FuncExec();
+    void InitLoad();
 
 Q_SIGNALS:
     void systemTrigger();

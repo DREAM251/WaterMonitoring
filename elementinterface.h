@@ -49,6 +49,7 @@ public:
     int getLastMeasureTime();
     int getCurrentWorkTime();
     Receiver getReceiver();
+    Sender getSender();
 
     TaskType getCurrentTask() {return currentTaskType;}
 

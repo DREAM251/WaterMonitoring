@@ -10,6 +10,9 @@
 #include <QMessageBox>
 #include <QToolButton>
 
+QString recvComData;
+QString errorMessage;
+
 QFMain::QFMain(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::QFMain),
@@ -80,6 +83,7 @@ QFMain::QFMain(QWidget *parent) :
     connect(ui->MeasureMethod, SIGNAL(clicked()), this, SLOT(MeasureMethod()));
     connect(ui->Range, SIGNAL(clicked()), this, SLOT(Range()));
     connect(ui->SamplePipe, SIGNAL(clicked()), this, SLOT(SamplePipe()));
+    connect(ui->Stop, SIGNAL(clicked()), this, SLOT(Stop()));
 }
 
 QFMain::~QFMain()
@@ -156,8 +160,10 @@ void QFMain::initMaintaince()
     {QObject::tr("蠕动泵"),1,"0"},
     {QObject::tr("蠕动泵转速"),2,"20"},
     {QObject::tr("泵2"),1,"0"},
-    {QObject::tr("十通阀1"),1,"0"},
-    {QObject::tr("十通阀2"),1,"0"},
+    {QObject::tr("十通阀1"),1,"0",ColumnInfo::CDT_Combox,
+                QObject::tr("关,阀1,阀2,阀3,阀4,阀5,阀6,阀7,阀8,阀9,阀10-A")},
+    {QObject::tr("十通阀2"),1,"0", ColumnInfo::CDT_Combox,
+                QObject::tr("关,阀1,阀2,阀3,阀4,阀5,阀6,阀7,阀8,阀9,阀10-A")},
     {QObject::tr("阀1"),1,"0"},
     {QObject::tr("阀2"),1,"0"},
     {QObject::tr("阀3"),1,"0"},
@@ -167,24 +173,28 @@ void QFMain::initMaintaince()
     {QObject::tr("阀7"),1,"0"},
     {QObject::tr("阀8"),1,"0"},
     {QObject::tr("水泵"),1,"0"},
-    {QObject::tr("模拟量"),4,"0000"},
     {QObject::tr("外控1"),1,"0"},
     {QObject::tr("外控2"),1,"0"},
     {QObject::tr("外控3"),1,"0"},
+    {QObject::tr("模拟量"),4,"0000"},
     {QObject::tr("风扇"),1,"0"},
-    {QObject::tr("液位"),1,"0"},
+    {QObject::tr("设置液位"),1,"0"},
     {QObject::tr("加热温度"),4,"0000"},
+    {QObject::tr("液位LED控制"),1,"0"},
+    {QObject::tr("测量LED控制"),1,"0"},
     {QObject::tr("保留"),4,"0000"},
     {QObject::tr("分隔符"),1,":"},
     {QObject::tr("时间关联"),2,"00", ColumnInfo::CDT_Combox,
-                QObject::tr("无,时间1,时间2")},
+                QObject::tr("无,采样时长,沉沙时长,水样润洗时长,水样排空时长,加热时长,"
+                            "比色池排空时长,预抽时长1,预抽时长2,预抽时长3")},
     {QObject::tr("额外时间"),4,"0000"},
     {QObject::tr("温度关联"),2,"00", ColumnInfo::CDT_Combox,
                 QObject::tr("无,温度1,温度2")},
     {QObject::tr("循环"),2,"00", ColumnInfo::CDT_Combox,
-                QObject::tr("无,循环1开始,循环1结束,循环2开始,循环2结束,循环3开始,循环3结束,循环4开始,循环4结束")},
+                QObject::tr("无,流路清洗开始,流路清洗结束,水样润洗开始,水样润洗结束,"
+                            "进水样开始,进水样结束,进清水开始,进清水结束")},
     {QObject::tr("流程判定"),1,"0", ColumnInfo::CDT_Combox,
-                QObject::tr("无,液位到达判定,液位检测,温度到达判断,温度检测,降温到达判定,降温检测")},
+                QObject::tr("无,液位1到达判定,液位2到达判定,液位3到达判定,温度到达判断,降温到达判定")},
     {QObject::tr("信号采集"),1,"0", ColumnInfo::CDT_Combox,
                 QObject::tr("无,空白值采集,显示值采集")},
     {QObject::tr("注释代码"),2,"00", ColumnInfo::CDT_Combox,
@@ -200,7 +210,8 @@ void QFMain::initMaintaince()
                             {tr("调试"), "test.txt"},
                             {tr("清洗"), "wash.txt"},
                             {tr("排空"), "drain.txt"},
-                            {tr("初始化"), "poweron.txt"}};
+                            {tr("初始化"), "poweron.txt"},
+                            {tr("试剂替换"), "initialize.txt"}};
     QList<CommondFileInfo> cfi;
     lines = sizeof(bb)/sizeof(struct CommondFileInfo);
     for(int i=0;i<lines;i++){
@@ -222,6 +233,8 @@ void QFMain::initMaintaince()
     connect(maintaince->Clean, SIGNAL(clicked()), this, SLOT(Clean()));
     connect(maintaince->OneStepExec, SIGNAL(clicked()), this, SLOT(OneStepExec()));
     connect(maintaince->FuncExec, SIGNAL(clicked()), this, SLOT(FuncExec()));
+    connect(maintaince->InitLoad, SIGNAL(clicked()), this, SLOT(InitLoad()));
+
 }
 
 // query ui
@@ -378,8 +391,65 @@ void QFMain::updateStatus()
     QString s = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
     ui->datetime->setText(s);
 
+    switch (element->getCurrentTask())
+    {
+    case TT_Idle:ui->status->setText(tr("空闲"));break;
+    case TT_Measure: ui->status->setText(tr("水样测试"));break;
+    case TT_ZeroCalibration: ui->status->setText(tr("零点校准"));break;
+    case TT_SampleCalibration: ui->status->setText(tr("标样校准"));break;
+    case TT_ZeroCheck: ui->status->setText(tr("零点测试"));break;
+    case TT_SampleCheck: ui->status->setText(tr("标样测试"));break;
+    case TT_SpikedCheck: ui->status->setText(tr("质控样测试"));break;
+    case TT_ErrorProc: ui->status->setText(tr("异常处理"));break;
+    case TT_Stop: ui->status->setText(tr("停止"));break;
+    case TT_Clean: ui->status->setText(tr("清洗"));break;
+    case TT_Drain: ui->status->setText(tr("排空"));break;
+    case TT_Initial: ui->status->setText(tr("初始排空"));break;
+    case TT_Debug: ui->status->setText(tr("调试"));break;
+    case TT_Initload: ui->status->setText(tr("试剂替换"));break;
+    case TT_Func: ui->status->setText(tr("抽取试剂"));break;
+    case TT_Config: ui->status->setText(tr("参数设置"));break;
+    default:
+        break;
+    }
+
     Receiver re = element->getReceiver();
-    ui->lightVoltage->setText(QString("%1").arg(re.lightVoltage1()));
+    if (!re.data().isEmpty())
+    {
+        ui->lightVoltage->setText(QString("%1").arg(re.lightVoltage1()));
+        ui->waterVoltage->setText(QString("%1").arg(re.lightVoltage1()));
+        ui->waterVoltage1->setText(QString("%1").arg(re.lightVoltage2()));
+        ui->waterVoltage2->setText(QString("%1").arg(re.lightVoltage3()));
+        ui->waterLevel->setText(QString("%1").arg(re.waterLevel()));
+        ui->measureVoltage->setText(QString("%1").arg(re.measureSignal1()));
+        ui->measureVoltage1->setText(QString("%1").arg(re.measureSignal2()));
+        ui->setTemp->setText(QString("%1").arg(re.heatTemp()));
+        ui->deviceTemp->setText(QString("%1").arg(re.mcu1Temp()));
+    }
+
+    ui->Recv->setText(recvComData);
+    if (!errorMessage.isEmpty()) {
+        ui->warning->setText(errorMessage);
+        errorMessage.clear();
+    }
+
+    const QString style1 = "image: url(:/LedGreen.ico);";
+    const QString style2 = "image: url(:/LedRed.ico);";
+    Sender sd = element->getSender();
+    if (!sd.data().isEmpty())
+    {
+        ui->pump1->setText(QString("%1").arg(sd.peristalticPump()));
+        ui->pump2->setText(QString("%1").arg(sd.pump2()));
+        ui->TV1->setText(QString("%1").arg(sd.TCValve1()));
+        ui->led1->setStyleSheet(sd.valve1()?style1:style2);
+        ui->led2->setStyleSheet(sd.valve2()?style1:style2);
+        ui->led3->setStyleSheet(sd.valve3()?style1:style2);
+        ui->led4->setStyleSheet(sd.valve4()?style1:style2);
+        ui->led5->setStyleSheet(sd.valve5()?style1:style2);
+        ui->led6->setStyleSheet(sd.valve6()?style1:style2);
+        ui->led7->setStyleSheet(sd.valve7()?style1:style2);
+        ui->led8->setStyleSheet(sd.valve8()?style1:style2);
+    }
 }
 
 //用户登陆权限管理
@@ -398,17 +468,24 @@ void QFMain::loadSettings()
         setui->Loop2->setValue(profile.value("Loop2", 1).toInt());
         setui->Loop3->setValue(profile.value("Loop3", 1).toInt());
         setui->Time0->setValue(profile.value("Time0", 3).toInt());
+
         setui->Time1->setValue(profile.value("Time1", 3).toInt());
         setui->Time2->setValue(profile.value("Time2", 3).toInt());
         setui->Time3->setValue(profile.value("Time3", 3).toInt());
         setui->Time4->setValue(profile.value("Time4", 3).toInt());
+        setui->Time5->setValue(profile.value("Time5", 3).toInt());
+
+        setui->Time6->setValue(profile.value("Time6", 3).toInt());
+        setui->Time7->setValue(profile.value("Time7", 3).toInt());
+        setui->Time8->setValue(profile.value("Time8", 3).toInt());
         setui->Temp0->setValue(profile.value("Temp0", 0).toInt());
         setui->Temp1->setValue(profile.value("Temp1", 0).toInt());
 
-        setui->AlarmLine->setValue(profile.value("AlarmLine", 999).toDouble());
+        setui->AlarmLineL->setValue(profile.value("AlarmLineL", 999).toDouble());
+        setui->AlarmLineH->setValue(profile.value("AlarmLineH", 999).toDouble());
         setui->RangeSwitch->setCurrentIndex(profile.value("RangeSwitch", 0).toInt());
-        setui->MeasureType->setCurrentIndex(profile.value("MeasureType", 0).toInt());
-        setui->RotateSpeed->setValue(profile.value("RotateSpeed", 50).toInt());
+        setui->_4mA->setValue(profile.value("_4mA", 0).toInt());
+        setui->_20mA->setValue(profile.value("_20mA", 50).toInt());
 
         setui->UserK->setValue(profile.value("UserK", 1).toDouble());
         setui->UserB->setValue(profile.value("UserB", 0).toDouble());
@@ -451,17 +528,24 @@ void QFMain::saveSettings()
         profile.setValue("Loop2",setui->Loop2->value());
         profile.setValue("Loop3",setui->Loop3->value());
         profile.setValue("Time0",setui->Time0->value());
+
         profile.setValue("Time1",setui->Time1->value());
         profile.setValue("Time2",setui->Time2->value());
         profile.setValue("Time3",setui->Time3->value());
         profile.setValue("Time4",setui->Time4->value());
+        profile.setValue("Time5",setui->Time5->value());
+
+        profile.setValue("Time6",setui->Time6->value());
+        profile.setValue("Time7",setui->Time7->value());
+        profile.setValue("Time8",setui->Time8->value());
         profile.setValue("Temp0",setui->Temp0->value());
         profile.setValue("Temp1",setui->Temp1->value());
 
-        profile.setValue("AlarmLine",setui->AlarmLine->value());
+        profile.setValue("AlarmLineL",setui->AlarmLineL->value());
+        profile.setValue("AlarmLineH",setui->AlarmLineH->value());
         profile.setValue("RangeSwitch",setui->RangeSwitch->currentIndex());
-        profile.setValue("MeasureType",setui->MeasureType->currentIndex());
-        profile.setValue("RotateSpeed",setui->RotateSpeed->value());
+        profile.setValue("_4mA",setui->_4mA->value());
+        profile.setValue("_20mA",setui->_20mA->value());
 
         profile.setValue("UserK",setui->UserK->value());
         profile.setValue("UserB",setui->UserB->value());
@@ -601,6 +685,7 @@ void QFMain::Stop()
                     == QMessageBox::No)
         return;
 
+    ui->warning->clear();
     element->stopTasks();
 }
 
@@ -640,7 +725,8 @@ void QFMain::OneStepExec()
         profile.setValue("WorkTime", maintaince->WorkTime->value());
         profile.setValue("Temp", maintaince->Temp->value());
         profile.setValue("Speed", maintaince->Speed->value());
-        profile.setValue("PumpRotate", maintaince->PumpRotate->currentIndex());
+        profile.setValue("PumpRotate1", maintaince->PumpRotate1->currentIndex());
+        profile.setValue("PumpRotate2", maintaince->PumpRotate2->currentIndex());
     }
 
     int ret = element->startTask(TT_Debug);
@@ -652,6 +738,14 @@ void QFMain::OneStepExec()
 void QFMain::FuncExec()
 {
     int ret = element->startTask(TT_Func);
+
+    if (ret != 0)
+        QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
+}
+
+void QFMain::InitLoad()
+{
+    int ret = element->startTask(TT_Initload);
 
     if (ret != 0)
         QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));

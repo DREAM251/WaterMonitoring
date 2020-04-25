@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>657</width>
-    <height>463</height>
+    <width>748</width>
+    <height>572</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
    <property name="spacing">
     <number>0</number>
    </property>
-   <item row="0" column="1">
+   <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
       <number>1</number>
@@ -30,22 +30,14 @@
        <string>系统维护</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="0">
-        <widget class="QPushButton" name="SampleMeasure">
-         <property name="text">
-          <string>水样测试</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QPushButton" name="ZeroMeasure">
-         <property name="text">
-          <string>零样测试</string>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="2">
         <widget class="QPushButton" name="StandardMeasure">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>60</height>
+          </size>
+         </property>
          <property name="text">
           <string>标样测试</string>
          </property>
@@ -53,12 +45,18 @@
        </item>
        <item row="0" column="3">
         <widget class="QPushButton" name="QCMeasure">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>60</height>
+          </size>
+         </property>
          <property name="text">
           <string>质控样测试</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="4" rowspan="2">
+       <item row="0" column="4">
         <spacer name="horizontalSpacer">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -71,7 +69,20 @@
          </property>
         </spacer>
        </item>
-       <item row="2" column="0" colspan="5">
+       <item row="0" column="1">
+        <widget class="QPushButton" name="ZeroMeasure">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>60</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>零样测试</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="5">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -83,6 +94,76 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item row="0" column="0">
+        <widget class="QPushButton" name="SampleMeasure">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>60</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>水样测试</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="InitLoad">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>60</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>试剂替换</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QPushButton" name="Clean">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>60</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>清洗</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="Drain">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>60</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>排空</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -172,7 +253,7 @@
              <item row="5" column="0">
               <widget class="QRadioButton" name="TV2_9">
                <property name="text">
-                <string>8</string>
+                <string>9</string>
                </property>
               </widget>
              </item>
@@ -188,6 +269,12 @@
           </item>
           <item row="0" column="0">
            <widget class="QGroupBox" name="groupBox_4">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="title">
              <string>阀：</string>
             </property>
@@ -218,19 +305,6 @@
                </property>
               </widget>
              </item>
-             <item row="3" column="0">
-              <widget class="QCheckBox" name="valve10">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>阀10</string>
-               </property>
-              </widget>
-             </item>
              <item row="1" column="1">
               <widget class="QCheckBox" name="valve5">
                <property name="sizePolicy">
@@ -241,32 +315,6 @@
                </property>
                <property name="text">
                 <string>阀5</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="2">
-              <widget class="QCheckBox" name="valve12">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>阀12</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QCheckBox" name="valve8">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>阀8</string>
                </property>
               </widget>
              </item>
@@ -283,8 +331,8 @@
                </property>
               </widget>
              </item>
-             <item row="1" column="2">
-              <widget class="QCheckBox" name="valve6">
+             <item row="3" column="0">
+              <widget class="QCheckBox" name="valve10">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -292,7 +340,33 @@
                 </sizepolicy>
                </property>
                <property name="text">
-                <string>阀6</string>
+                <string>阀10</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QCheckBox" name="valve8">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>阀8</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="2">
+              <widget class="QCheckBox" name="valve12">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>阀12</string>
                </property>
               </widget>
              </item>
@@ -309,13 +383,6 @@
                </property>
               </widget>
              </item>
-             <item row="5" column="0">
-              <widget class="QLabel" name="label">
-               <property name="text">
-                <string>转速：</string>
-               </property>
-              </widget>
-             </item>
              <item row="3" column="1">
               <widget class="QCheckBox" name="valve11">
                <property name="sizePolicy">
@@ -329,6 +396,26 @@
                </property>
               </widget>
              </item>
+             <item row="6" column="0">
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>转速：</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QCheckBox" name="valve6">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>阀6</string>
+               </property>
+              </widget>
+             </item>
              <item row="0" column="2">
               <widget class="QCheckBox" name="valve3">
                <property name="sizePolicy">
@@ -339,6 +426,22 @@
                </property>
                <property name="text">
                 <string>阀3</string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="1" colspan="2">
+              <widget class="QSpinBox" name="Speed">
+               <property name="buttonSymbols">
+                <enum>QAbstractSpinBox::NoButtons</enum>
+               </property>
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>99</number>
+               </property>
+               <property name="value">
+                <number>20</number>
                </property>
               </widget>
              </item>
@@ -356,14 +459,14 @@
               </widget>
              </item>
              <item row="4" column="0">
-              <widget class="QLabel" name="label_7">
+              <widget class="QLabel" name="label_8">
                <property name="text">
-                <string>蠕动泵：</string>
+                <string>进样泵：</string>
                </property>
               </widget>
              </item>
              <item row="4" column="1" colspan="2">
-              <widget class="QComboBox" name="PumpRotate">
+              <widget class="QComboBox" name="PumpRotate1">
                <item>
                 <property name="text">
                  <string>停止</string>
@@ -381,20 +484,30 @@
                </item>
               </widget>
              </item>
-             <item row="5" column="1" colspan="2">
-              <widget class="QSpinBox" name="Speed">
-               <property name="buttonSymbols">
-                <enum>QAbstractSpinBox::NoButtons</enum>
+             <item row="7" column="0">
+              <widget class="QLabel" name="label_7">
+               <property name="text">
+                <string>排液泵：</string>
                </property>
-               <property name="minimum">
-                <number>1</number>
-               </property>
-               <property name="maximum">
-                <number>99</number>
-               </property>
-               <property name="value">
-                <number>20</number>
-               </property>
+              </widget>
+             </item>
+             <item row="7" column="1" colspan="2">
+              <widget class="QComboBox" name="PumpRotate2">
+               <item>
+                <property name="text">
+                 <string>停止</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>正转</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>反转</string>
+                </property>
+               </item>
               </widget>
              </item>
             </layout>
@@ -475,7 +588,7 @@
              <item row="5" column="0">
               <widget class="QRadioButton" name="TV1_9">
                <property name="text">
-                <string>8</string>
+                <string>9</string>
                </property>
               </widget>
              </item>
@@ -491,19 +604,6 @@
           </item>
           <item row="1" column="0" colspan="3">
            <layout class="QGridLayout" name="gridLayout_4">
-            <item row="0" column="3" rowspan="2">
-             <widget class="QPushButton" name="OneStepExec">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>执行</string>
-              </property>
-             </widget>
-            </item>
             <item row="0" column="0">
              <widget class="QLabel" name="label_2">
               <property name="text">
@@ -522,6 +622,13 @@
              <widget class="QLabel" name="label_5">
               <property name="text">
                <string>执行时间：</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QLabel" name="label_3">
+              <property name="text">
+               <string>℃</string>
               </property>
              </widget>
             </item>
@@ -551,10 +658,29 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="2">
-             <widget class="QLabel" name="label_3">
+            <item row="0" column="4" rowspan="2">
+             <widget class="QPushButton" name="Stop">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="text">
-               <string>℃</string>
+               <string>停止</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3" rowspan="2">
+             <widget class="QPushButton" name="OneStepExec">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>执行</string>
               </property>
              </widget>
             </item>
@@ -577,47 +703,7 @@
            <number>0</number>
           </property>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
-            <item>
-             <widget class="QPushButton" name="Drain">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>排空</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="Stop">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>紧急停止</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="Clean">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>清洗</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
+           <layout class="QHBoxLayout" name="horizontalLayout_3"/>
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -645,7 +731,7 @@
             <item>
              <widget class="QPushButton" name="FuncExec">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>

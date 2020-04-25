@@ -24,6 +24,9 @@
 #include <windows.h>
 #endif
 
+
+extern QString errorMessage;
+
 QString Int2Hex(int a , int b)
 {
     if(a < 0) a= 0;
@@ -308,6 +311,8 @@ bool getUserDataBase(QSqlDatabase &sqlitedb)
 
 void addErrorMsg(QString strMsg, int level)
 {
+    if (level) {errorMessage = strMsg;}
+
     QSqlDatabase sqlitedb;
     if (!getUserDataBase(sqlitedb))
         return;

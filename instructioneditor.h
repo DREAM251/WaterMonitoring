@@ -44,6 +44,7 @@ public:
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 private:
     QStringList curItemStrList;
+    QStringList explainList;
 };
 
 
