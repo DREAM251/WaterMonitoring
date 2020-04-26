@@ -107,7 +107,9 @@ QString ElementInterface::translateStartCode(int i)
 int ElementInterface::startTask(TaskType type)
 {
     ITask *task = NULL;
-    if (currentTaskType != TT_Idle)
+    if (currentTaskType != TT_Idle &&
+            (currentTaskType != TT_Debug && type != TT_Debug) &&
+            (currentTaskType != TT_Config && type != TT_Config))
         return 1;
 
     if (!protocol->portIsOpened())

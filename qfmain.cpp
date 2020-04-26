@@ -152,6 +152,7 @@ void QFMain::initMaintaince()
 
     QWidget *w1 = new QWidget;
     lightVoltage->setupUi(w1);
+    connect(lightVoltage->Save, SIGNAL(clicked()), this, SLOT(SaveLigthVoltage()));
     maintaince->tabWidget->addTab(w1, tr("光源调节"));
 
     struct ColumnInfo aa[] = {
@@ -378,7 +379,7 @@ void QFMain::menuClicked(int p)
         factorycalib->loadParams();
         factorycalib->renewUI();
         break;
-    case 3: break;
+    case 3: loadMaintaince();break;
     case 4: loadSettings();break;
     case 5: break;
     default:
@@ -499,20 +500,17 @@ void QFMain::loadSettings()
 
     if (profile.beginSection("measuremode"))
     {
-        const int c = 5;
-        QCheckBox *enables[c] = {measuremode->AdjustEnable1,measuremode->AdjustEnable2,measuremode->AdjustEnable3,measuremode->AdjustEnable4,measuremode->AdjustEnable5};
-        QComboBox *tasks[c] = {measuremode->AdjustTask1,measuremode->AdjustTask2,measuremode->AdjustTask3,measuremode->AdjustTask4,measuremode->AdjustTask5};
-        QSpinBox *periods[c] = {measuremode->AdjustPeriod1,measuremode->AdjustPeriod2,measuremode->AdjustPeriod3,measuremode->AdjustPeriod4,measuremode->AdjustPeriod5};
-        QTimeEdit *startTimes[c] = {measuremode->AdjustStartTime1,measuremode->AdjustStartTime2,measuremode->AdjustStartTime3,measuremode->AdjustStartTime4,measuremode->AdjustStartTime5};
+        QPushButton *enables[] = {measuremode->point_1,measuremode->point_2,measuremode->point_3,measuremode->point_4,
+                                   measuremode->point_5,measuremode->point_6,measuremode->point_7,measuremode->point_8,
+                                   measuremode->point_9,measuremode->point_10,measuremode->point_11,measuremode->point_12,
+                                   measuremode->point_13,measuremode->point_14,measuremode->point_15,measuremode->point_16,
+                                   measuremode->point_17,measuremode->point_18,measuremode->point_19,measuremode->point_20,
+                                   measuremode->point_21,measuremode->point_22,measuremode->point_23,measuremode->point_24};
 
-        for (int i = 0; i < c; i++)
-        {
-            enables[i]->setChecked(profile.value(QString("enable%1").arg(i), false).toBool());
-            tasks[i]->setCurrentIndex(profile.value(QString("task%1").arg(i), 0).toBool());
-            periods[i]->setValue(profile.value(QString("period%1").arg(i), 1).toBool());
-            startTimes[i]->setTime(profile.value(QString("startTime%1").arg(i), QTime::currentTime()).toTime());
-        }
+        for (int i = 0; i < 24; i++)
+            enables[i]->setChecked(profile.value(QString("Point%1").arg(i), false).toBool());
 
+        measuremode->PointMin->setValue(profile.value("PointMin", 0).toInt());
         measuremode->MeasurePeriod->setValue(profile.value("MeasurePeriod", 60).toInt());
         measuremode->MeasureStartTime->setTime(profile.value("MeasureStartTime", QTime::currentTime()).toTime());
     }
@@ -559,24 +557,38 @@ void QFMain::saveSettings()
 
     if (profile.beginSection("measuremode"))
     {
-        const int c = 5;
-        QCheckBox *enables[c] = {measuremode->AdjustEnable1,measuremode->AdjustEnable2,measuremode->AdjustEnable3,measuremode->AdjustEnable4,measuremode->AdjustEnable5};
-        QComboBox *tasks[c] = {measuremode->AdjustTask1,measuremode->AdjustTask2,measuremode->AdjustTask3,measuremode->AdjustTask4,measuremode->AdjustTask5};
-        QSpinBox *periods[c] = {measuremode->AdjustPeriod1,measuremode->AdjustPeriod2,measuremode->AdjustPeriod3,measuremode->AdjustPeriod4,measuremode->AdjustPeriod5};
-        QTimeEdit *startTimes[c] = {measuremode->AdjustStartTime1,measuremode->AdjustStartTime2,measuremode->AdjustStartTime3,measuremode->AdjustStartTime4,measuremode->AdjustStartTime5};
+        QPushButton *enables[] = {measuremode->point_1,measuremode->point_2,measuremode->point_3,measuremode->point_4,
+                                   measuremode->point_5,measuremode->point_6,measuremode->point_7,measuremode->point_8,
+                                   measuremode->point_9,measuremode->point_10,measuremode->point_11,measuremode->point_12,
+                                   measuremode->point_13,measuremode->point_14,measuremode->point_15,measuremode->point_16,
+                                   measuremode->point_17,measuremode->point_18,measuremode->point_19,measuremode->point_20,
+                                    measuremode->point_21,measuremode->point_22,measuremode->point_23,measuremode->point_24};
 
-        for (int i = 0; i < c; i++)
-        {
-            profile.setValue(QString("enable%1").arg(i), enables[i]->isChecked());
-            profile.setValue(QString("task%1").arg(i), tasks[i]->currentIndex());
-            profile.setValue(QString("period%1").arg(i), periods[i]->value());
-            profile.setValue(QString("startTime%1").arg(i), startTimes[i]->time());
-        }
+        for (int i = 0; i < 24; i++)
+            profile.setValue(QString("Point%1").arg(i), enables[i]->isChecked());
 
+        profile.setValue("PointMin", measuremode->PointMin->value());
         profile.setValue("MeasurePeriod", measuremode->MeasurePeriod->value());
         profile.setValue("MeasureStartTime", measuremode->MeasureStartTime->time());
     }
     QMessageBox::information(NULL, tr("提示"), tr("保存成功"));
+}
+
+void QFMain::loadMaintaince()
+{
+    DatabaseProfile profile;
+    if (profile.beginSection("lightVoltage"))
+    {
+        lightVoltage->Color1Current->setValue(profile.value("Color1Current").toInt());
+        lightVoltage->Color2Current->setValue(profile.value("Color2Current").toInt());
+        lightVoltage->Color1Gain->setCurrentIndex(profile.value("Color1Gain").toInt());
+        lightVoltage->Color2Gain->setCurrentIndex(profile.value("Color2Gain").toInt());
+        lightVoltage->CurrentHigh->setValue(profile.value("CurrentHigh").toInt());
+        lightVoltage->CurrentLow->setValue(profile.value("CurrentLow").toInt());
+        lightVoltage->ThresholdHigh->setValue(profile.value("ThresholdHigh").toInt());
+        lightVoltage->ThresholdMid->setValue(profile.value("ThresholdMid").toInt());
+        lightVoltage->ThresholdLow->setValue(profile.value("ThresholdLow").toInt());
+    }
 }
 
 void QFMain::OnlineOffline()
@@ -746,6 +758,28 @@ void QFMain::FuncExec()
 void QFMain::InitLoad()
 {
     int ret = element->startTask(TT_Initload);
+
+    if (ret != 0)
+        QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
+}
+
+void QFMain::SaveLigthVoltage()
+{
+    DatabaseProfile profile;
+    if (profile.beginSection("lightVoltage"))
+    {
+        profile.setValue("Color1Current", lightVoltage->Color1Current->value());
+        profile.setValue("Color2Current", lightVoltage->Color2Current->value());
+        profile.setValue("Color1Gain", lightVoltage->Color1Gain->currentIndex());
+        profile.setValue("Color2Gain", lightVoltage->Color2Gain->currentIndex());
+        profile.setValue("CurrentHigh", lightVoltage->CurrentHigh->value());
+        profile.setValue("CurrentLow", lightVoltage->CurrentLow->value());
+        profile.setValue("ThresholdHigh", lightVoltage->ThresholdHigh->value());
+        profile.setValue("ThresholdMid", lightVoltage->ThresholdMid->value());
+        profile.setValue("ThresholdLow", lightVoltage->ThresholdLow->value());
+    }
+
+    int ret = element->startTask(TT_Config);
 
     if (ret != 0)
         QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));

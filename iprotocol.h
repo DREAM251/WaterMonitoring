@@ -102,20 +102,26 @@ public:
     QByteArray data();
     QByteArray rawData() {return sent;}
 
-    void setWaterLevelAlwaysOn(int);
-    void setLedAlwaysOn(int);
-    void setWaterLevelRealTimeCheck(int);
-    void setWasteWaterRealTimeCheck(int);
+//    void setWaterLevelAlwaysOn(int);
+//    void setLedAlwaysOn(int);
+//    void setWaterLevelRealTimeCheck(int);
+//    void setWasteWaterRealTimeCheck(int);
     void setWaterLevelLed1Current(int);
     void setWaterLevelLed23Current(int);
     void setLed1Current(int);
     void setLed2Current(int);
-    void set420mA1(int);
-    void set420mA2(int);
     void setPD1Incred(int);
     void setPD2Incred(int);
-    void setTempFixBit(int);
-    void setTempFixValue(int);
+
+//    void set420mA1(int);
+//    void set420mA2(int);
+//    void setTempFixBit(int);
+//    void setTempFixValue(int);
+    void setWaterLevel1Threshold(int);
+    void setWaterLevel2Threshold(int);
+    void setWaterLevel3Threshold(int);
+
+    int step();
 
 private:
     // sent data format
@@ -225,6 +231,7 @@ protected:
     bool timeoutFlag;
     bool newDataFlag;
     int timeCount;
+    int sendType;
 
     QByteArray recvTemp;
     QTimer *timer;

@@ -486,10 +486,17 @@ void DeviceConfigTask::stop()
 void DeviceConfigTask::loadParameters()
 {
     DatabaseProfile profile;
-    if (profile.beginSection("settings"))
+    if (profile.beginSection("lightVoltage"))
     {
-        // sender.set420mA1(1);
-        // ...
+        sender.setLed1Current(profile.value("Color1Current").toInt());
+        sender.setLed2Current(profile.value("Color2Current").toInt());
+        sender.setPD1Incred(profile.value("Color1Gain").toInt() + 1);
+        sender.setPD2Incred(profile.value("Color2Gain").toInt() + 1);
+        sender.setWaterLevelLed23Current(profile.value("CurrentHigh").toInt());
+        sender.setWaterLevelLed1Current(profile.value("CurrentLow").toInt());
+        sender.setWaterLevel1Threshold(profile.value("ThresholdHigh").toInt());
+        sender.setWaterLevel2Threshold(profile.value("ThresholdMid").toInt());
+        sender.setWaterLevel3Threshold(profile.value("ThresholdLow").toInt());
     }
 }
 

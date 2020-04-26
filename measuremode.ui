@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>516</width>
-    <height>397</height>
+    <width>531</width>
+    <height>325</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
 </string>
   </property>
   <property name="frameShape">
-   <enum>QFrame::StyledPanel</enum>
+   <enum>QFrame::NoFrame</enum>
   </property>
   <property name="frameShadow">
    <enum>QFrame::Raised</enum>
@@ -31,6 +31,461 @@
     <number>0</number>
    </property>
    <item>
+    <widget class="QLabel" name="fixMode">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>定点模式：</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>分钟设置：</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="PointMin">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+       <property name="maximum">
+        <number>59</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>min  </string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QWidget" name="widget" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton::checked{background-color: rgb(3, 134, 18);}</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QPushButton" name="point_1">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>0:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QPushButton" name="point_2">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>1:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QPushButton" name="point_3">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>2:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QPushButton" name="point_4">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>3:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QPushButton" name="point_5">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>4:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QPushButton" name="point_6">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>5:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QPushButton" name="point_7">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>6:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="point_8">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>7:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QPushButton" name="point_9">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>8:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QPushButton" name="point_10">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>9:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QPushButton" name="point_11">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>10:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QPushButton" name="point_12">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>11:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QPushButton" name="point_13">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>12:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QPushButton" name="point_14">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>13:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QPushButton" name="point_15">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>14:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="QPushButton" name="point_16">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>15:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="4">
+       <widget class="QPushButton" name="point_17">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>16:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="5">
+       <widget class="QPushButton" name="point_18">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>17:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QPushButton" name="point_19">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>18:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QPushButton" name="point_20">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>19:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QPushButton" name="point_21">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>20:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="3">
+       <widget class="QPushButton" name="point_22">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>21:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="4">
+       <widget class="QPushButton" name="point_23">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>22:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="5">
+       <widget class="QPushButton" name="point_24">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>45</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>23:00</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <widget class="QLabel" name="measureOption">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -39,7 +494,7 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>周期模式间隔设置：</string>
+      <string>周期模式：</string>
      </property>
     </widget>
    </item>
@@ -114,553 +569,8 @@
      </layout>
     </widget>
    </item>
-   <item>
-    <widget class="QLabel" name="fixMode">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>校准模式：</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QWidget" name="widget" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="5" column="1" colspan="5">
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="1" column="3">
-       <widget class="QSpinBox" name="AdjustPeriod2">
-        <property name="buttonSymbols">
-         <enum>QAbstractSpinBox::NoButtons</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3">
-       <widget class="QSpinBox" name="AdjustPeriod1">
-        <property name="buttonSymbols">
-         <enum>QAbstractSpinBox::NoButtons</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="4">
-       <widget class="QLabel" name="label_10">
-        <property name="text">
-         <string>分钟      开始时刻：</string>
-        </property>
-        <property name="buddy">
-         <cstring>AdjustStartTime2</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="5">
-       <widget class="QTimeEdit" name="AdjustStartTime2">
-        <property name="wrapping">
-         <bool>false</bool>
-        </property>
-        <property name="buttonSymbols">
-         <enum>QAbstractSpinBox::NoButtons</enum>
-        </property>
-        <property name="accelerated">
-         <bool>false</bool>
-        </property>
-        <property name="correctionMode">
-         <enum>QAbstractSpinBox::CorrectToPreviousValue</enum>
-        </property>
-        <property name="keyboardTracking">
-         <bool>true</bool>
-        </property>
-        <property name="displayFormat">
-         <string>HH:mm</string>
-        </property>
-        <property name="calendarPopup">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QComboBox" name="AdjustTask3">
-        <item>
-         <property name="text">
-          <string>标样校准</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>零点校准</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>标样核查</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>零点核查</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>跨度核查</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QCheckBox" name="AdjustEnable2">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QCheckBox" name="AdjustEnable3">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="3">
-       <widget class="QSpinBox" name="AdjustPeriod3">
-        <property name="buttonSymbols">
-         <enum>QAbstractSpinBox::NoButtons</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>周期：</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="buddy">
-         <cstring>AdjustPeriod3</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="4">
-       <widget class="QLabel" name="label_6">
-        <property name="text">
-         <string>分钟      开始时刻：</string>
-        </property>
-        <property name="buddy">
-         <cstring>AdjustStartTime1</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>周期：</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="buddy">
-         <cstring>AdjustPeriod2</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>周期：</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="buddy">
-         <cstring>AdjustPeriod1</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="5">
-       <widget class="QTimeEdit" name="AdjustStartTime1">
-        <property name="wrapping">
-         <bool>false</bool>
-        </property>
-        <property name="buttonSymbols">
-         <enum>QAbstractSpinBox::NoButtons</enum>
-        </property>
-        <property name="accelerated">
-         <bool>false</bool>
-        </property>
-        <property name="correctionMode">
-         <enum>QAbstractSpinBox::CorrectToPreviousValue</enum>
-        </property>
-        <property name="keyboardTracking">
-         <bool>true</bool>
-        </property>
-        <property name="displayFormat">
-         <string>HH:mm</string>
-        </property>
-        <property name="calendarPopup">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QComboBox" name="AdjustTask2">
-        <item>
-         <property name="text">
-          <string>标样校准</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>零点校准</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>标样核查</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>零点核查</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>跨度核查</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QComboBox" name="AdjustTask1">
-        <item>
-         <property name="text">
-          <string>标样校准</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>零点校准</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>标样核查</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>零点核查</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>跨度核查</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QCheckBox" name="AdjustEnable4">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2">
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>周期：</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="buddy">
-         <cstring>AdjustPeriod4</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="4">
-       <widget class="QLabel" name="label_9">
-        <property name="text">
-         <string>分钟      开始时刻：</string>
-        </property>
-        <property name="buddy">
-         <cstring>AdjustStartTime3</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="3">
-       <widget class="QSpinBox" name="AdjustPeriod4">
-        <property name="buttonSymbols">
-         <enum>QAbstractSpinBox::NoButtons</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="4">
-       <widget class="QLabel" name="label_8">
-        <property name="text">
-         <string>分钟      开始时刻：</string>
-        </property>
-        <property name="buddy">
-         <cstring>AdjustStartTime4</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="5">
-       <widget class="QTimeEdit" name="AdjustStartTime3">
-        <property name="wrapping">
-         <bool>false</bool>
-        </property>
-        <property name="buttonSymbols">
-         <enum>QAbstractSpinBox::NoButtons</enum>
-        </property>
-        <property name="accelerated">
-         <bool>false</bool>
-        </property>
-        <property name="correctionMode">
-         <enum>QAbstractSpinBox::CorrectToPreviousValue</enum>
-        </property>
-        <property name="keyboardTracking">
-         <bool>true</bool>
-        </property>
-        <property name="displayFormat">
-         <string>HH:mm</string>
-        </property>
-        <property name="calendarPopup">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QComboBox" name="AdjustTask5">
-        <item>
-         <property name="text">
-          <string>标样校准</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>零点校准</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>标样核查</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>零点核查</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>跨度核查</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="3" column="5">
-       <widget class="QTimeEdit" name="AdjustStartTime4">
-        <property name="wrapping">
-         <bool>false</bool>
-        </property>
-        <property name="buttonSymbols">
-         <enum>QAbstractSpinBox::NoButtons</enum>
-        </property>
-        <property name="accelerated">
-         <bool>false</bool>
-        </property>
-        <property name="correctionMode">
-         <enum>QAbstractSpinBox::CorrectToPreviousValue</enum>
-        </property>
-        <property name="keyboardTracking">
-         <bool>true</bool>
-        </property>
-        <property name="displayFormat">
-         <string>HH:mm</string>
-        </property>
-        <property name="calendarPopup">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="5">
-       <widget class="QTimeEdit" name="AdjustStartTime5">
-        <property name="wrapping">
-         <bool>false</bool>
-        </property>
-        <property name="buttonSymbols">
-         <enum>QAbstractSpinBox::NoButtons</enum>
-        </property>
-        <property name="accelerated">
-         <bool>false</bool>
-        </property>
-        <property name="correctionMode">
-         <enum>QAbstractSpinBox::CorrectToPreviousValue</enum>
-        </property>
-        <property name="keyboardTracking">
-         <bool>true</bool>
-        </property>
-        <property name="displayFormat">
-         <string>HH:mm</string>
-        </property>
-        <property name="calendarPopup">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QComboBox" name="AdjustTask4">
-        <item>
-         <property name="text">
-          <string>标样校准</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>零点校准</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>标样核查</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>零点核查</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>跨度核查</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="4" column="3">
-       <widget class="QSpinBox" name="AdjustPeriod5">
-        <property name="buttonSymbols">
-         <enum>QAbstractSpinBox::NoButtons</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="2">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>周期：</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="buddy">
-         <cstring>AdjustPeriod5</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="4">
-       <widget class="QLabel" name="label_7">
-        <property name="text">
-         <string>分钟      开始时刻：</string>
-        </property>
-        <property name="buddy">
-         <cstring>AdjustStartTime5</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QCheckBox" name="AdjustEnable1">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QCheckBox" name="AdjustEnable5">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
   </layout>
  </widget>
- <tabstops>
-  <tabstop>AdjustEnable1</tabstop>
-  <tabstop>AdjustEnable2</tabstop>
-  <tabstop>AdjustEnable3</tabstop>
-  <tabstop>AdjustEnable4</tabstop>
-  <tabstop>AdjustEnable5</tabstop>
-  <tabstop>AdjustTask1</tabstop>
-  <tabstop>AdjustTask2</tabstop>
-  <tabstop>AdjustTask3</tabstop>
-  <tabstop>AdjustTask4</tabstop>
-  <tabstop>AdjustTask5</tabstop>
-  <tabstop>AdjustPeriod1</tabstop>
-  <tabstop>AdjustPeriod2</tabstop>
-  <tabstop>AdjustPeriod3</tabstop>
-  <tabstop>AdjustPeriod4</tabstop>
-  <tabstop>AdjustPeriod5</tabstop>
-  <tabstop>AdjustStartTime1</tabstop>
-  <tabstop>AdjustStartTime2</tabstop>
-  <tabstop>AdjustStartTime3</tabstop>
-  <tabstop>AdjustStartTime4</tabstop>
-  <tabstop>AdjustStartTime5</tabstop>
- </tabstops>
  <resources/>
  <connections/>
 </ui>

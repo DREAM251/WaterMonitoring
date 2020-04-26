@@ -39,6 +39,8 @@ public slots:
     void loadSettings();
     void saveSettings();
 
+    void loadMaintaince();
+
     void OnlineOffline();
     void MeasureMethod();
     void Range();
@@ -54,6 +56,7 @@ public slots:
     void OneStepExec();
     void FuncExec();
     void InitLoad();
+    void SaveLigthVoltage();
 
 Q_SIGNALS:
     void systemTrigger();

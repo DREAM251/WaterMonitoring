@@ -120,7 +120,7 @@ ConfigSender::ConfigSender(const QByteArray &src) :
 
 ConfigSender::ConfigSender()
 {
-    sent = "000111111001001001000200033118000000";
+    sent = "0001000000000000000000000000000000";
 }
 
 QByteArray ConfigSender::data()
@@ -129,7 +129,7 @@ QByteArray ConfigSender::data()
     QByteArray da = "#" + length + "1" + sent;
     return da + checkSum(da) + '!';
 }
-
+/*
 void ConfigSender::setWaterLevelAlwaysOn(int i)
 {sent.replace(4, 1, QString("0000%1").arg(i).right(1).toLatin1());}
 
@@ -141,37 +141,51 @@ void ConfigSender::setWaterLevelRealTimeCheck(int i)
 
 void ConfigSender::setWasteWaterRealTimeCheck(int i)
 {sent.replace(7, 1, QString("0000%1").arg(i).right(1).toLatin1());}
+*/
 
 void ConfigSender::setWaterLevelLed1Current(int i)
-{sent.replace(8, 3, QString("0000%1").arg(i).right(3).toLatin1());}
+{sent.replace(4, 3, QString("0000%1").arg(i).right(3).toLatin1());}
 
 void ConfigSender::setWaterLevelLed23Current(int i)
-{sent.replace(11, 3, QString("0000%1").arg(i).right(3).toLatin1());}
+{sent.replace(7, 3, QString("0000%1").arg(i).right(3).toLatin1());}
 
 void ConfigSender::setLed1Current(int i)
-{sent.replace(14, 3, QString("0000%1").arg(i).right(3).toLatin1());}
+{sent.replace(10, 3, QString("0000%1").arg(i).right(3).toLatin1());}
 
 void ConfigSender::setLed2Current(int i)
-{sent.replace(17, 3, QString("0000%1").arg(i).right(3).toLatin1());}
-
+{sent.replace(13, 3, QString("0000%1").arg(i).right(3).toLatin1());}
+/*
 void ConfigSender::set420mA1(int i)
 {sent.replace(20, 1, QString("0000%1").arg(i).right(1).toLatin1());}
 
 void ConfigSender::set420mA2(int i)
 {sent.replace(21, 4, QString("0000%1").arg(i).right(4).toLatin1());}
-
+*/
 void ConfigSender::setPD1Incred(int i)
-{sent.replace(25, 1, QString("0000%1").arg(i).right(1).toLatin1());}
+{sent.replace(16, 1, QString("0000%1").arg(i).right(1).toLatin1());}
 
 void ConfigSender::setPD2Incred(int i)
-{sent.replace(26, 1, QString("0000%1").arg(i).right(1).toLatin1());}
+{sent.replace(17, 1, QString("0000%1").arg(i).right(1).toLatin1());}
 
+void ConfigSender::setWaterLevel1Threshold(int i)
+{sent.replace(18, 4, QString("0000%1").arg(i).right(4).toLatin1());}
+
+void ConfigSender::setWaterLevel2Threshold(int i)
+{sent.replace(22, 4, QString("0000%1").arg(i).right(4).toLatin1());}
+
+void ConfigSender::setWaterLevel3Threshold(int i)
+{sent.replace(26, 4, QString("0000%1").arg(i).right(4).toLatin1());}
+
+int ConfigSender::step()
+{return sent.left(4).toInt();}
+
+/*
 void ConfigSender::setTempFixBit(int i)
 {sent.replace(27, 1, QString("0000%1").arg(i).right(1).toLatin1());}
 
 void ConfigSender::setTempFixValue(int i)
 {sent.replace(28, 4, QString("0000%1").arg(i).right(4).toLatin1());}
-
+*/
 
 int Receiver::check()
 {
@@ -233,6 +247,7 @@ IProtocol::IProtocol(const QString &portParamter, QObject *parent) :
     timeoutFlag(false),
     newDataFlag(false),
     timeCount(0),
+    sendType(0),
     timer(new QTimer(this)),
     port(new QextSerialPort(QextSerialPort::EventDriven, this)),
     counter(new ProtocolCounter(this))
@@ -312,6 +327,7 @@ void IProtocol::sendData(const QString &cmd)
         counter->start(dataSender.stepTime());
         counter->lock();
         timeCount = 0;
+        sendType = 0;
 
         mcuLogger()->info("send:" + dataSender.data());
     }
@@ -324,6 +340,7 @@ void IProtocol::sendConfig(const ConfigSender &sender)
         port->write(configSender.data());
         counter->start(1);
         counter->lock();
+        sendType = 1;
 
         mcuLogger()->info("conf:" + configSender.data());
     }
@@ -351,10 +368,17 @@ void IProtocol::onReadyRead()
         {
             dataReceiver = tempr;
 
+            int step = 0;
+            switch (sendType)
+            {
+            case 0: step = dataSender.step(); break;
+            case 1: step = configSender.step(); break;
+            }
+
 #ifdef NO_CHECK_STEP
-            dataReceiver.setStep(dataSender.step());
+            step = dataReceiver.step();
 #endif
-            if (dataReceiver.step() == dataSender.step()) {
+            if (dataReceiver.step() == step) {
                 newDataFlag = true;
                 timeoutFlag = false;
                 counter->unlock();
@@ -387,7 +411,11 @@ void IProtocol::onCounterTimeout()
         }
         else if (mod == 0)
         {
-            port->write(dataSender.data());
+            switch (sendType)
+            {
+            case 0: port->write(dataSender.data()); break;
+            case 1: port->write(configSender.data()); break;
+            }
             mcuLogger()->info("resd:" + dataSender.data());
         }
     }
