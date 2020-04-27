@@ -74,6 +74,28 @@ void ITask::timeEvent()
                 }
             }
 
+            // 加热异常判定
+            if (protocol->getSender().heatReachStep())
+            {
+                if (protocol->getReceiver().heatTemp() + 2 < protocol->getSender().heatTemp()) {
+                    addErrorMsg(QObject::tr("加热异常，请检查"), 1);
+                    errorFlag = EF_HeatError;
+                    stop();
+                    return;
+                }
+            }
+
+            // 降温异常判定
+            if (protocol->getSender().coolReachStep())
+            {
+                if (protocol->getReceiver().heatTemp() - 2 > protocol->getSender().heatTemp()) {
+                    addErrorMsg(QObject::tr("降温异常，请检查"), 1);
+                    errorFlag = EF_HeatError;
+                    stop();
+                    return;
+                }
+            }
+
             cmd = commandList[cmdIndex++];
             protocol->sendData(cmd);
         }
@@ -86,34 +108,18 @@ void ITask::recvEvent()
 {
     if (protocol && protocol->recvNewData())
     {        
-        // 加热判定
+        // 加热到达判定
         if (protocol->getSender().heatReachStep())
         {
             if (protocol->getReceiver().heatTemp() >= protocol->getSender().heatTemp())
                 protocol->skipCurrentStep();
         }
-        else if (protocol->getSender().heatJudgeStep())
-        {
-            if (protocol->getReceiver().heatTemp() + 2 < protocol->getSender().heatTemp()) {
-                errorFlag = EF_HeatError;
-                stop();
-            }
-            protocol->skipCurrentStep();
-        }
 
-        // 降温判定
+        // 降温到达判定
         if (protocol->getSender().coolReachStep())
         {
             if (protocol->getReceiver().heatTemp() <= protocol->getSender().heatTemp())
                 protocol->skipCurrentStep();
-        }
-        else if (protocol->getSender().heatJudgeStep())
-        {
-            if (protocol->getReceiver().heatTemp() - 2 > protocol->getSender().heatTemp()) {
-                errorFlag = EF_HeatError;
-                stop();
-            }
-            protocol->skipCurrentStep();
         }
 
 
@@ -293,13 +299,16 @@ void MeasureTask::recvEvent()
             bool finished = collectBlankValues();
             if (finished) {
                 if (blankValue < 2500) {
+                    addErrorMsg(QObject::tr("空白值为%1，为异常值，请检查").arg(blankValue), 1);
                     errorFlag = EF_BlankError;
+                    protocol->skipCurrentStep();
                     stop();
+                    return;
                 }
-                else if (colorSampleTimes > 0)
+                else if (colorSampleTimes > 0) {
+                    protocol->skipCurrentStep();
                     dataProcess();
-
-                protocol->skipCurrentStep();
+                }
             }
         }
 

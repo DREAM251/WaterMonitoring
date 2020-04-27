@@ -195,7 +195,7 @@ void QFMain::initMaintaince()
                 QObject::tr("无,流路清洗开始,流路清洗结束,水样润洗开始,水样润洗结束,"
                             "进水样开始,进水样结束,进清水开始,进清水结束")},
     {QObject::tr("流程判定"),1,"0", ColumnInfo::CDT_Combox,
-                QObject::tr("无,液位1到达判定,液位2到达判定,液位3到达判定,温度到达判断,降温到达判定")},
+                QObject::tr("无,液位1到达判定,液位2到达判定,液位3到达判定,加热判断,降温判定")},
     {QObject::tr("信号采集"),1,"0", ColumnInfo::CDT_Combox,
                 QObject::tr("无,空白值采集,显示值采集")},
     {QObject::tr("注释代码"),2,"00", ColumnInfo::CDT_Combox,
@@ -451,6 +451,12 @@ void QFMain::updateStatus()
         ui->led7->setStyleSheet(sd.valve7()?style1:style2);
         ui->led8->setStyleSheet(sd.valve8()?style1:style2);
     }
+
+    DatabaseProfile profile;
+    if (profile.beginSection("measure")){
+        ui->measureResult->setText(profile.value("conc", 0).toString() + "mg/L");
+    }
+
 }
 
 //用户登陆权限管理

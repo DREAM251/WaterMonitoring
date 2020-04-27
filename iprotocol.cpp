@@ -68,9 +68,9 @@ bool Sender::waterLevelReachStep(){return judgeStep() == 1;}
 bool Sender::waterLevelReachStep2(){return judgeStep() == 2;}
 bool Sender::waterLevelReachStep3(){return judgeStep() == 3;}
 bool Sender::heatReachStep(){return judgeStep() == 4;}
-bool Sender::heatJudgeStep(){return judgeStep() == 5;}
-bool Sender::coolReachStep(){return judgeStep() == 6;}
-bool Sender::coolJudgeStep(){return judgeStep() == 7;}
+bool Sender::heatJudgeStep(){return judgeStep() == -1;}
+bool Sender::coolReachStep(){return judgeStep() == 5;}
+bool Sender::coolJudgeStep(){return judgeStep() == -1;}
 bool Sender::blankStep(){return sent.mid(54, 1).toInt() == 1;}
 bool Sender::colorStep(){return sent.mid(54, 1).toInt() == 2;}
 int Sender::explainCode(){return sent.mid(55, 2).toInt();}
