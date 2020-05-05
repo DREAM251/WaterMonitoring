@@ -53,7 +53,7 @@ int Sender::extControl3(){return sent.mid(25, 1).toInt();}
 int Sender::_420mA(){return sent.mid(26, 4).toInt();}
 int Sender::fun(){return sent.mid(30, 1).toInt();}
 int Sender::waterLevel(){return sent.mid(31, 1).toInt();}
-int Sender::heatTemp(){return sent.mid(32, 4).toInt();}
+float Sender::heatTemp(){return sent.mid(32, 4).toFloat() / 10.0;}
 int Sender::waterLedControl(){return sent.mid(36, 1).toInt();}
 int Sender::measureLedControl(){return sent.mid(37, 1).toInt();}
 //int Sender::reserve(){return sent.mid(36, 4).toInt();}
@@ -109,7 +109,7 @@ void Sender::setExtControl3(int i){sent.replace(25, 1, QString("0000%1").arg(i).
 void Sender::set420mA(int i){sent.replace(26, 4, QString("0000%1").arg(i).right(4).toLatin1());}
 void Sender::setFun(int i){sent.replace(30, 1, QString("0000%1").arg(i).right(1).toLatin1());}
 void Sender::setWaterLevel(int i){sent.replace(31, 1, QString("0000%1").arg(i).right(1).toLatin1());}
-void Sender::setHeatTemp(int i){sent.replace(32, 4, QString("0000%1").arg(i).right(4).toLatin1());}
+void Sender::setHeatTemp(float i){sent.replace(32, 4, QString("0000%1").arg((int)(i*10)).right(4).toLatin1());}
 
 
 
@@ -230,14 +230,14 @@ int Receiver::extControl3()   {return recv.mid(PACKET_HEAD_LENGTH + 10, 1).toInt
 int Receiver::_420mA()        {return recv.mid(PACKET_HEAD_LENGTH + 11, 4).toInt();}
 int Receiver::pumpStatus()    {return recv.mid(PACKET_HEAD_LENGTH + 15, 1).toInt();}
 int Receiver::waterLevel()    {return recv.mid(PACKET_HEAD_LENGTH + 16, 1).toInt();}
-int Receiver::heatTemp()      {return recv.mid(PACKET_HEAD_LENGTH + 17, 4).toInt();}
+float Receiver::heatTemp()      {return recv.mid(PACKET_HEAD_LENGTH + 17, 4).toFloat() / 10.0;}
 int Receiver::mcu1Temp()      {return recv.mid(PACKET_HEAD_LENGTH + 21, 2).toInt();}
 int Receiver::mcu2Temp()      {return recv.mid(PACKET_HEAD_LENGTH + 23, 2).toInt();}
 int Receiver::lightVoltage1() {return recv.mid(PACKET_HEAD_LENGTH + 25, 5).toInt();}
 int Receiver::lightVoltage2() {return recv.mid(PACKET_HEAD_LENGTH + 30, 5).toInt();}
 int Receiver::lightVoltage3() {return recv.mid(PACKET_HEAD_LENGTH + 35, 5).toInt();}
-int Receiver::measureSignal1(){return recv.mid(PACKET_HEAD_LENGTH + 40, 5).toInt();}
-int Receiver::measureSignal2(){return recv.mid(PACKET_HEAD_LENGTH + 45, 5).toInt();}
+int Receiver::refLightSignal(){return recv.mid(PACKET_HEAD_LENGTH + 45, 5).toInt();}
+int Receiver::measureSignal(){return recv.mid(PACKET_HEAD_LENGTH + 40, 5).toInt();}
 
 void Receiver::setStep(int i)          {recv.replace(PACKET_HEAD_LENGTH, 4, QString("0000%1").arg(i).right(4).toLatin1());}
 

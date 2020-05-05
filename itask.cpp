@@ -77,7 +77,7 @@ void ITask::timeEvent()
             // 加热异常判定
             if (protocol->getSender().heatReachStep())
             {
-                if (protocol->getReceiver().heatTemp() + 2 < protocol->getSender().heatTemp()) {
+                if (protocol->getReceiver().heatTemp() + 3 < protocol->getSender().heatTemp()) {
                     addErrorMsg(QObject::tr("加热异常，请检查"), 1);
                     errorFlag = EF_HeatError;
                     stop();
@@ -88,7 +88,7 @@ void ITask::timeEvent()
             // 降温异常判定
             if (protocol->getSender().coolReachStep())
             {
-                if (protocol->getReceiver().heatTemp() - 2 > protocol->getSender().heatTemp()) {
+                if (protocol->getReceiver().heatTemp() - 3 > protocol->getSender().heatTemp()) {
                     addErrorMsg(QObject::tr("降温异常，请检查"), 1);
                     errorFlag = EF_HeatError;
                     stop();
@@ -104,21 +104,22 @@ void ITask::timeEvent()
     }
 }
 
-void ITask::recvEvent()
+bool ITask::recvEvent()
 {
-    if (protocol && protocol->recvNewData())
+    bool newData = protocol && protocol->recvNewData();
+    if (newData)
     {        
         // 加热到达判定
         if (protocol->getSender().heatReachStep())
         {
-            if (protocol->getReceiver().heatTemp() >= protocol->getSender().heatTemp())
+            if (protocol->getReceiver().heatTemp() >= protocol->getSender().heatTemp() - 2)
                 protocol->skipCurrentStep();
         }
 
         // 降温到达判定
         if (protocol->getSender().coolReachStep())
         {
-            if (protocol->getReceiver().heatTemp() <= protocol->getSender().heatTemp())
+            if (protocol->getReceiver().heatTemp() <= protocol->getSender().heatTemp() + 2)
                 protocol->skipCurrentStep();
         }
 
@@ -137,6 +138,7 @@ void ITask::recvEvent()
                 protocol->getReceiver().waterLevel() < protocol->getSender().waterLevel())
             protocol->skipCurrentStep();
     }
+    return newData;
 }
 
 void ITask::loadParameters()
@@ -247,13 +249,13 @@ bool MeasureTask::start(IProtocol *protocol)
 bool MeasureTask::collectBlankValues()
 {
     const int sampleMaxTimes = 10;
-    if (blankSampleTimes < sampleMaxTimes)
+
+    if (++blankSampleTimes <= sampleMaxTimes)
     {
-        blankSampleTimes++;
-        blankValue += protocol->getReceiver().lightVoltage1();
+        blankValue += protocol->getReceiver().measureSignal();
     }
 
-    if (blankSampleTimes >= sampleMaxTimes)
+    if (blankSampleTimes == sampleMaxTimes)
     {
         blankValue = blankValue / blankSampleTimes;
         return true;
@@ -264,13 +266,13 @@ bool MeasureTask::collectBlankValues()
 bool MeasureTask::collectColorValues()
 {
     const int sampleMaxTimes = 10;
-    if (blankSampleTimes < sampleMaxTimes)
+
+    if (++colorSampleTimes <= sampleMaxTimes)
     {
-        blankSampleTimes++;
-        colorValue += protocol->getReceiver().lightVoltage1();
+        colorValue += protocol->getReceiver().measureSignal();
     }
 
-    if (colorSampleTimes >= sampleMaxTimes)
+    if (colorSampleTimes == sampleMaxTimes)
     {
         colorValue = colorValue / colorSampleTimes;
         return true;
@@ -288,25 +290,23 @@ void MeasureTask::dataProcess()
     saveParameters();
 }
 
-void MeasureTask::recvEvent()
+bool MeasureTask::recvEvent()
 {
-    ITask::recvEvent();
-    if (protocol && protocol->recvNewData())
+    bool newData = ITask::recvEvent();
+    if (newData)
     {
         // 空白检测
         if (protocol->getSender().blankStep())
         {
             bool finished = collectBlankValues();
             if (finished) {
-                if (blankValue < 2500) {
+                protocol->skipCurrentStep();
+                if (blankValue < args.blankErrorValue) {
                     addErrorMsg(QObject::tr("空白值为%1，为异常值，请检查").arg(blankValue), 1);
                     errorFlag = EF_BlankError;
-                    protocol->skipCurrentStep();
                     stop();
-                    return;
-                }
-                else if (colorSampleTimes > 0) {
-                    protocol->skipCurrentStep();
+                    return newData;
+                } else if (colorSampleTimes > 0 && blankSampleTimes > 0)  {
                     dataProcess();
                 }
             }
@@ -316,14 +316,16 @@ void MeasureTask::recvEvent()
         else if (protocol->getSender().colorStep())
         {
             bool finished = collectColorValues();
-            if (finished)
+            if (finished) {
                 protocol->skipCurrentStep();
-            else if (blankSampleTimes > 0)
-                dataProcess();
+                // 计算
+                if (colorSampleTimes > 0 && blankSampleTimes > 0)  {
+                    dataProcess();
+                }
+            }
         }
-
-        //
     }
+    return newData;
 }
 
 void MeasureTask::loadParameters()
@@ -341,6 +343,10 @@ void MeasureTask::loadParameters()
         args.quada = profile.value("quada").toFloat();
         args.quadb = profile.value("quadb", 1).toFloat();
         args.quadc = profile.value("quadc").toFloat();
+    }
+    if (profile.beginSection("settings"))
+    {
+        args.blankErrorValue = profile.value("BlankErrorThreshold").toInt();
     }
 }
 
@@ -374,7 +380,6 @@ QStringList CleaningTask::loadCommands()
 
 QStringList StopTask::loadCommands()
 {
-    qDebug() << "stop";
     return loadCommandFileLines("stop.txt");
 }
 
@@ -430,20 +435,20 @@ void DebugTask::loadParameters()
             sender.setPeristalticPumpSpeed(speed);
             sender.setPump2(pump2);
 
-            sender.setValve1(valve[1]);
-            sender.setValve2(valve[2]);
-            sender.setValve3(valve[3]);
-            sender.setValve4(valve[4]);
-            sender.setValve5(valve[5]);
-            sender.setValve6(valve[6]);
-            sender.setValve7(valve[7]);
-            sender.setValve8(valve[8]);
-            sender.setExtValve(valve[9]);
-            //            sender.setExtControl1(valve[10]);
-            //            sender.setExtControl2(valve[11]);
-            //            sender.setExtControl3(valve[12]);
-            sender.setFun(valve[10]);
-            sender.setWaterLevel(valve[11]);
+            sender.setValve1(valve[0]);
+            sender.setValve2(valve[1]);
+            sender.setValve3(valve[2]);
+            sender.setValve4(valve[3]);
+            sender.setValve5(valve[4]);
+            sender.setValve6(valve[5]);
+            sender.setValve7(valve[6]);
+            sender.setValve8(valve[7]);
+            sender.setExtValve(valve[8]);
+            sender.setFun(valve[9]);
+//            sender.setExtControl1(valve[10]);
+//            sender.setExtControl2(valve[11]);
+//            sender.setExtControl3(valve[12]);
+//            sender.setWaterLevel(valve[11]);
         }
         commandList[0] = sender.rawData();
     }
@@ -530,7 +535,8 @@ void DeviceConfigTask::timeEvent()
     }
 }
 
-void DeviceConfigTask::recvEvent()
+bool DeviceConfigTask::recvEvent()
 {
+    return false;
 }
 

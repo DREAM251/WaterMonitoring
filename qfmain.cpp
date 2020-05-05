@@ -31,7 +31,7 @@ QFMain::QFMain(QWidget *parent) :
     initSettings();
     initQuery();
 
-    nameMeasureMethod <<  tr("单次测量") <<  tr("受控测量") <<  tr("周期测量") << tr("连续测量");
+    nameMeasureMethod <<  tr("周期模式") <<  tr("定点模式") <<  tr("维护模式") ;
     nameRange <<  tr("0-10mg/L") <<  tr("0-50mg/L") <<  tr("0-200mg/L");
     nameSamplePipe <<  tr("水样") <<  tr("标样") <<  tr("零样");
     nameOnlineOffline <<  tr("在线测量") <<  tr("离线测量");
@@ -152,7 +152,8 @@ void QFMain::initMaintaince()
 
     QWidget *w1 = new QWidget;
     lightVoltage->setupUi(w1);
-    connect(lightVoltage->Save, SIGNAL(clicked()), this, SLOT(SaveLigthVoltage()));
+    connect(lightVoltage->Save, SIGNAL(clicked()), this, SLOT(SaveLigthVoltage()));    
+    connect(lightVoltage->Renew, SIGNAL(clicked()), this, SLOT(Stop()));
     maintaince->tabWidget->addTab(w1, tr("光源调节"));
 
     struct ColumnInfo aa[] = {
@@ -190,7 +191,7 @@ void QFMain::initMaintaince()
                             "比色池排空时长,预抽时长1,预抽时长2,预抽时长3")},
     {QObject::tr("额外时间"),4,"0000"},
     {QObject::tr("温度关联"),2,"00", ColumnInfo::CDT_Combox,
-                QObject::tr("无,温度1,温度2")},
+                QObject::tr("无,加热温度,降温温度")},
     {QObject::tr("循环"),2,"00", ColumnInfo::CDT_Combox,
                 QObject::tr("无,流路清洗开始,流路清洗结束,水样润洗开始,水样润洗结束,"
                             "进水样开始,进水样结束,进清水开始,进清水结束")},
@@ -223,7 +224,8 @@ void QFMain::initMaintaince()
 
     maintaince->tabWidget->setCurrentIndex(0);
     ui->contentStackedWidget->addWidget(w);
-
+    maintaince->valve11->hide();
+    maintaince->valve12->hide();
     connect(maintaince->SampleMeasure, SIGNAL(clicked()), this, SLOT(SampleMeasure()));
     connect(maintaince->ZeroMeasure, SIGNAL(clicked()), this, SLOT(ZeroMeasure()));
     connect(maintaince->StandardMeasure, SIGNAL(clicked()), this, SLOT(StandardMeasure()));
@@ -235,7 +237,6 @@ void QFMain::initMaintaince()
     connect(maintaince->OneStepExec, SIGNAL(clicked()), this, SLOT(OneStepExec()));
     connect(maintaince->FuncExec, SIGNAL(clicked()), this, SLOT(FuncExec()));
     connect(maintaince->InitLoad, SIGNAL(clicked()), this, SLOT(InitLoad()));
-
 }
 
 // query ui
@@ -417,15 +418,21 @@ void QFMain::updateStatus()
     Receiver re = element->getReceiver();
     if (!re.data().isEmpty())
     {
-        ui->lightVoltage->setText(QString("%1").arg(re.lightVoltage1()));
+//        ui->RealTimeResult->setText(QString("%1").arg(re.lightVoltage1()));
         ui->waterVoltage->setText(QString("%1").arg(re.lightVoltage1()));
         ui->waterVoltage1->setText(QString("%1").arg(re.lightVoltage2()));
         ui->waterVoltage2->setText(QString("%1").arg(re.lightVoltage3()));
         ui->waterLevel->setText(QString("%1").arg(re.waterLevel()));
-        ui->measureVoltage->setText(QString("%1").arg(re.measureSignal1()));
-        ui->measureVoltage1->setText(QString("%1").arg(re.measureSignal2()));
-        ui->setTemp->setText(QString("%1").arg(re.heatTemp()));
-        ui->deviceTemp->setText(QString("%1").arg(re.mcu1Temp()));
+        ui->RefLightVoltage->setText(QString("%1").arg(re.refLightSignal()));
+        ui->measureVoltage->setText(QString("%1").arg(re.measureSignal()));
+        ui->setTemp->setText(QString("%1").arg(re.heatTemp()) + tr("℃"));
+        ui->deviceTemp->setText(QString("%1").arg(re.mcu1Temp()) + tr("℃"));
+
+        lightVoltage->WaterLevel1->setText(QString("%1").arg(re.lightVoltage1()));
+        lightVoltage->WaterLevel2->setText(QString("%1").arg(re.lightVoltage2()));
+        lightVoltage->WaterLevel3->setText(QString("%1").arg(re.lightVoltage3()));
+        lightVoltage->RefWaterLevel1->setText(QString("%1").arg(re.refLightSignal()));
+        lightVoltage->RefWaterLevel2->setText(QString("%1").arg(re.measureSignal()));
     }
 
     ui->Recv->setText(recvComData);
@@ -442,6 +449,7 @@ void QFMain::updateStatus()
         ui->pump1->setText(QString("%1").arg(sd.peristalticPump()));
         ui->pump2->setText(QString("%1").arg(sd.pump2()));
         ui->TV1->setText(QString("%1").arg(sd.TCValve1()));
+        ui->TV2->setText(QString("%1").arg(sd.TCValve2()));
         ui->led1->setStyleSheet(sd.valve1()?style1:style2);
         ui->led2->setStyleSheet(sd.valve2()?style1:style2);
         ui->led3->setStyleSheet(sd.valve3()?style1:style2);
@@ -454,7 +462,11 @@ void QFMain::updateStatus()
 
     DatabaseProfile profile;
     if (profile.beginSection("measure")){
-        ui->measureResult->setText(profile.value("conc", 0).toString() + "mg/L");
+        float v = profile.value("conc", 0).toFloat();
+        ui->measureResult->setText(QString::number(v, 'f', 2) + "mg/L");
+    }
+    if (profile.beginSection("settings")) {
+        ui->temp->setText(profile.value("Temp0").toString() + tr("℃"));
     }
 
 }

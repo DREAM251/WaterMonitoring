@@ -56,7 +56,7 @@ public:
     virtual bool start(IProtocol *protocol);
     virtual void stop();
     virtual void timeEvent();
-    virtual void recvEvent();
+    virtual bool recvEvent();
     inline bool isWorking(){return workFlag;}
     inline ErrorFlag isError(){return errorFlag;}
 
@@ -91,6 +91,8 @@ public:
         float quada;
         float quadb;
         float quadc;
+
+        int blankErrorValue;
     };
 
     MeasureTask();
@@ -105,7 +107,7 @@ public:
     virtual bool collectColorValues();
 
     virtual void dataProcess();
-    virtual void recvEvent();
+    virtual bool recvEvent();
     virtual void loadParameters();
     virtual void saveParameters();
     virtual QStringList loadCommands();
@@ -185,7 +187,7 @@ public:
     void stop();
     void loadParameters();
     void timeEvent();
-    void recvEvent();
+    bool recvEvent();
 
 protected:
     ConfigSender sender;

@@ -39,7 +39,7 @@ public:
     int _420mA();
     int fun();
     int waterLevel();
-    int heatTemp();
+    float heatTemp();
     int waterLedControl();
     int measureLedControl();
 
@@ -81,7 +81,7 @@ public:
     void set420mA(int i);
     void setFun(int i);
     void setWaterLevel(int i);
-    void setHeatTemp(int i);
+    void setHeatTemp(float i);
 
 private:
     // sent data format
@@ -151,14 +151,14 @@ public:
     int _420mA();
     int pumpStatus();
     int waterLevel();
-    int heatTemp();
+    float heatTemp();
     int mcu1Temp();
     int mcu2Temp();
     int lightVoltage1();
     int lightVoltage2();
     int lightVoltage3();
-    int measureSignal1();
-    int measureSignal2();
+    int refLightSignal();
+    int measureSignal();
 
     void setStep(int i);
 private:
