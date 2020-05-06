@@ -116,7 +116,9 @@ private:
     int blankSampleTimes;
     int colorSampleTimes;
     int blankValue;
+    int blankValueC2;
     int colorValue;
+    int colorValueC2;
     WorkArguments args;
 
     double vabs;

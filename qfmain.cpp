@@ -248,7 +248,7 @@ void QFMain::initQuery()
         int column1 = 9;
         QString label = tr("测量数据查询");
         QString table1 = "Data";
-        QString items1 = "A1,A2,A3,A4,A5,B1,B2,A6,A8,A7";
+        QString items1 = "A1,A2,A3,A4,A5,A6,A7,A8,A9,B1";
         QString name1[] = {
             tr("时间"),
             tr("浓度(mg/L)"),
@@ -279,7 +279,7 @@ void QFMain::initQuery()
         int column1 = 9;
         QString label = tr("标定数据查询");
         QString table1 = "Calibration";
-        QString items1 = "A1,A2,A3,A4,A5,B1,B2,A6,A8,A7";
+        QString items1 = "A1,A2,A3,A4,A5,A6,A7,A8,A9,B1";
         QString name1[] = {
             tr("时间"),
             tr("浓度(mg/L)"),

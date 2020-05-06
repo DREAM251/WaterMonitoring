@@ -228,15 +228,27 @@ void ITask::fixCommands(const QStringList &sources)
 
 MeasureTask::MeasureTask() :
     blankValue(0),
-    colorValue(0)
+    colorValue(0),
+  blankValueC2(0),
+  colorValueC2(0)
 {}
 
 bool MeasureTask::start(IProtocol *protocol)
 {
+//    blankValue =(11),
+//    colorValue=(22),
+//  blankValueC2=(3),
+//  colorValueC2=(45);
+//    args.lineark = (2),
+//      args.linearb = (1);
+//    qDebug() << "12";
+//    dataProcess();
     if (ITask::start(protocol))
     {
         blankValue = 0;
         colorValue = 0;
+        blankValueC2 = 0;
+        colorValueC2 = 0;
         blankSampleTimes = 0;
         colorSampleTimes = 0;
 
@@ -253,11 +265,13 @@ bool MeasureTask::collectBlankValues()
     if (++blankSampleTimes <= sampleMaxTimes)
     {
         blankValue += protocol->getReceiver().measureSignal();
+        blankValueC2 += protocol->getReceiver().refLightSignal();
     }
 
     if (blankSampleTimes == sampleMaxTimes)
     {
         blankValue = blankValue / blankSampleTimes;
+        blankValueC2 = blankValueC2 / blankSampleTimes;
         return true;
     }
     return false;
@@ -270,11 +284,13 @@ bool MeasureTask::collectColorValues()
     if (++colorSampleTimes <= sampleMaxTimes)
     {
         colorValue += protocol->getReceiver().measureSignal();
+        colorValueC2 += protocol->getReceiver().refLightSignal();
     }
 
     if (colorSampleTimes == sampleMaxTimes)
     {
         colorValue = colorValue / colorSampleTimes;
+        colorValueC2 = colorValueC2 / colorSampleTimes;
         return true;
     }
     return false;
@@ -286,7 +302,20 @@ void MeasureTask::dataProcess()
     double vcolor = colorValue > 0 ? colorValue : 1;
     vabs = log10(vblank / vcolor);
 
-    conc = vabs * args.lineark + args.linearb;
+    QString strResult;
+    conc = setPrecision(vabs * args.lineark + args.linearb, 4, &strResult);
+
+    QList<QVariant> data;
+    data << strResult;
+    data << QString::number(vabs, 'f', 4);
+    data << QString::number(blankValue);
+    data << QString::number(colorValue);
+    data << QString::number(blankValueC2);
+    data << QString::number(colorValueC2);
+    data << QString::number(0);
+    data << QObject::tr("常规测量");
+
+    addMeasureData(data);
     saveParameters();
 }
 
