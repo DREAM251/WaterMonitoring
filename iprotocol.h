@@ -16,6 +16,7 @@ public:
     // data section
     QByteArray data();
     QByteArray rawData() {return sent;}
+    void clear() {sent.clear();}
 
     int step();
     int stepTime();

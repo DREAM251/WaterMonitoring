@@ -103,6 +103,7 @@ public:
     // 2 : ...
     virtual bool start(IProtocol *protocol);
 
+    void clearCollectedValues();
     virtual bool collectBlankValues();
     virtual bool collectColorValues();
 

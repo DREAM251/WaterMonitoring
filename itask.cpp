@@ -245,16 +245,20 @@ bool MeasureTask::start(IProtocol *protocol)
 //    dataProcess();
     if (ITask::start(protocol))
     {
-        blankValue = 0;
-        colorValue = 0;
-        blankValueC2 = 0;
-        colorValueC2 = 0;
-        blankSampleTimes = 0;
-        colorSampleTimes = 0;
-
+        clearCollectedValues();
         return true;
     }
     return false;
+}
+
+void MeasureTask::clearCollectedValues()
+{
+    blankValue = 0;
+    colorValue = 0;
+    blankValueC2 = 0;
+    colorValueC2 = 0;
+    blankSampleTimes = 0;
+    colorSampleTimes = 0;
 }
 
 // 空白值采集
@@ -337,6 +341,7 @@ bool MeasureTask::recvEvent()
                     return newData;
                 } else if (colorSampleTimes > 0 && blankSampleTimes > 0)  {
                     dataProcess();
+                    clearCollectedValues();
                 }
             }
         }
@@ -350,6 +355,7 @@ bool MeasureTask::recvEvent()
                 // 计算
                 if (colorSampleTimes > 0 && blankSampleTimes > 0)  {
                     dataProcess();
+                    clearCollectedValues();
                 }
             }
         }

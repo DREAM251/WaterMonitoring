@@ -349,6 +349,7 @@ void IProtocol::sendConfig(const ConfigSender &sender)
 void IProtocol::skipCurrentStep()
 {
     counter->stop();
+    dataSender.clear();
 }
 
 void IProtocol::onReadyRead()
