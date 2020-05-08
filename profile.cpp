@@ -4,6 +4,7 @@
 #include <QSqlQuery>
 #include <QStringList>
 #include <QSqlError>
+#include "common.h"
 
 DatabaseProfile::DatabaseProfile(const QString &name)
 {
@@ -59,10 +60,14 @@ bool DatabaseProfile::setValue(const QString &section, const QString &name, cons
     return false;
 }
 
-bool DatabaseProfile::setValue(const QString &name, const QVariant &value)
+bool DatabaseProfile::setValue(const QString &name, const QVariant &value, const QString &keyName)
 {
-    if (this->value(name) == value)
+    QVariant thisValue = this->value(name);
+    if (thisValue == value)
         return true;
+
+    if (!keyName.isEmpty())
+        addLogger(QString("%1%2->%3").arg(keyName).arg(thisValue.toString()).arg(value.toString()), LoggerTypeSettingsChanged);
 
     return updateValue(sectionName, name, value);
 }

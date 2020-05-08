@@ -17,6 +17,8 @@ public:
     QByteArray data();
     QByteArray rawData() {return sent;}
     void clear() {sent.clear();}
+    QString translateExplainCode();
+    QString getTCValve1Name(int i);
 
     int step();
     int stepTime();

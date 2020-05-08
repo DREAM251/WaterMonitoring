@@ -6,12 +6,11 @@
 #include "ui_maintaince.h"
 #include "ui_measuremode.h"
 #include "ui_lightvoltage.h"
+#include "common.h"
 #include <QDebug>
 #include <QMessageBox>
 #include <QToolButton>
 
-QString recvComData;
-QString errorMessage;
 
 QFMain::QFMain(QWidget *parent) :
     QWidget(parent),
@@ -200,7 +199,7 @@ void QFMain::initMaintaince()
     {QObject::tr("信号采集"),1,"0", ColumnInfo::CDT_Combox,
                 QObject::tr("无,空白值采集,显示值采集")},
     {QObject::tr("注释代码"),2,"00", ColumnInfo::CDT_Combox,
-                QObject::tr("无,进样,排空")}};
+                QObject::tr("无,降温,排空比色池,排空计量管,开采样,水样润洗,进***,消解,空白检测,比色检测,流路清洗,显色,静置,鼓泡,试剂替换,空闲")}};
     QList<ColumnInfo> ci ;
     int lines = sizeof(aa)/sizeof(struct ColumnInfo);
     for(int i=0;i<lines;i++){
@@ -307,6 +306,39 @@ void QFMain::initQuery()
     }
 
     {
+        int column1 = 13;
+        QString label = tr("核查数据");
+        QString table1 = "QC";
+        QString items1 = "A1,A2,A3,A4,A5,A6,A7,A8,A9,B1,B2,B3,B4";
+        QString name1[] = {
+            tr("时间"),
+            tr("类别"),
+            tr("浓度(mg/L)"),
+            tr("吸光度"),
+            tr("参比1"),
+            tr("吸收1"),
+            tr("参比2"),
+            tr("吸收2"),
+            tr("温度"),
+            tr("数据标识"),
+            tr("指标1"),
+            tr("指标2"),
+            tr("指标3")};
+        //   int width1[] = {120,100,70,65,65,65,68,120};
+        int width1[] = {130,100,68,85,85,85,85,55,110,55,85,55,110,55};
+        queryQC =  new QueryData(column1);
+        for(int i=0;i<column1;i++){
+            queryQC->setColumnWidth(i,width1[i]);
+            queryQC->setHeaderName(i,name1[i]);
+        }
+        queryQC->setLabel(label);
+        queryQC->setSqlString(table1,items1);
+        queryQC->UpdateModel();
+        queryQC->initFirstPageQuery();
+        tabwidget->addTab(queryQC, tr("核查数据"));
+    }
+
+    {
         int column1 = 3;
         QString label = tr("报警记录查询");
         QString table1 = "Error";
@@ -330,15 +362,16 @@ void QFMain::initQuery()
     }
 
     {
-        int column1 = 2;
+        int column1 = 3;
         QString label = tr("日志记录查询");
         QString table1 = "Log";
-        QString items1 = "A1,A2";
+        QString items1 = "A1,A2,A3";
         QString name1[] = {
             tr("时间"),
+            tr("类别"),
             tr("信息")
         };
-        int width1[] = {120,550};
+        int width1[] = {120,120,550};
         queryLog =  new QueryData(column1);
         for(int i=0;i<column1;i++){
             queryLog->setColumnWidth(i,width1[i]);
@@ -433,12 +466,9 @@ void QFMain::updateStatus()
         lightVoltage->WaterLevel3->setText(QString("%1").arg(re.lightVoltage3()));
         lightVoltage->RefWaterLevel1->setText(QString("%1").arg(re.refLightSignal()));
         lightVoltage->RefWaterLevel2->setText(QString("%1").arg(re.measureSignal()));
-    }
 
-    ui->Recv->setText(recvComData);
-    if (!errorMessage.isEmpty()) {
-        ui->warning->setText(errorMessage);
-        errorMessage.clear();
+        ui->Recv->setText(re.data());
+        ui->warning->setText(getLastErrorMsg());
     }
 
     const QString style1 = "image: url(:/LedGreen.ico);";
@@ -458,6 +488,10 @@ void QFMain::updateStatus()
         ui->led6->setStyleSheet(sd.valve6()?style1:style2);
         ui->led7->setStyleSheet(sd.valve7()?style1:style2);
         ui->led8->setStyleSheet(sd.valve8()?style1:style2);
+
+        QString explainString = sd.translateExplainCode();
+        if (!explainString.isEmpty())
+            ui->CurrentTask->setText(tr("当前流程：") + explainString);
     }
 
     DatabaseProfile profile;
@@ -539,36 +573,36 @@ void QFMain::saveSettings()
     DatabaseProfile profile;
     if (profile.beginSection("settings"))
     {
-        profile.setValue("Loop0",setui->Loop0->value());
-        profile.setValue("Loop1",setui->Loop1->value());
-        profile.setValue("Loop2",setui->Loop2->value());
-        profile.setValue("Loop3",setui->Loop3->value());
-        profile.setValue("Time0",setui->Time0->value());
+        profile.setValue("Loop0",setui->Loop0->value(),setui->label_18->text());
+        profile.setValue("Loop1",setui->Loop1->value(),setui->label_19->text());
+        profile.setValue("Loop2",setui->Loop2->value(),setui->label_20->text());
+        profile.setValue("Loop3",setui->Loop3->value(),setui->label_21->text());
+        profile.setValue("Time0",setui->Time0->value(),setui->label_82->text());
 
-        profile.setValue("Time1",setui->Time1->value());
-        profile.setValue("Time2",setui->Time2->value());
-        profile.setValue("Time3",setui->Time3->value());
-        profile.setValue("Time4",setui->Time4->value());
-        profile.setValue("Time5",setui->Time5->value());
+        profile.setValue("Time1",setui->Time1->value(),setui->label_22->text());
+        profile.setValue("Time2",setui->Time2->value(),setui->label_123->text());
+        profile.setValue("Time3",setui->Time3->value(),setui->label_17->text());
+        profile.setValue("Time4",setui->Time4->value(),setui->label_161->text());
+        profile.setValue("Time5",setui->Time5->value(),setui->label_26->text());
 
-        profile.setValue("Time6",setui->Time6->value());
-        profile.setValue("Time7",setui->Time7->value());
-        profile.setValue("Time8",setui->Time8->value());
-        profile.setValue("Temp0",setui->Temp0->value());
-        profile.setValue("Temp1",setui->Temp1->value());
+        profile.setValue("Time6",setui->Time6->value(),setui->label_23->text());
+        profile.setValue("Time7",setui->Time7->value(),setui->label_24->text());
+        profile.setValue("Time8",setui->Time8->value(),setui->label_25->text());
+        profile.setValue("Temp0",setui->Temp0->value(),setui->label_157->text());
+        profile.setValue("Temp1",setui->Temp1->value(),setui->label_159->text());
 
-        profile.setValue("AlarmLineL",setui->AlarmLineL->value());
-        profile.setValue("AlarmLineH",setui->AlarmLineH->value());
-        profile.setValue("RangeSwitch",setui->RangeSwitch->currentIndex());
-        profile.setValue("_4mA",setui->_4mA->value());
-        profile.setValue("_20mA",setui->_20mA->value());
+        profile.setValue("AlarmLineL",setui->AlarmLineL->value(),setui->label_13->text());
+        profile.setValue("AlarmLineH",setui->AlarmLineH->value(),setui->label_12->text());
+        profile.setValue("RangeSwitch",setui->RangeSwitch->currentIndex(),setui->label_3->text());
+        profile.setValue("_4mA",setui->_4mA->value(),setui->label_42->text());
+        profile.setValue("_20mA",setui->_20mA->value(),setui->label_43->text());
 
-        profile.setValue("UserK",setui->UserK->value());
-        profile.setValue("UserB",setui->UserB->value());
-        profile.setValue("TurbidityOffset",setui->TurbidityOffset->value());
-        profile.setValue("TempOffset",setui->TempOffset->value());
-        profile.setValue("DeviceTempOffset",setui->DeviceTempOffset->value());
-        profile.setValue("BlankErrorThreshold",setui->BlankErrorThreshold->value());
+        profile.setValue("UserK",setui->UserK->value(),setui->label_8->text());
+        profile.setValue("UserB",setui->UserB->value(),setui->label_7->text());
+        profile.setValue("TurbidityOffset",setui->TurbidityOffset->value(),setui->label_6->text());
+        profile.setValue("TempOffset",setui->TempOffset->value(),setui->label->text());
+        profile.setValue("DeviceTempOffset",setui->DeviceTempOffset->value(),setui->label_4->text());
+        profile.setValue("BlankErrorThreshold",setui->BlankErrorThreshold->value(),setui->label_5->text());
 
         profile.setValue("SmoothOffset",setui->SmoothOffset->value());
     }
@@ -673,6 +707,8 @@ void QFMain::SampleMeasure()
 
     if (ret != 0)
         QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
+    else
+        addLogger(tr("水样测试"), LoggerTypeOperations);
 }
 
 void QFMain::ZeroMeasure()
@@ -681,6 +717,8 @@ void QFMain::ZeroMeasure()
 
     if (ret != 0)
         QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
+    else
+        addLogger(tr("零点核查"), LoggerTypeOperations);
 }
 
 void QFMain::StandardMeasure()
@@ -689,6 +727,8 @@ void QFMain::StandardMeasure()
 
     if (ret != 0)
         QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
+    else
+        addLogger(tr("标样核查"), LoggerTypeOperations);
 }
 
 void QFMain::QCMeasure()
@@ -697,6 +737,8 @@ void QFMain::QCMeasure()
 
     if (ret != 0)
         QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
+    else
+        addLogger(tr("水样加标"), LoggerTypeOperations);
 }
 
 void QFMain::Drain()
@@ -705,6 +747,8 @@ void QFMain::Drain()
 
     if (ret != 0)
         QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
+    else
+        addLogger(tr("手动排空"), LoggerTypeMaintiance);
 }
 
 void QFMain::Stop()
@@ -715,6 +759,9 @@ void QFMain::Stop()
                     == QMessageBox::No)
         return;
 
+    addLogger(tr("手动停止"), LoggerTypeMaintiance);
+
+    clearLastErrorMsg();
     ui->warning->clear();
     element->stopTasks();
 }
@@ -725,6 +772,8 @@ void QFMain::Clean()
 
     if (ret != 0)
         QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
+    else
+        addLogger(tr("手动清洗"), LoggerTypeMaintiance);
 }
 
 void QFMain::OneStepExec()
@@ -771,6 +820,8 @@ void QFMain::FuncExec()
 
     if (ret != 0)
         QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
+    else
+        addLogger(tr("独立进样"), LoggerTypeMaintiance);
 }
 
 void QFMain::InitLoad()
@@ -779,6 +830,8 @@ void QFMain::InitLoad()
 
     if (ret != 0)
         QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
+    else
+        addLogger(tr("初始进样"), LoggerTypeMaintiance);
 }
 
 void QFMain::SaveLigthVoltage()
@@ -801,4 +854,6 @@ void QFMain::SaveLigthVoltage()
 
     if (ret != 0)
         QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
+    else
+        addLogger(tr("光源调节"), LoggerTypeMaintiance);
 }

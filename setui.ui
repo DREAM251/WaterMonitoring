@@ -627,7 +627,7 @@
             <enum>QFrame::NoFrame</enum>
            </property>
            <property name="text">
-            <string>加热温度：                </string>
+            <string>加热温度：</string>
            </property>
           </widget>
          </item>

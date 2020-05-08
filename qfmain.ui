@@ -118,7 +118,7 @@ QRadioButton::indicator{min-width:24px;min-height:24px;}</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_5">
        <item row="3" column="0">
-        <widget class="QLabel" name="label_3">
+        <widget class="QLabel" name="CurrentTask">
          <property name="text">
           <string>当前流程： 进试剂</string>
          </property>

@@ -5,8 +5,6 @@
 #include "common.h"
 #include "profile.h"
 
-extern QString recvComData;
-
 
 #define PACKET_MIN_LENGTH  7
 #define PACKET_HEAD_LENGTH 4
@@ -30,6 +28,50 @@ QByteArray Sender::data()
     QByteArray da = "#" + QString("00%1").arg(index + PACKET_MIN_LENGTH).right(2).toLatin1() + "1" + sent.left(index);
     return da + checkSum(da) + '!';
 }
+
+QString Sender::translateExplainCode()
+{
+    QString str;
+
+    switch (explainCode())
+    {
+    case 1:str = QObject::tr("降温");break;
+    case 2:str = QObject::tr("排空比色池");break;
+    case 3:str = QObject::tr("排空计量管");break;
+    case 4:str = QObject::tr("开采样");break;
+    case 5:str = QObject::tr("水样润洗");break;
+    case 6:str = QObject::tr("进") + getTCValve1Name(TCValve1());break;
+    case 7:str = QObject::tr("消解");break;
+    case 8:str = QObject::tr("空白检测");break;
+    case 9:str = QObject::tr("比色检测");break;
+    case 10:str = QObject::tr("流路清洗");break;
+    case 11:str = QObject::tr("显色");break;
+    case 12:str = QObject::tr("静置");break;
+    case 13:str = QObject::tr("鼓泡");break;
+    case 14:str = QObject::tr("试剂替换");break;
+    case 15:str = QObject::tr("空闲");break;
+    }
+    return str;
+}
+
+QString Sender::getTCValve1Name(int i)
+{
+    switch (i)
+    {
+    case 1:return QObject::tr("tv1");break;
+    case 2:return QObject::tr("tv2");break;
+    case 3:return QObject::tr("tv3");break;
+    case 4:return QObject::tr("tv4");break;
+    case 5:return QObject::tr("tv5");break;
+    case 6:return QObject::tr("tv6");break;
+    case 7:return QObject::tr("tv7");break;
+    case 8:return QObject::tr("tv8");break;
+    case 9:return QObject::tr("tv9");break;
+    case 10:return QObject::tr("tv10");break;
+    }
+    return "";
+}
+
 
 int Sender::step(){return sent.left(4).toInt();}
 int Sender::stepTime(){return sent.mid(4, 4).toInt();}
@@ -222,6 +264,7 @@ QByteArray Receiver::data()
     return recv;
 }
 
+
 int Receiver::step()          {return recv.mid(PACKET_HEAD_LENGTH, 4).toInt();}
 int Receiver::stepTime()      {return recv.mid(PACKET_HEAD_LENGTH + 4, 4).toInt();}
 int Receiver::extControl1()   {return recv.mid(PACKET_HEAD_LENGTH + 8, 1).toInt();}
@@ -389,7 +432,6 @@ void IProtocol::onReadyRead()
             if (!isIdle())
                 mcuLogger()->info("recv:" + recvTemp);
 
-            recvComData = dataReceiver.data();
             recvTemp.clear();
         }
         else if (ret > 0)

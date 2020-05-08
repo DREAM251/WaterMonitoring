@@ -75,6 +75,7 @@ private:
 
     QueryData *queryData;
     QueryData *queryCalib;
+    QueryData *queryQC;
     QueryData *queryError;
     QueryData *queryLog;
     CalibFrameUser *usercalib;

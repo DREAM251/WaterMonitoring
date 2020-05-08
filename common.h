@@ -15,6 +15,14 @@
 #include <QLayout>
 #include <QSqlDatabase>
 
+enum LoggerType
+{
+    LoggerTypeOthers,
+    LoggerTypeRunning,
+    LoggerTypeMaintiance,
+    LoggerTypeOperations,
+    LoggerTypeSettingsChanged
+};
 
 QStringList loadCommandFileLines(const QString &filePath);
 bool saveCommandFile(const QStringList &lines, const QString &filePath);
@@ -36,8 +44,10 @@ float setPrecision(float v, int n, QString *pshow=NULL);
 // 提取数据库中某一条数据，index仿python用法，-1代码最后一条数据
 bool readSqlValues(QSqlDatabase *db, const QString &table, QStringList &value, int index = -1);
 void addMeasureData(QList<QVariant> &data);
-void addErrorMsg(QString strMsg, int level);
-void addLogger(QString strMsg);
+void addErrorMsg(const QString &strMsg, int level);
+QString getLastErrorMsg();
+void clearLastErrorMsg();
+void addLogger(QString strMsg, LoggerType type = LoggerTypeOthers);
 bool getUserDataBase(QSqlDatabase &db);
 
 class DriverSelectionDialog : protected QDialog

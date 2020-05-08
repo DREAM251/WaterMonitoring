@@ -25,7 +25,7 @@
 #endif
 
 
-extern QString errorMessage;
+static QString errorMessage;
 
 QString Int2Hex(int a , int b)
 {
@@ -337,7 +337,18 @@ void addMeasureData(QList<QVariant> &data)
     sqlquery.clear();
 }
 
-void addErrorMsg(QString strMsg, int level)
+
+QString getLastErrorMsg()
+{
+    return errorMessage;
+}
+
+void clearLastErrorMsg()
+{
+    errorMessage.clear();
+}
+
+void addErrorMsg(const QString &strMsg, int level)
 {
     if (level) {errorMessage = strMsg;}
 
@@ -356,7 +367,7 @@ void addErrorMsg(QString strMsg, int level)
     sqlquery.clear();
 }
 
-void addLogger(QString strMsg)
+void addLogger(QString strMsg, LoggerType type)
 {
     QSqlDatabase sqlitedb;
     if (!getUserDataBase(sqlitedb))
@@ -364,11 +375,21 @@ void addLogger(QString strMsg)
 
     QString TimeID = QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
     QString Time = QDateTime::currentDateTime().toString("yy-MM-dd hh:mm");
+    QString mesgType;
+    switch (type)
+    {
+    case LoggerTypeRunning: mesgType = QObject::tr("运行日志");break;
+    case LoggerTypeMaintiance: mesgType = QObject::tr("维护");break;
+    case LoggerTypeOperations: mesgType = QObject::tr("校准信息");break;
+    case LoggerTypeSettingsChanged: mesgType = QObject::tr("参数变更");break;
+    default:
+         mesgType = QObject::tr("其他");break;
+    }
 
     QSqlQuery sqlquery(sqlitedb);
     if (!sqlquery.exec(QString("INSERT INTO Log(ID,TimeID,A1,A2,A3,A4,A5,A6,A7,A8,A9,B1,B2,B3,B4,B5,B6,B7,B8,B9)"
-                          "VALUES(NULL,'%1','%2','%3','','','','','','','','','','','','','','','','');")
-                  .arg(TimeID).arg(Time).arg(strMsg)))
+                          "VALUES(NULL,'%1','%2','%3','%4','','','','','','','','','','','','','','','');")
+                  .arg(TimeID).arg(Time).arg(mesgType).arg(strMsg)))
         qDebug() << sqlitedb.lastError();
     sqlquery.clear();
 }

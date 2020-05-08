@@ -120,5 +120,10 @@ void initDataBase()
     query.exec("CREATE TABLE if not exists QC(ID INTEGER PRIMARY KEY AUTOINCREMENT,TimeID TEXT,"
                "A1 TEXT,A2 TEXT,A3 TEXT,A4 TEXT,A5 TEXT,A6 TEXT,A7 TEXT,A8 TEXT,A9 TEXT,"
                "B1 TEXT,B2 TEXT,B3 TEXT,B4 TEXT,B5 TEXT,B6 TEXT,B7 TEXT,B8 TEXT,B9 TEXT);");
+
+    /*query.exec("CREATE TRIGGER if not exists deleteUntil1w after insert on log when (select count(*) from log) > 10000 "
+               "begin "
+               "delete from log where log.id in (select log.id from log limit 1); "
+               "end");*/
     query.clear();
 }

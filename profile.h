@@ -10,7 +10,7 @@ public:
     DatabaseProfile(const QString &name = "config.db");
 
     bool beginSection(const QString &section);
-    bool setValue(const QString &key, const QVariant &value);
+    bool setValue(const QString &key, const QVariant &value, const QString &keyName = QString());
     bool setValue(const QString &section, const QString &key, const QVariant &value);
     QVariant value(const QString &key, const QVariant &defaultValue = QVariant());
 
