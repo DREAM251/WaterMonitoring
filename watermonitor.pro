@@ -17,7 +17,7 @@ TARGET = cmplat
 TEMPLATE = app
 
 win32 {
-DEFINES += NO_CHECK_STEP
+DEFINES += NO_STEP_CHECK
 }
 
 

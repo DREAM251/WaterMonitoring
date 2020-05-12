@@ -40,8 +40,10 @@ enum ErrorFlag
     EF_BlankError
 };
 
-class ITask
+class ITask : public QObject
 {
+    Q_OBJECT
+
 public:
     struct CorrelationArguments
     {
@@ -50,13 +52,13 @@ public:
         int loopTab[20];
     };
 
-    ITask();
+    ITask(QObject *parent = NULL);
     virtual ~ITask(){;}
 
     virtual bool start(IProtocol *protocol);
     virtual void stop();
-    virtual void timeEvent();
-    virtual bool recvEvent();
+    virtual void oneCmdFinishEvent();
+    virtual void recvEvent();
     inline bool isWorking(){return workFlag;}
     inline ErrorFlag isError(){return errorFlag;}
 
@@ -64,6 +66,13 @@ public:
     virtual void saveParameters();
     virtual QStringList loadCommands(){return QStringList();}
     virtual void fixCommands(const QStringList &sources);
+
+    virtual void sendNextCommand();
+
+public slots:
+    void DataReceived();
+    void CommandEnd();
+    void Timeout();
 
 protected:
     IProtocol *protocol; // shared
@@ -108,7 +117,7 @@ public:
     virtual bool collectColorValues();
 
     virtual void dataProcess();
-    virtual bool recvEvent();
+    void recvEvent();
     virtual void loadParameters();
     virtual void saveParameters();
     virtual QStringList loadCommands();
@@ -167,7 +176,6 @@ class DebugTask : public ITask
 public:
     virtual QStringList loadCommands();
     void loadParameters();
-    bool start(IProtocol *sp);
 };
 
 class InitialLoadTask : public ITask
@@ -186,11 +194,11 @@ public:
 class DeviceConfigTask : public ITask
 {
 public:
-    virtual bool start(IProtocol *protocol);
-    void stop();
     void loadParameters();
-    void timeEvent();
-    bool recvEvent();
+    void sendNextCommand();
+
+    void oneCmdFinishEvent();
+    void recvEvent();
 
 protected:
     ConfigSender sender;

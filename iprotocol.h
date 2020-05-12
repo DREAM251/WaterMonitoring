@@ -193,7 +193,7 @@ public:
     int getCounts() {return counts;}
 
 Q_SIGNALS:
-    void timing();
+    void timing(bool);
 
 protected:
     void timerEvent(QTimerEvent *event);
@@ -226,9 +226,14 @@ public:
     Sender getSender(){return dataSender;}
     Receiver getReceiver(){return dataReceiver;}
 
+Q_SIGNALS:
+    void DataReceived();
+    void ComFinished();
+    void ComTimeout();
+
 public Q_SLOTS:
     void onReadyRead();
-    void onCounterTimeout();
+    void onCounterTimeout(bool islast);
 
 protected:
     bool timeoutFlag;

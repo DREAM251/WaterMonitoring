@@ -328,7 +328,7 @@ IProtocol::IProtocol(const QString &portParamter, QObject *parent) :
 
     connect(timer, SIGNAL(timeout()), this, SLOT(onReadyRead()));
     connect(port, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
-    connect(counter, SIGNAL(timing()), this, SLOT(onCounterTimeout()));
+    connect(counter, SIGNAL(timing(bool)), this, SLOT(onCounterTimeout(bool)));
 }
 
 IProtocol::~IProtocol()
@@ -392,7 +392,6 @@ void IProtocol::sendConfig(const ConfigSender &sender)
 void IProtocol::skipCurrentStep()
 {
     counter->stop();
-    dataSender.clear();
 }
 
 void IProtocol::onReadyRead()
@@ -410,7 +409,10 @@ void IProtocol::onReadyRead()
         }
         else if (ret == 0)
         {
-            dataReceiver = tempr;
+            // 只记录工作状态下接收的数据
+            if (!isIdle())
+                mcuLogger()->info("recv:" + recvTemp);
+            recvTemp.clear();
 
             int step = 0;
             switch (sendType)
@@ -419,28 +421,22 @@ void IProtocol::onReadyRead()
             case 1: step = configSender.step(); break;
             }
 
-#ifdef NO_CHECK_STEP
-            step = dataReceiver.step();
+#ifdef NO_STEP_CHECK
+            step = tempr.step();
 #endif
-            if (dataReceiver.step() == step) {
+            if (tempr.step() == step) {
+                dataReceiver = tempr;
                 newDataFlag = true;
                 timeoutFlag = false;
                 counter->unlock();
+
+                emit DataReceived();
             }
-
-            // 只记录工作状态下接收的数据
-            if (!isIdle())
-                mcuLogger()->info("recv:" + recvTemp);
-
-            recvTemp.clear();
-        }
-        else if (ret > 0)
-        {
         }
     }
 }
 
-void IProtocol::onCounterTimeout()
+void IProtocol::onCounterTimeout(bool islast)
 {
     if (counter->locked())
     {
@@ -451,19 +447,26 @@ void IProtocol::onCounterTimeout()
         if (times >= 5) {
             timeoutFlag = true;
             counter->stop();
+
+            emit ComTimeout();
         }
         else if (mod == 0)
         {
             switch (sendType)
             {
-            case 0: port->write(dataSender.data()); break;
-            case 1: port->write(configSender.data()); break;
+            case 0:
+                port->write(dataSender.data());
+                mcuLogger()->info("resd:" + dataSender.data());
+                break;
+            case 1: port->write(configSender.data());
+                mcuLogger()->info("resd:" + configSender.data());
+                break;
             }
-            mcuLogger()->info("resd:" + dataSender.data());
         }
     }
+    else if (islast)
+        emit ComFinished();
 }
-
 
 
 ProtocolCounter::ProtocolCounter(QObject *parent) :
@@ -497,8 +500,10 @@ void ProtocolCounter::timerEvent(QTimerEvent *event)
         counts++;
         if (counts >= max) {
             stop();
+            emit timing(true);
+            return;
         }
     }
-    emit timing();
+    emit timing(false);
 }
 

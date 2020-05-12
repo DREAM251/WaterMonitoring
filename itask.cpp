@@ -5,11 +5,12 @@
 #include <QFile>
 #include <math.h>
 
-ITask::ITask() :
+ITask::ITask(QObject *parent) :
+    QObject(parent),
     protocol(NULL),
     cmdIndex(0),
-    workFlag(false),
-    errorFlag(EF_NoError)
+    errorFlag(EF_NoError),
+    workFlag(false)
 {
     for (int i = 0; i < 20; i++)
     {
@@ -19,19 +20,24 @@ ITask::ITask() :
     }
 }
 
+
 bool ITask::start(IProtocol *sp)
 {
     if (sp)
     {
         protocol = sp;
         protocol->reset();
+        connect(protocol, SIGNAL(DataReceived()), this, SLOT(DataReceived()));
+        connect(protocol, SIGNAL(ComFinished()), this, SLOT(CommandEnd()));
+        connect(protocol, SIGNAL(ComTimeout()), this, SLOT(Timeout()));
         cmdIndex = 0;
-        workFlag = true;
         errorFlag = EF_NoError;
         cmd.clear();
+        workFlag = true;
 
         loadParameters();
         fixCommands(loadCommands());
+        sendNextCommand();
         return true;
     }
     else
@@ -40,105 +46,100 @@ bool ITask::start(IProtocol *sp)
 
 void ITask::stop()
 {
-    if (protocol)
+    if (protocol) {
+        protocol->disconnect(SIGNAL(DataReceived()));
+        protocol->disconnect(SIGNAL(ComFinished()));
+        protocol->disconnect(SIGNAL(ComTimeout()));
         protocol->reset();
-    protocol = NULL;
+    }
     workFlag = false;
+    protocol = NULL;
 }
 
-void ITask::timeEvent()
+void ITask::oneCmdFinishEvent()
 {
-    if (!protocol || !workFlag)
-        return;
-
-    // send next command
-    if (protocol->isTimeOut())
+    // 液位抽取是否成功判定
+    if (protocol->getSender().waterLevelReachStep() ||
+            protocol->getSender().waterLevelReachStep2() ||
+            protocol->getSender().waterLevelReachStep3())
     {
-        stop();
-    }
-    else if (protocol->isIdle())
-    {
-        if (cmdIndex < commandList.count())
+        if (protocol->getSender().judgeStep() > protocol->getReceiver().pumpStatus())
         {
-            // 液位抽取是否成功判定
-            if (protocol->getSender().waterLevelReachStep() ||
-                    protocol->getSender().waterLevelReachStep2() ||
-                    protocol->getSender().waterLevelReachStep3())
-            {
-                if (protocol->getSender().judgeStep() > protocol->getReceiver().pumpStatus())
-                {
-                    addErrorMsg(QObject::tr("试剂抽取失败，请检查"), 1);
-                    errorFlag = EF_SamplingError;
-                    stop();
-                    return;
-                }
-            }
-
-            // 加热异常判定
-            if (protocol->getSender().heatReachStep())
-            {
-                if (protocol->getReceiver().heatTemp() + 3 < protocol->getSender().heatTemp()) {
-                    addErrorMsg(QObject::tr("加热异常，请检查"), 1);
-                    errorFlag = EF_HeatError;
-                    stop();
-                    return;
-                }
-            }
-
-            // 降温异常判定
-            if (protocol->getSender().coolReachStep())
-            {
-                if (protocol->getReceiver().heatTemp() - 3 > protocol->getSender().heatTemp()) {
-                    addErrorMsg(QObject::tr("降温异常，请检查"), 1);
-                    errorFlag = EF_HeatError;
-                    stop();
-                    return;
-                }
-            }
-
-            cmd = commandList[cmdIndex++];
-            protocol->sendData(cmd);
-        }
-        else
+            addErrorMsg(QObject::tr("试剂抽取失败，请检查"), 1);
+            errorFlag = EF_SamplingError;
             stop();
+            return;
+        }
     }
+
+    // 加热异常判定
+    if (protocol->getSender().heatReachStep())
+    {
+        if (protocol->getReceiver().heatTemp() + 3 < protocol->getSender().heatTemp()) {
+            addErrorMsg(QObject::tr("加热异常，请检查"), 1);
+            errorFlag = EF_HeatError;
+            stop();
+            return;
+        }
+    }
+
+    // 降温异常判定
+    if (protocol->getSender().coolReachStep())
+    {
+        if (protocol->getReceiver().heatTemp() - 3 > protocol->getSender().heatTemp()) {
+            addErrorMsg(QObject::tr("降温异常，请检查"), 1);
+            errorFlag = EF_HeatError;
+            stop();
+            return;
+        }
+    }
+
+    sendNextCommand();
 }
 
-bool ITask::recvEvent()
+
+void ITask::sendNextCommand()
 {
-    bool newData = protocol && protocol->recvNewData();
-    if (newData)
-    {        
-        // 加热到达判定
-        if (protocol->getSender().heatReachStep())
-        {
-            if (protocol->getReceiver().heatTemp() >= protocol->getSender().heatTemp() - 2)
-                protocol->skipCurrentStep();
-        }
-
-        // 降温到达判定
-        if (protocol->getSender().coolReachStep())
-        {
-            if (protocol->getReceiver().heatTemp() <= protocol->getSender().heatTemp() + 2)
-                protocol->skipCurrentStep();
-        }
-
-
-        // 液位到达判定
-        if (protocol->getSender().waterLevelReachStep() ||
-                protocol->getSender().waterLevelReachStep2() ||
-                protocol->getSender().waterLevelReachStep3())
-        {
-            if (protocol->getSender().judgeStep() <= protocol->getReceiver().pumpStatus())
-                protocol->skipCurrentStep();
-        }
-
-        // 定量结束判定
-        if (protocol->getSender().waterLevel() > 0 &&
-                protocol->getReceiver().waterLevel() < protocol->getSender().waterLevel())
-            protocol->skipCurrentStep();
+    protocol->skipCurrentStep();
+    if (cmdIndex < commandList.count())
+    {
+        cmd = commandList[cmdIndex++];
+        protocol->sendData(cmd);
     }
-    return newData;
+    else
+        stop();
+}
+
+void ITask::recvEvent()
+{   
+    // 加热到达判定
+    if (protocol->getSender().heatReachStep())
+    {
+        if (protocol->getReceiver().heatTemp() >= protocol->getSender().heatTemp() - 2)
+            sendNextCommand();
+    }
+
+    // 降温到达判定
+    if (protocol->getSender().coolReachStep())
+    {
+        if (protocol->getReceiver().heatTemp() <= protocol->getSender().heatTemp() + 2)
+            sendNextCommand();
+    }
+
+
+    // 液位到达判定
+    if (protocol->getSender().waterLevelReachStep() ||
+            protocol->getSender().waterLevelReachStep2() ||
+            protocol->getSender().waterLevelReachStep3())
+    {
+        if (protocol->getSender().judgeStep() <= protocol->getReceiver().pumpStatus())
+            sendNextCommand();
+    }
+
+    // 定量结束判定
+    if (protocol->getSender().waterLevel() > 0 &&
+            protocol->getReceiver().waterLevel() < protocol->getSender().waterLevel())
+        sendNextCommand();
 }
 
 void ITask::loadParameters()
@@ -159,7 +160,6 @@ void ITask::saveParameters()
 {
 
 }
-
 
 // command correlation
 void ITask::fixCommands(const QStringList &sources)
@@ -225,6 +225,21 @@ void ITask::fixCommands(const QStringList &sources)
     }
 }
 
+void ITask::DataReceived()
+{
+    recvEvent();
+}
+
+void ITask::CommandEnd()
+{
+    oneCmdFinishEvent();
+}
+
+void ITask::Timeout()
+{
+    stop();
+}
+
 
 MeasureTask::MeasureTask() :
     blankValue(0),
@@ -235,14 +250,6 @@ MeasureTask::MeasureTask() :
 
 bool MeasureTask::start(IProtocol *protocol)
 {
-//    blankValue =(11),
-//    colorValue=(22),
-//  blankValueC2=(3),
-//  colorValueC2=(45);
-//    args.lineark = (2),
-//      args.linearb = (1);
-//    qDebug() << "12";
-//    dataProcess();
     if (ITask::start(protocol))
     {
         clearCollectedValues();
@@ -323,44 +330,42 @@ void MeasureTask::dataProcess()
     saveParameters();
 }
 
-bool MeasureTask::recvEvent()
+void MeasureTask::recvEvent()
 {
-    bool newData = ITask::recvEvent();
-    if (newData)
+    ITask::recvEvent();
+    // 空白检测
+    if (protocol->getSender().blankStep())
     {
-        // 空白检测
-        if (protocol->getSender().blankStep())
-        {
-            bool finished = collectBlankValues();
-            if (finished) {
-                protocol->skipCurrentStep();
-                if (blankValue < args.blankErrorValue) {
-                    addErrorMsg(QObject::tr("空白值为%1，为异常值，请检查").arg(blankValue), 1);
-                    errorFlag = EF_BlankError;
-                    stop();
-                    return newData;
-                } else if (colorSampleTimes > 0 && blankSampleTimes > 0)  {
-                    dataProcess();
-                    clearCollectedValues();
-                }
+        bool finished = collectBlankValues();
+        if (finished) {
+            if (blankValue < args.blankErrorValue) {
+                addErrorMsg(QObject::tr("空白值为%1，为异常值，请检查").arg(blankValue), 1);
+                errorFlag = EF_BlankError;
+                stop();
+                return;
+            } else if (colorSampleTimes > 0 && blankSampleTimes > 0)  {
+                dataProcess();
+                clearCollectedValues();
             }
-        }
 
-        // 显色检测
-        else if (protocol->getSender().colorStep())
-        {
-            bool finished = collectColorValues();
-            if (finished) {
-                protocol->skipCurrentStep();
-                // 计算
-                if (colorSampleTimes > 0 && blankSampleTimes > 0)  {
-                    dataProcess();
-                    clearCollectedValues();
-                }
-            }
+            sendNextCommand();
         }
     }
-    return newData;
+
+    // 显色检测
+    else if (protocol->getSender().colorStep())
+    {
+        bool finished = collectColorValues();
+        if (finished) {
+            // 计算
+            if (colorSampleTimes > 0 && blankSampleTimes > 0)  {
+                dataProcess();
+                clearCollectedValues();
+            }
+
+            sendNextCommand();
+        }
+    }
 }
 
 void MeasureTask::loadParameters()
@@ -489,49 +494,6 @@ void DebugTask::loadParameters()
     }
 }
 
-bool DebugTask::start(IProtocol *sp)
-{
-    if (sp)
-    {
-        protocol = sp;
-        protocol->reset();
-        cmdIndex = 0;
-        workFlag = true;
-        errorFlag = EF_NoError;
-        cmd.clear();
-
-        commandList = loadCommands();
-        loadParameters();
-        return true;
-    }
-    else
-        return false;
-}
-
-bool DeviceConfigTask::start(IProtocol *sp)
-{
-    if (sp)
-    {
-        protocol = sp;
-        protocol->reset();
-        cmdIndex = 1;
-        workFlag = true;
-        errorFlag = EF_NoError;
-        loadParameters();
-        return true;
-    }
-    else
-        return false;
-}
-
-void DeviceConfigTask::stop()
-{
-    if (protocol)
-        protocol->reset();
-    protocol = NULL;
-    workFlag = false;
-}
-
 void DeviceConfigTask::loadParameters()
 {
     DatabaseProfile profile;
@@ -549,29 +511,18 @@ void DeviceConfigTask::loadParameters()
     }
 }
 
-void DeviceConfigTask::timeEvent()
+void DeviceConfigTask::sendNextCommand()
 {
-    if (!protocol || !workFlag)
-        return;
-
-    // send next command
-    if (protocol->isTimeOut())
-    {
-        stop();
-    }
-    else if (protocol->isIdle())
-    {
-        if (cmdIndex-- > 0)
-        {
-            protocol->sendConfig(sender);
-        }
-        else
-            stop();
-    }
+    protocol->skipCurrentStep();
+    protocol->sendConfig(sender);
 }
 
-bool DeviceConfigTask::recvEvent()
+void DeviceConfigTask::oneCmdFinishEvent()
 {
-    return false;
+    stop();
 }
 
+void DeviceConfigTask::recvEvent()
+{
+    stop();
+}

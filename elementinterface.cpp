@@ -146,13 +146,6 @@ void ElementInterface::TimerEvent()
 {
     counter++;
 
-    if (counter % 5 == 0)
-    {
-        if (currentTask && currentTaskType != TT_Idle){
-            currentTask->recvEvent();
-        }
-    }
-
     if (counter % 10 == 0) {
         MMTimerEvent();
 
@@ -170,9 +163,6 @@ void ElementInterface::TimerEvent()
             }
         }
     }
-
-    if (currentTask)
-        currentTask->timeEvent();
 }
 
 void ElementInterface::externTriggerMeasure()
