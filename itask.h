@@ -5,6 +5,7 @@
 #include <QString>
 #include <QStringList>
 #include <QTimer>
+#include <QDateTime>
 #include <QVariant>
 #include "iprotocol.h"
 #include "profile.h"
@@ -61,6 +62,9 @@ public:
     virtual void recvEvent();
     inline bool isWorking(){return workFlag;}
     inline ErrorFlag isError(){return errorFlag;}
+    inline int getLastProcessTime() {return processSeconds;}
+    int getProcess();
+    inline void setTaskType(TaskType type) { taskType = type;}
 
     virtual void loadParameters();
     virtual void saveParameters();
@@ -83,6 +87,10 @@ protected:
     bool workFlag;
     ErrorFlag errorFlag;
     CorrelationArguments corArgs;
+
+    TaskType taskType;
+    QDateTime startTime;
+    int processSeconds; // 一次完整测量花费的时间
 };
 
 
@@ -175,7 +183,9 @@ class DebugTask : public ITask
 {
 public:
     virtual QStringList loadCommands();
-    void loadParameters();
+
+protected:
+    ConfigSender sender;
 };
 
 class InitialLoadTask : public ITask

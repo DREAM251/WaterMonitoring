@@ -36,7 +36,7 @@ QFMain::QFMain(QWidget *parent) :
     nameOnlineOffline <<  tr("在线测量") <<  tr("离线测量");
 
     DatabaseProfile profile;
-    if (profile.beginSection("measure")) {
+    if (profile.beginSection("measuremode")) {
         int x1 = profile.value("MeasureMethod", 0).toInt();
         if (x1 < 0 || x1 >= nameMeasureMethod.count())
             x1 = 0;
@@ -426,7 +426,7 @@ void QFMain::updateStatus()
     QString s = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
     ui->datetime->setText(s);
 
-    switch (element->getCurrentTask())
+    switch (element->getTaskType())
     {
     case TT_Idle:ui->status->setText(tr("空闲"));break;
     case TT_Measure: ui->status->setText(tr("水样测试"));break;
@@ -446,6 +446,15 @@ void QFMain::updateStatus()
     case TT_Config: ui->status->setText(tr("参数设置"));break;
     default:
         break;
+    }
+
+    ITask *task = element->getTask();
+    if (task)
+    {
+        ui->progressBar->setRange(0, task->getLastProcessTime());
+        ui->progressBar->setValue(task->getProcess());
+    } else {
+        ui->progressBar->setValue(0);
     }
 
     Receiver re = element->getReceiver();
@@ -502,6 +511,7 @@ void QFMain::updateStatus()
     if (profile.beginSection("settings")) {
         ui->temp->setText(profile.value("Temp0").toString() + tr("℃"));
     }
+
 
 }
 
@@ -654,7 +664,7 @@ void QFMain::OnlineOffline()
     button->setText(nameOnlineOffline[value]);
 
     DatabaseProfile profile;
-    if (profile.beginSection("measure"))
+    if (profile.beginSection("measuremode"))
         profile.setValue("OnlineOffline", value);
 }
 
@@ -669,7 +679,7 @@ void QFMain::MeasureMethod()
     button->setText(nameMeasureMethod[value]);
 
     DatabaseProfile profile;
-    if (profile.beginSection("measure"))
+    if (profile.beginSection("measuremode"))
         profile.setValue("MeasureMethod", value);
 }
 
@@ -683,7 +693,7 @@ void QFMain::Range()
     button->setText(nameRange[value]);
 
     DatabaseProfile profile;
-    if (profile.beginSection("measure"))
+    if (profile.beginSection("measuremode"))
         profile.setValue("Range", value);
 }
 
@@ -697,7 +707,7 @@ void QFMain::SamplePipe()
     button->setText(nameSamplePipe[value]);
 
     DatabaseProfile profile;
-    if (profile.beginSection("measure"))
+    if (profile.beginSection("measuremode"))
         profile.setValue("SamplePipe", value);
 }
 
@@ -753,7 +763,7 @@ void QFMain::Drain()
 
 void QFMain::Stop()
 {
-    if (element->getCurrentTask() <= TT_ErrorProc &&
+    if (element->getTaskType() <= TT_ErrorProc &&
             QMessageBox::question(this, tr("提示"), tr("当前正在执行其他任务，是否确定停止？"),
                                      QMessageBox::Yes|QMessageBox::No)
                     == QMessageBox::No)

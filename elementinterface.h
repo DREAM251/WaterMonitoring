@@ -51,7 +51,8 @@ public:
     Receiver getReceiver();
     Sender getSender();
 
-    TaskType getCurrentTask() {return currentTaskType;}
+    TaskType getTaskType() {return currentTaskType;}
+    ITask *getTask() {return currentTask;}
 
     QString translateStartCode(int);
     int startTask(TaskType type);

@@ -10,7 +10,8 @@ ITask::ITask(QObject *parent) :
     protocol(NULL),
     cmdIndex(0),
     errorFlag(EF_NoError),
-    workFlag(false)
+    workFlag(false),
+    processSeconds(0)
 {
     for (int i = 0; i < 20; i++)
     {
@@ -34,6 +35,7 @@ bool ITask::start(IProtocol *sp)
         errorFlag = EF_NoError;
         cmd.clear();
         workFlag = true;
+        startTime = QDateTime::currentDateTime();
 
         loadParameters();
         fixCommands(loadCommands());
@@ -106,8 +108,15 @@ void ITask::sendNextCommand()
         cmd = commandList[cmdIndex++];
         protocol->sendData(cmd);
     }
-    else
+    else {
         stop();
+
+        processSeconds = getProcess();
+        DatabaseProfile profile;
+        if (profile.beginSection("measuremode")) {
+            profile.setValue(QString("taskTime/%1").arg((int)taskType), processSeconds);
+        }
+    }
 }
 
 void ITask::recvEvent()
@@ -142,6 +151,11 @@ void ITask::recvEvent()
         sendNextCommand();
 }
 
+int ITask::getProcess()
+{
+    return startTime.secsTo(QDateTime::currentDateTime());
+}
+
 void ITask::loadParameters()
 {
     DatabaseProfile profile;
@@ -153,6 +167,9 @@ void ITask::loadParameters()
             corArgs.tempTab[i] = profile.value(QString("Temp%1").arg(i)).toInt();
             corArgs.timeTab[i] = profile.value(QString("Time%1").arg(i), 3).toInt();
         }
+    }
+    if (profile.beginSection("measuremode")) {
+        processSeconds = profile.value(QString("taskTime/%1").arg((int)taskType), 0).toInt();
     }
 }
 
@@ -358,7 +375,7 @@ void MeasureTask::recvEvent()
         bool finished = collectColorValues();
         if (finished) {
             // 计算
-            if (colorSampleTimes > 0 && blankSampleTimes > 0)  {
+            if (colorSampleTimes > 0 && blankSampleTimes > 0) {
                 dataProcess();
                 clearCollectedValues();
             }
@@ -438,18 +455,16 @@ QStringList InitialTask::loadCommands()
     return loadCommandFileLines("poweron.txt");
 }
 
-QStringList DebugTask::loadCommands()
-{
-    return loadCommandFileLines("test.txt");
-}
 
 QStringList InitialLoadTask::loadCommands()
 {
     return loadCommandFileLines("initialize.txt");
 }
 
-void DebugTask::loadParameters()
+QStringList DebugTask::loadCommands()
 {
+    QStringList commandList = loadCommandFileLines("test.txt");
+
     if (commandList.count() > 0) {
         Sender sender(commandList[0].toLatin1());
         DatabaseProfile profile;
@@ -492,6 +507,7 @@ void DebugTask::loadParameters()
         }
         commandList[0] = sender.rawData();
     }
+    return commandList;
 }
 
 void DeviceConfigTask::loadParameters()

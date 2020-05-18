@@ -11,8 +11,8 @@ MeasureMode::~MeasureMode()
 {
 }
 
-bool MeasureMode::startAutoMeasure(MeasureMode::AutoMeasureMode mode,
-                                   const QString &parameter)
+bool MeasureMode::startAutoMeasure(MeasureMode::AutoMeasureMode ,
+                                   const QString &)
 {
     return true;
 }
@@ -26,6 +26,44 @@ void MeasureMode::MMTimerEvent()
 {
     if (!isWorking())
         return;
+
+    QDateTime cdt = QDateTime::currentDateTime();
+    DatabaseProfile profile;
+    if (profile.beginSection("measuremode")) {
+        int measureMode = profile.value("MeasureMethod", 0).toInt();
+        // 0 : 周期模式
+        // 1 : 定点模式
+        // 2 : 维护模式
+        switch (measureMode)
+        {
+        case 0: {
+            int offset = profile.value("PointMin").toInt();
+            QDateTime dt = cdt.addSecs(-60 * offset);
+
+            if (dt.time().second() == 0 && dt.time().minute() == 0 &&
+                    profile.value(QString("Point%1").arg(dt.time().hour()), false).toBool())
+            {
+                startTask(TT_Measure);
+            }
+        }break;
+
+        case 1: {
+            int period = profile.value("MeasurePeriod", 60).toInt();
+            QTime stime = profile.value("MeasureStartTime", QTime::currentTime()).toTime();
+
+            int g = cdt.time().secsTo(stime);
+            if (g < 0)
+                g = -g;
+            if (g % (period * 60) == 0)
+            {
+                startTask(TT_Measure);
+            }
+        }break;
+
+        default:
+            break;
+        }
+    }
 }
 
 QDateTime MeasureMode::getNextPoint()
@@ -51,8 +89,10 @@ ElementInterface::ElementInterface(ElementType element, QObject *parent) :
         TaskType tt = (TaskType)(i);
 
         ITask *it = factory.getTask(tt);
-        if (it)
+        if (it) {
+            it->setTaskType(tt);
             flowTable.insert(tt, it);
+        }
     }
     protocol = factory.getProtocol();
 
@@ -156,10 +196,9 @@ void ElementInterface::TimerEvent()
                 startTask(TT_ErrorProc);
             }
             else if (!currentTask->isWorking()) {
+                // ...
                 currentTaskType = TT_Idle;
                 currentTask = NULL;
-
-                // ...
             }
         }
     }

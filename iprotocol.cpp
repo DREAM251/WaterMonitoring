@@ -276,9 +276,9 @@ int Receiver::waterLevel()    {return recv.mid(PACKET_HEAD_LENGTH + 16, 1).toInt
 float Receiver::heatTemp()      {return recv.mid(PACKET_HEAD_LENGTH + 17, 4).toFloat() / 10.0;}
 int Receiver::mcu1Temp()      {return recv.mid(PACKET_HEAD_LENGTH + 21, 2).toInt();}
 int Receiver::mcu2Temp()      {return recv.mid(PACKET_HEAD_LENGTH + 23, 2).toInt();}
-int Receiver::lightVoltage1() {return recv.mid(PACKET_HEAD_LENGTH + 25, 5).toInt();}
+int Receiver::lightVoltage3() {return recv.mid(PACKET_HEAD_LENGTH + 25, 5).toInt();}
 int Receiver::lightVoltage2() {return recv.mid(PACKET_HEAD_LENGTH + 30, 5).toInt();}
-int Receiver::lightVoltage3() {return recv.mid(PACKET_HEAD_LENGTH + 35, 5).toInt();}
+int Receiver::lightVoltage1() {return recv.mid(PACKET_HEAD_LENGTH + 35, 5).toInt();}
 int Receiver::refLightSignal(){return recv.mid(PACKET_HEAD_LENGTH + 45, 5).toInt();}
 int Receiver::measureSignal(){return recv.mid(PACKET_HEAD_LENGTH + 40, 5).toInt();}
 
