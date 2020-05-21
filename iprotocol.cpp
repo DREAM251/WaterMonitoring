@@ -210,13 +210,13 @@ void ConfigSender::setPD2Incred(int i)
 {sent.replace(17, 1, QString("0000%1").arg(i).right(1).toLatin1());}
 
 void ConfigSender::setWaterLevel1Threshold(int i)
-{sent.replace(18, 4, QString("0000%1").arg(i).right(4).toLatin1());}
+{sent.replace(26, 4, QString("0000%1").arg(i).right(4).toLatin1());}
 
 void ConfigSender::setWaterLevel2Threshold(int i)
 {sent.replace(22, 4, QString("0000%1").arg(i).right(4).toLatin1());}
 
 void ConfigSender::setWaterLevel3Threshold(int i)
-{sent.replace(26, 4, QString("0000%1").arg(i).right(4).toLatin1());}
+{sent.replace(18, 4, QString("0000%1").arg(i).right(4).toLatin1());}
 
 int ConfigSender::step()
 {return sent.left(4).toInt();}
