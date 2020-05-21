@@ -182,7 +182,7 @@
             <enum>QAbstractSpinBox::NoButtons</enum>
            </property>
            <property name="minimum">
-            <number>1</number>
+            <number>0</number>
            </property>
            <property name="maximum">
             <number>9999</number>
@@ -205,7 +205,7 @@
             <enum>QAbstractSpinBox::NoButtons</enum>
            </property>
            <property name="minimum">
-            <number>1</number>
+            <number>0</number>
            </property>
            <property name="maximum">
             <number>9999</number>
@@ -256,7 +256,7 @@
             <enum>QAbstractSpinBox::NoButtons</enum>
            </property>
            <property name="minimum">
-            <number>1</number>
+            <number>0</number>
            </property>
            <property name="maximum">
             <number>9999</number>
@@ -279,7 +279,7 @@
             <enum>QAbstractSpinBox::NoButtons</enum>
            </property>
            <property name="minimum">
-            <number>1</number>
+            <number>0</number>
            </property>
            <property name="maximum">
             <number>9999</number>
