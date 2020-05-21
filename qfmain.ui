@@ -132,7 +132,7 @@ QRadioButton::indicator{min-width:24px;min-height:24px;}</string>
          <widget class="QWidget" name="page">
           <layout class="QGridLayout" name="gridLayout_4">
            <item row="1" column="3">
-            <widget class="QLabel" name="label_2">
+            <widget class="QLabel" name="MeasureModeInfo">
              <property name="text">
               <string>标定日期：
 2020/1/1 8：00
@@ -296,18 +296,6 @@ QLabel{color:white;}</string>
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
             <layout class="QGridLayout" name="gridLayout_2">
-             <item row="2" column="1">
-              <widget class="QLabel" name="waterVoltage">
-               <property name="font">
-                <font>
-                 <pointsize>12</pointsize>
-                </font>
-               </property>
-               <property name="text">
-                <string>9999</string>
-               </property>
-              </widget>
-             </item>
              <item row="2" column="2">
               <widget class="QLabel" name="waterVoltage1">
                <property name="font">
@@ -500,18 +488,6 @@ QLabel{color:white;}</string>
                </property>
               </widget>
              </item>
-             <item row="2" column="3">
-              <widget class="QLabel" name="waterVoltage2">
-               <property name="font">
-                <font>
-                 <pointsize>12</pointsize>
-                </font>
-               </property>
-               <property name="text">
-                <string>9999</string>
-               </property>
-              </widget>
-             </item>
              <item row="6" column="2">
               <widget class="QLabel" name="TV2">
                <property name="font">
@@ -548,18 +524,6 @@ QLabel{color:white;}</string>
                </property>
               </widget>
              </item>
-             <item row="4" column="2">
-              <widget class="QLabel" name="temp">
-               <property name="font">
-                <font>
-                 <pointsize>12</pointsize>
-                </font>
-               </property>
-               <property name="text">
-                <string>167℃</string>
-               </property>
-              </widget>
-             </item>
              <item row="1" column="2">
               <widget class="QLabel" name="RealTimeResult">
                <property name="font">
@@ -569,6 +533,42 @@ QLabel{color:white;}</string>
                </property>
                <property name="text">
                 <string>0</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLabel" name="waterVoltage2">
+               <property name="font">
+                <font>
+                 <pointsize>12</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>9999</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="3">
+              <widget class="QLabel" name="waterVoltage">
+               <property name="font">
+                <font>
+                 <pointsize>12</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>9999</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="2">
+              <widget class="QLabel" name="temp">
+               <property name="font">
+                <font>
+                 <pointsize>12</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>167℃</string>
                </property>
               </widget>
              </item>
