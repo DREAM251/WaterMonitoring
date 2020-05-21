@@ -464,12 +464,13 @@ void QFMain::updateStatus()
         ui->waterVoltage->setText(QString("%1").arg(re.lightVoltage1()));
         ui->waterVoltage1->setText(QString("%1").arg(re.lightVoltage2()));
         ui->waterVoltage2->setText(QString("%1").arg(re.lightVoltage3()));
-        ui->waterLevel->setText(QString("%1").arg(re.waterLevel()));
+        ui->waterLevel->setText(QString("%1").arg(re.pumpStatus()));
         ui->RefLightVoltage->setText(QString("%1").arg(re.refLightSignal()));
         ui->measureVoltage->setText(QString("%1").arg(re.measureSignal()));
         ui->setTemp->setText(QString("%1").arg(re.heatTemp()) + tr("℃"));
         ui->deviceTemp->setText(QString("%1").arg(re.mcu1Temp()) + tr("℃"));
 
+        lightVoltage->WaterLevel->setText(QString("%1").arg(re.pumpStatus()));
         lightVoltage->WaterLevel1->setText(QString("%1").arg(re.lightVoltage1()));
         lightVoltage->WaterLevel2->setText(QString("%1").arg(re.lightVoltage2()));
         lightVoltage->WaterLevel3->setText(QString("%1").arg(re.lightVoltage3()));
