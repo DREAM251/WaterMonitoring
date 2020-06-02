@@ -20,7 +20,8 @@ public slots:
     void platformSelect();
     void updateProgram();
     void setTime();
-
+private slots:
+    void on_pushButton_clicked();
 private:
     Ui::SystemWindow *ui;
 };
