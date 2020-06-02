@@ -59,6 +59,7 @@ public:
     void setSQLDatabase(QSqlDatabase *);
     void setColumnIsHidden(int, bool);
     void initFirstPageQuery();
+    void readData(QString &table,QString &filename);
 };
 
 #endif // QUERYDATA_H
