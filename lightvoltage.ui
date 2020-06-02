@@ -60,13 +60,6 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="WaterLevel1">
-        <property name="text">
-         <string>0</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="1">
        <widget class="QLabel" name="WaterLevel2">
         <property name="text">
@@ -95,13 +88,6 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="WaterLevel3">
-        <property name="text">
-         <string>0</string>
-        </property>
-       </widget>
-      </item>
       <item row="3" column="1">
        <widget class="QLabel" name="RefWaterLevel1">
         <property name="text">
@@ -125,6 +111,20 @@
       </item>
       <item row="5" column="1">
        <widget class="QLabel" name="WaterLevel">
+        <property name="text">
+         <string>0</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="WaterLevel3">
+        <property name="text">
+         <string>0</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="WaterLevel1">
         <property name="text">
          <string>0</string>
         </property>
