@@ -3,6 +3,7 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QStandardItemModel>
+#include <QSqlTableModel>
 
 QueryData::QueryData(int ucolumn, int urow, QWidget* parent) :
     QWidget(parent , Qt::FramelessWindowHint) , row(urow)
@@ -330,8 +331,95 @@ void QueryData::slot_PrinterData(QModelIndex index)
     }
 }
 
+void QueryData::readData(QString &table, QString &filename)
+{
+    QSqlTableModel *exportModel = new QSqlTableModel();
+    exportModel->setTable(table);
+    exportModel->select();
+    QStringList strList;//记录数据库中的一行报警数据
+    QString strString;
+
+    QFile csvFile(filename);
+    if (csvFile.open(QIODevice::ReadWrite))
+    {
+        QTextStream stream(&csvFile);
+        stream.setCodec("UTF-8");
+        for(int i=0;i<exportModel->columnCount();i++)
+        {
+            stream << exportModel->headerData(i,Qt::Horizontal,Qt::DisplayRole).toString()<<",";
+            if(i==exportModel->columnCount()-1)
+            {
+                stream << "\n";
+            }
+        }
+        for (int i=0;i<exportModel->rowCount();i++)
+        {
+            for(int j=0;j<exportModel->columnCount();j++)
+            {
+                if(j==1)
+                {
+                    continue;
+                }
+                strList.insert(j,exportModel->data(exportModel->index(i,j)).toString());//把每一行的每一列数据读取到strList中
+            }
+            strString = strList.join(", ")+"\n";//给两个列数据之前加“,”号，一行数据末尾加回车
+            strList.clear();//记录一行数据后清空，再记下一行数据
+            stream << strString;
+            //csvFile.write(strString.toUtf8());//使用方法：转换为Utf8格式后在windows下的excel打开是乱码,可先用notepad++打开并转码为unicode，再次用excel打开即可。
+            qDebug()<<strString.toUtf8();
+        }
+        csvFile.close();
+    }
+    QString filepath = "/myfile";
+
+    DriverSelectionDialog dsd;
+    dsd.addExclusiveDriver("/dev/root");
+    dsd.addExclusiveDriver("/dev/mmcblk0p3");
+    dsd.addExclusiveDriver("/dev/mmcblk0p7");
+
+    if(dsd.showModule())
+    {
+        QString strTargetDir = dsd.getSelectedDriver();
+        qDebug()<<QString("%1").arg(strTargetDir);
+
+        if(QFile::exists(strTargetDir))
+        {
+            QString strSource1 = strTargetDir + filepath;
+
+            system(QString("cp /dist/csv/%1.csv %2").arg(table).arg(strSource1).toLatin1().data());
+            //QMessageBox::information(NULL, tr("提示"),tr("导出成功！"));
+        }
+    }
+
+
+}
 void QueryData::slot_PrinterSelectUi()
 {
+     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName("/dist/UserData.db");
+    db.open();
+
+
+    QString tablename1 = "data";
+    QString filename1 = "/dist/csv/data.csv";
+
+    QString tablename2 = "error";
+    QString filename2 = "/dist/csv/error.csv";
+
+    QString tablename3 = "calibration";
+    QString filename3 = "/dist/csv/calibration.csv";
+
+    QString tablename4 = "log";
+    QString filename4 = "/dist/csv/log.csv";
+
+    QString tablename5 = "qc";
+    QString filename5 = "/dist/csv/qc.csv";
+
+    readData(tablename1,filename1);
+    readData(tablename2,filename2);
+    readData(tablename3,filename3);
+    readData(tablename4,filename4);
+    readData(tablename5,filename5);
 }
 
 
