@@ -21,27 +21,6 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="label_50">
-     <property name="text">
-      <string>报警设置：</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="0">
-    <widget class="QPushButton" name="ScreenCalibration">
-     <property name="text">
-      <string>屏幕校准</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="2">
-    <widget class="QPushButton" name="SetTime">
-     <property name="text">
-      <string>设置</string>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="1">
     <widget class="QDateTimeEdit" name="DateTimeEdit">
      <property name="buttonSymbols">
@@ -55,47 +34,31 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label_21">
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_50">
      <property name="text">
-      <string>时间设置</string>
+      <string>报警设置：</string>
      </property>
     </widget>
    </item>
-   <item row="7" column="1">
-    <widget class="QPushButton" name="PlatformSelect">
+   <item row="1" column="2">
+    <widget class="QPushButton" name="SetTime">
      <property name="text">
-      <string>平台选择</string>
+      <string>设置</string>
      </property>
     </widget>
    </item>
-   <item row="7" column="2">
+   <item row="8" column="0">
+    <widget class="QPushButton" name="ScreenCalibration">
+     <property name="text">
+      <string>屏幕校准</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="2">
     <widget class="QPushButton" name="UpdateProgram">
      <property name="text">
       <string>更新程序</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0" colspan="3">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>518</width>
-       <height>108</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="3" column="0" colspan="3">
-    <widget class="Line" name="line">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
@@ -118,6 +81,43 @@
       </property>
      </item>
     </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_21">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string>时间设置</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="3">
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="1">
+    <widget class="QPushButton" name="PlatformSelect">
+     <property name="text">
+      <string>平台选择</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0" colspan="3">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>518</width>
+       <height>108</height>
+      </size>
+     </property>
+    </spacer>
    </item>
    <item row="5" column="1">
     <widget class="QComboBox" name="ScreenSave">
@@ -157,6 +157,13 @@
        <string>120分钟</string>
       </property>
      </item>
+    </widget>
+   </item>
+   <item row="7" column="2">
+    <widget class="QPushButton" name="pushButton">
+     <property name="text">
+      <string>导出文件</string>
+     </property>
     </widget>
    </item>
   </layout>
