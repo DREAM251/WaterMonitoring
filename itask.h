@@ -63,6 +63,8 @@ public:
     inline bool isWorking(){return workFlag;}
     inline ErrorFlag isError(){return errorFlag;}
     inline int getLastProcessTime() {return processSeconds;}
+    inline int getTotalStep() {return commandList.count();}
+    inline int getStepnum() {return cmdIndex;}
     int getProcess();
     inline void setTaskType(TaskType type) { taskType = type;}
 
