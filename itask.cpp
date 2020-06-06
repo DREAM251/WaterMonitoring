@@ -340,7 +340,7 @@ void MeasureTask::dataProcess()
     data << QString::number(colorValue);
     data << QString::number(blankValueC2);
     data << QString::number(colorValueC2);
-    data << QString::number(0);
+    data << QString::number(protocol->getReceiver().mcu1Temp());
     data << QObject::tr("常规测量");
 
     addMeasureData(data);
