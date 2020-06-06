@@ -449,8 +449,12 @@ void QFMain::updateStatus()
     }
 
     ITask *task = element->getTask();
+    int nowstep = 0;
+    int totalnum = 0;
     if (task)
     {
+        nowstep = task->getStepnum();
+        totalnum = task->getTotalStep();
         ui->progressBar->setRange(0, task->getLastProcessTime());
         ui->progressBar->setValue(task->getProcess());
     } else {
@@ -500,8 +504,10 @@ void QFMain::updateStatus()
         ui->led8->setStyleSheet(sd.valve8()?style1:style2);
 
         QString explainString = sd.translateExplainCode();
+        QString explainString2 = QString("(%1)").arg(re.stepTime());
+        QString stepshow = QString("<%1 / %2>").arg(nowstep).arg(totalnum);
         if (!explainString.isEmpty())
-            ui->CurrentTask->setText(tr("当前流程：") + explainString);
+            ui->CurrentTask->setText(tr("当前流程：") + explainString + stepshow + explainString2);
     }
 
     DatabaseProfile profile;
