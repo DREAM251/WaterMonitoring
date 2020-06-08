@@ -13,6 +13,7 @@
 CalibFrame::CalibFrame(const QString &profile, QWidget *parent) :
     QFrame(parent),
     ui(new Ui::CalibFrame),
+    num(-1),
     profile(profile)
 {
     ui->setupUi(this);
@@ -160,6 +161,15 @@ void CalibFrame::renewUI()
 void CalibFrame::reset()
 {
 
+}
+void CalibFrame::on_pushButton_2_clicked()
+{
+    num=2;
+}
+
+void CalibFrame::on_pushButton_clicked()
+{
+    num=1;
 }
 
 void CalibFrame::setRange(int sel, QString name)
@@ -518,31 +528,42 @@ bool CalibFrameFactory::calc()
     }
 
     //当标定数小于4时一次拟合否则二次拟合
-    if(count > 3)
+   if(num%2==1)
     {
-        if(Quadfit(abs,conc,count,qfitA,qfitB,qfitC))
+        if(count > 3)
         {
-            RQuadfit(abs,conc,count,qfitA,qfitB,qfitC,qfitR);
-            return true;
+            if(Quadfit(abs,conc,count,qfitA,qfitB,qfitC))
+            {
+                RQuadfit(abs,conc,count,qfitA,qfitB,qfitC,qfitR);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         else
         {
+            QMessageBox::warning(NULL, tr("错误") ,tr("请选择3个以上的数据进行拟合！"));
             return false;
         }
     }
-    else
+    if(num%2==0)
     {
-        qfitA = 0.0;
-        if(Linefit(abs,conc,count,qfitB,qfitC))
-        {
-            RLinefit(abs,conc,count,qfitB,qfitC,qfitR);
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+
+
+
+            qfitA = 0.0;
+            if(Linefit(abs,conc,count,qfitB,qfitC))
+            {
+                RLinefit(abs,conc,count,qfitB,qfitC,qfitR);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+     }
 }
 
 void CalibFrameFactory::saveParams()
