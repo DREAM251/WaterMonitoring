@@ -57,6 +57,7 @@ public:
 
     int getNextCalib();
     void setHaveCalib();
+    int num ;
     void setWaitToHaveCalib(); // 自动标定专用
     float getConc(int select);
     float getAbs(int select);
@@ -93,6 +94,10 @@ protected:
     QSpinBox *psbWater[SAMPLE_COUNT];
     QComboBox *pcbPipe[SAMPLE_COUNT];
     QComboBox *pcbSelect[SAMPLE_COUNT];
+    
+private slots:
+    void on_pushButton_2_clicked();
+    void on_pushButton_clicked();
 };
 
 class CalibFrameUser : public CalibFrame
