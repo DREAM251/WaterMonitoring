@@ -1,9 +1,43 @@
-﻿#include "itask.h"
+#include "itask.h"
 #include "defines.h"
 #include "profile.h"
+#include "../globelvalues.h"
 #include <QDebug>
 #include <QFile>
 #include <math.h>
+#include <QTime>
+#include "smooth.h"
+
+int getRandom(int min,int max)
+{
+    qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
+    return qrand()%(max-min);
+}
+
+float QuadRoot(float y,float jx,float A,float B ,float C)
+{
+    if(A==0.0){
+        if(B==0.0)
+            return 0.0;
+        else
+            return (y-C)/B;
+    }else{
+        float j = B*B-4*A*(C-y);
+        if(j<0){
+            return 0.0;
+        }else{
+            float cx = -B/(2*A);
+            float v1 = (-B+sqrt(j))/(2*A);
+            float v2 = (-B-sqrt(j))/(2*A);
+            //取与原始吸光度相同的一边
+            if(jx<=cx){
+                return v1<v2?v1:v2;
+            }else{
+                return v1>v2?v1:v2;
+            }
+        }
+    }
+}
 
 ITask::ITask(QObject *parent) :
     QObject(parent),
@@ -11,7 +45,9 @@ ITask::ITask(QObject *parent) :
     cmdIndex(0),
     errorFlag(EF_NoError),
     workFlag(false),
-    processSeconds(0)
+    processSeconds(0),
+    pipe(-1),
+    realTimeConc(0)
 {
     for (int i = 0; i < 20; i++)
     {
@@ -67,7 +103,9 @@ void ITask::oneCmdFinishEvent()
     {
         if (protocol->getSender().judgeStep() > protocol->getReceiver().pumpStatus())
         {
-            addErrorMsg(QObject::tr("试剂抽取失败，请检查"), 1);
+            QString pp = protocol->getSender().getTCValve1Name(
+                        protocol->getSender().TCValve1());
+            addErrorMsg(QObject::tr("%1抽取失败，请检查").arg(pp), 1);
             errorFlag = EF_SamplingError;
             stop();
             return;
@@ -163,7 +201,7 @@ void ITask::loadParameters()
     {
         for (int i = 0; i < 20; i++)
         {
-            corArgs.loopTab[i] = profile.value(QString("Loop%1").arg(i), 1).toInt();
+            corArgs.loopTab[i] = profile.value(QString("Loop%1").arg(i), 0).toInt();
             corArgs.tempTab[i] = profile.value(QString("Temp%1").arg(i)).toInt();
             corArgs.timeTab[i] = profile.value(QString("Time%1").arg(i), 3).toInt();
         }
@@ -192,7 +230,7 @@ void ITask::fixCommands(const QStringList &sources)
         Sender sen(sources[i].toLatin1());
         int loopFlag = sen.loopFix();
 
-        if (loopFlag > 0 && (loopFlag - 1) / 2 < sizeof(corArgs.timeTab) / sizeof (int))
+        if (loopFlag > 0 && (loopFlag - 1) / 2 < sizeof(corArgs.loopTab) / sizeof (int))
         {
             if (loopStart < 0 && loopFlag%2 == 1)
             {
@@ -223,20 +261,24 @@ void ITask::fixCommands(const QStringList &sources)
     if (!loopList.isEmpty())
         tempList += loopList;
 
-    // 时间关联
-    // 加热降温关联
     commandList.clear();
     for (int i = 0; i < tempList.count(); i++)
     {
         Sender sen(tempList[i].toLatin1());
 
+        // 时间关联
         int timeIndex = sen.timeFix();
         if (timeIndex > 0 && timeIndex < sizeof(corArgs.timeTab) / sizeof(int))
             sen.setStepTime(corArgs.timeTab[timeIndex-1] + sen.timeAddFix());
 
+        // 加热降温关联
         int tempIndex = sen.tempFix();
         if (tempIndex > 0 && tempIndex < sizeof(corArgs.tempTab) / sizeof(int))
             sen.setHeatTemp(corArgs.tempTab[tempIndex-1]);
+
+        //  管道切换
+        if (pipe >= 0 && sen.TCValve1() == 3)
+            sen.setTCValve1(pipe);
 
         commandList << sen.rawData();
     }
@@ -263,7 +305,9 @@ MeasureTask::MeasureTask() :
     colorValue(0),
   blankValueC2(0),
   colorValueC2(0)
-{}
+{
+//    testDataProcess();
+}
 
 bool MeasureTask::start(IProtocol *protocol)
 {
@@ -283,6 +327,7 @@ void MeasureTask::clearCollectedValues()
     colorValueC2 = 0;
     blankSampleTimes = 0;
     colorSampleTimes = 0;
+    realTimeConc = 0;
 }
 
 // 空白值采集
@@ -328,10 +373,51 @@ void MeasureTask::dataProcess()
 {
     double vblank = blankValue > 0 ? blankValue : 1;
     double vcolor = colorValue > 0 ? colorValue : 1;
-    vabs = log10(vblank / vcolor);
+    double vblank1 = blankValueC2 > 100 ? blankValueC2 : 100;
+    double vcolor1 = colorValueC2 > 100 ? colorValueC2 : 100;
+    vabs = log10(vblank / vcolor) - log10(vblank1 / vcolor1) * (args.turbidityOffset); // 浊度系数填在这里
+
+    // 出厂标定运算
+    double v1 = vabs * vabs * args.quada + vabs *args.quadb + args.quadc;
+
+    // 用户标定运算
+    double v2 = v1 * args.lineark + args.linearb;
+
+    //稀释比例
+    double dilutionRate = 1.0;
+    if (corArgs.loopTab[2] > 0)
+        dilutionRate = (double)(corArgs.loopTab[2] + corArgs.loopTab[3]) / corArgs.loopTab[2];
+    double v3 = v2 * dilutionRate;
+
+    // 用户修正系数
+    double v4 = v3 * args.userk + args.userb;
+
+    double c = 0;
+    // 防止负值或者很小的值
+    if (v4 < 0.01) {
+        v4 = getRandom(1, 100) / 1000.0;
+    }
+    // 平滑和反算
+    smooth s(0);
+    s.setThreshold(args.smoothRange);
+    c = s.calc(v4);
+
+    //反推显色值
+    if (args.userk != 0.0 && args.lineark != 0.0)
+    {
+        float rv1 = (c - args.userb) / args.userk;
+        float rv2 = rv1 / dilutionRate;
+        float rv3 = (rv2 - args.linearb) / args.lineark;
+        float rv4 = QuadRoot(rv3, log10(vblank / vcolor), args.quada, args.quadb, args.quadc)
+                + log10(vblank1 / vcolor1) * (args.turbidityOffset);
+        float rv5 = blankValue/pow(10, rv4);
+        float rv6 = rv5 < 1 ? 1 : rv5;
+        vabs = log10(vblank / rv6) - log10(vblank1 / vcolor1) * (args.turbidityOffset);
+        colorValue = rv6;
+    }
 
     QString strResult;
-    conc = setPrecision(vabs * args.lineark + args.linearb, 4, &strResult);
+    conc = setPrecision(c, 4, &strResult);
 
     QList<QVariant> data;
     data << strResult;
@@ -341,10 +427,52 @@ void MeasureTask::dataProcess()
     data << QString::number(blankValueC2);
     data << QString::number(colorValueC2);
     data << QString::number(protocol->getReceiver().mcu1Temp());
-    data << QObject::tr("常规测量");
+    data << QObject::tr("M");
+    data << QString::number(vcolor);
+    data << QString::number(args.turbidityOffset);
+    data << QString("%1,%2,%3").arg(args.quada).arg(args.quadb).arg(args.quadc);
+    data << QString("%1,%2").arg(args.lineark).arg(args.linearb);
+    data << QString("%1,%2").arg(corArgs.loopTab[2]).arg(corArgs.loopTab[3]);
+    data << QString("%1,%2").arg(args.userk).arg(args.userb);
+    data << QString::number(args.smoothRange);
 
     addMeasureData(data);
     saveParameters();
+}
+
+
+float MeasureTask::realTimeDataProcess(int blankValue,
+                                       int colorValue,
+                                       int blankValueC2,
+                                       int colorValueC2)
+{
+    double vblank = blankValue > 0 ? blankValue : 1;
+    double vcolor = colorValue > 0 ? colorValue : 1;
+    double vblank1 = blankValueC2 > 100 ? blankValueC2 : 100;
+    double vcolor1 = colorValueC2 > 100 ? colorValueC2 : 100;
+    vabs = log10(vblank / vcolor) - log10(vblank1 / vcolor1) * (args.turbidityOffset); // 浊度系数填在这里
+
+    // 出厂标定运算
+    double v1 = vabs * vabs * args.quada + vabs *args.quadb + args.quadc;
+
+    // 用户标定运算
+    double v2 = v1 * args.lineark + args.linearb;
+
+    //稀释比例
+    double dilutionRate = 1.0;
+    if (corArgs.loopTab[2] > 0)
+        dilutionRate = (double)(corArgs.loopTab[2] + corArgs.loopTab[3]) / corArgs.loopTab[2];
+    double v3 = v2 * dilutionRate;
+
+    // 用户修正系数
+    double v4 = v3 * args.userk + args.userb;
+
+    // 防止负值或者很小的值
+    if (v4 < 0.01) {
+        v4 = getRandom(1, 100) / 1000.0;
+    }
+
+    return v4;
 }
 
 void MeasureTask::recvEvent()
@@ -383,6 +511,16 @@ void MeasureTask::recvEvent()
             sendNextCommand();
         }
     }
+
+    // 实时计算
+    else if (protocol->getSender().realTimeValueStep())
+    {
+          realTimeConc = realTimeDataProcess(blankValue == 0 ? lastBlankValue : blankValue,
+                                             blankValueC2 == 0 ? lastBlankValueC2 : blankValueC2,
+                                             protocol->getReceiver().measureSignal(),
+                                             protocol->getReceiver().refLightSignal());
+    }
+
 }
 
 void MeasureTask::loadParameters()
@@ -390,20 +528,52 @@ void MeasureTask::loadParameters()
     ITask::loadParameters();
 
     DatabaseProfile profile;
+
+    if (profile.beginSection("measuremode")) {
+        args.mode = profile.value("OnlineOffline", 0).toInt();
+        args.pipe = profile.value("SamplePipe").toInt();
+    }
+
     if (profile.beginSection("measure"))
     {
         args.range = profile.value("range").toInt();
         args.rangeLock = profile.value("rangeLock").toBool();
-        args.pipe = profile.value("pipe").toInt();
         args.lineark = profile.value("lineark", 1).toFloat();
         args.linearb = profile.value("linearb").toFloat();
         args.quada = profile.value("quada").toFloat();
         args.quadb = profile.value("quadb", 1).toFloat();
         args.quadc = profile.value("quadc").toFloat();
+
+        // 在线测量
+        if (args.mode == 0)
+        {
+            pipe = 3;
+            corArgs.loopTab[4] = 1;
+            corArgs.loopTab[5] = 1;
+        } else {
+            switch (args.pipe)
+            {
+            case 0: pipe = 3; break;
+            case 1: pipe = 4; break;
+            case 2: pipe = 1; break;
+            case 3: pipe = 8; break;
+            }
+            corArgs.loopTab[4] = 0;
+            corArgs.loopTab[5] = 0;
+        }
+
+        lastBlankValue = profile.value("blankValue").toInt();
+        lastBlankValueC2 = profile.value("blankValueC2").toInt();
     }
+
     if (profile.beginSection("settings"))
     {
         args.blankErrorValue = profile.value("BlankErrorThreshold").toInt();
+        args.userk = profile.value("UserK", 1).toFloat();
+        args.userb = profile.value("UserB").toFloat();
+
+        args.smoothRange = profile.value("SmoothOffset").toFloat() / 100.0;
+        args.turbidityOffset = profile.value("TurbidityOffset", 1).toFloat();
     }
 }
 
@@ -416,6 +586,11 @@ void MeasureTask::saveParameters()
     {
         profile.setValue("conc", conc);
         profile.setValue("abs", vabs);
+
+        profile.setValue("blankValue", blankValue);
+        profile.setValue("blankValueC2", blankValueC2);
+        profile.setValue("colorValue", colorValue);
+        profile.setValue("colorValueC2", colorValueC2);
     }
 }
 
@@ -429,6 +604,138 @@ QStringList MeasureTask::loadCommands()
 
     return commands;
 }
+
+void MeasureTask::testDataProcess()
+{
+    args.lineark = 1856.93;
+    args.linearb = 108.16;
+    args.quada = 0;
+    args.quadb = 1;
+    args.quadc = 0;
+
+    args.userk = 1;
+    args.userb = 0;
+
+    args.smoothRange = 0.1;
+    args.turbidityOffset = 1;
+
+
+    corArgs.loopTab[2] = 2;
+    corArgs.loopTab[3] = 1;
+
+    // 第1组
+    blankValue = 20876;
+    colorValue = 23036;
+    blankValueC2 = 19816;
+    colorValueC2 = 19812;
+    dataProcess();
+    qDebug() <<  "1:" <<  QString::number(conc)
+         << QString::number(vabs, 'f', 4)
+        << QString::number(colorValue);
+
+
+    // 第2组
+    blankValue = 20811;
+    colorValue = 22923;
+    blankValueC2 = 19761;
+    colorValueC2 = 19754;
+    dataProcess();
+    qDebug() <<  "2:" <<  QString::number(conc)
+         << QString::number(vabs, 'f', 4)
+        << QString::number(colorValue);
+
+
+    // 第3组
+    blankValue = 20868;
+    colorValue = 22989;
+    blankValueC2 = 19743;
+    colorValueC2 = 19731;
+    dataProcess();
+    qDebug() <<  "3:" <<  QString::number(conc)
+         << QString::number(vabs, 'f', 4)
+        << QString::number(colorValue);
+
+
+    // 第4组
+    blankValue = 20869;
+    colorValue = 23015;
+    blankValueC2 = 19759;
+    colorValueC2 = 19744;
+    dataProcess();
+    qDebug() <<  "4:" <<  QString::number(conc)
+         << QString::number(vabs, 'f', 4)
+        << QString::number(colorValue);
+}
+
+
+///////////////////////////////////////////////////////////////////////
+
+
+CalibrationTask::CalibrationTask() :
+    MeasureTask()
+{
+}
+
+void CalibrationTask::loadParameters()
+{
+    MeasureTask::loadParameters();
+
+    if (pframe) {
+        corArgs.loopTab[2] = pframe->getCurrentSample(); //
+        corArgs.loopTab[3] = pframe->getCurrentWater(); //
+        pipe = pframe->getCurrentPipe();
+    }
+}
+
+void CalibrationTask::dataProcess()
+{
+    int vblank = blankValue > 0 ? blankValue : 1;
+    int vcolor = colorValue > 0 ? colorValue : 1;
+    int vblank2 = blankValueC2 > 0 ? blankValueC2 : 1;
+    int vcolor2 = colorValueC2 > 0 ? colorValueC2 : 1;
+
+    if (pframe)
+    {
+        pframe->setVLight(vblank, vcolor, vblank2, vcolor2);
+
+        double lfitA,lfitB,lfitR;
+        double qfitA,qfitB,qfitC,qfitR;
+        DatabaseProfile dbprofile;
+        if (dbprofile.beginSection("measure"))
+        {
+            lfitA=dbprofile.value("lineark",1).toDouble();
+            lfitB=dbprofile.value("linearb",0).toDouble();
+            lfitR=dbprofile.value("linearr",1).toDouble();
+
+            qfitA=dbprofile.value("quada",0).toDouble();
+            qfitB=dbprofile.value("quadb",1).toDouble();
+            qfitC=dbprofile.value("quadc",0).toDouble();
+            qfitR=dbprofile.value("quadr",1).toDouble();
+        }
+
+        QList<QVariant> data;
+        data << pframe->getCurrentName();
+        data << QString::number(pframe->getCurrentConc());
+        data << QString::number(pframe->getCurrentAbs());
+        data << QString::number(blankValue);
+        data << QString::number(colorValue);
+        data << QString::number(blankValueC2);
+        data << QString::number(colorValueC2);
+        data << QString::number(protocol->getReceiver().mcu1Temp());
+        data << QObject::tr("C");
+        data << QString::number(lfitA);
+        data << QString::number(lfitB);
+        data << QString::number(lfitR);
+        data << QString::number(qfitA);
+        data << QString::number(qfitB);
+        data << QString::number(qfitC);
+        data << QString::number(qfitR);
+
+        addCalibrationData(data);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////
 
 QStringList CleaningTask::loadCommands()
 {
