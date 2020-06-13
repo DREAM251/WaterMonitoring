@@ -6,9 +6,17 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>638</width>
+    <width>650</width>
     <height>390</height>
    </rect>
+  </property>
+  <property name="font">
+   <font>
+    <pointsize>10</pointsize>
+    <weight>50</weight>
+    <italic>false</italic>
+    <bold>false</bold>
+   </font>
   </property>
   <property name="windowTitle">
    <string>Frame</string>
@@ -34,21 +42,44 @@ QLabel {
    <enum>QFrame::Plain</enum>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="3" column="0">
-    <widget class="QLabel" name="lbCali2">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
+   <item row="10" column="7">
+    <widget class="QPushButton" name="pushButton">
      <property name="text">
-      <string>标样2</string>
+      <string>二次拟合</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="3">
-    <widget class="QComboBox" name="cbRange2">
+   <item row="3" column="5">
+    <widget class="QSpinBox" name="sbSample2">
+     <property name="buttonSymbols">
+      <enum>QAbstractSpinBox::NoButtons</enum>
+     </property>
+     <property name="maximum">
+      <number>20</number>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="7">
+    <widget class="QComboBox" name="cbSelect4">
+     <item>
+      <property name="text">
+       <string>不标定</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>待标定</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>已标定</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="1" column="3">
+    <widget class="QComboBox" name="cbRange0">
      <item>
       <property name="text">
        <string>0.0-2.0</string>
@@ -66,27 +97,18 @@ QLabel {
      </item>
     </widget>
    </item>
-   <item row="3" column="7">
-    <widget class="QComboBox" name="cbSelect2">
-     <item>
-      <property name="text">
-       <string>不标定</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>待标定</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>已标定</string>
-      </property>
-     </item>
+   <item row="2" column="6">
+    <widget class="QSpinBox" name="sbWater1">
+     <property name="buttonSymbols">
+      <enum>QAbstractSpinBox::NoButtons</enum>
+     </property>
+     <property name="maximum">
+      <number>20</number>
+     </property>
     </widget>
    </item>
-   <item row="4" column="1">
-    <widget class="QDoubleSpinBox" name="dsbConc3">
+   <item row="5" column="1">
+    <widget class="QDoubleSpinBox" name="dsbConc4">
      <property name="buttonSymbols">
       <enum>QAbstractSpinBox::NoButtons</enum>
      </property>
@@ -95,32 +117,58 @@ QLabel {
      </property>
     </widget>
    </item>
-   <item row="2" column="7">
-    <widget class="QComboBox" name="cbSelect1">
-     <item>
-      <property name="text">
-       <string>不标定</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>待标定</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>已标定</string>
-      </property>
-     </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="lbCali0">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>零标样</string>
+     </property>
     </widget>
    </item>
-   <item row="3" column="5">
-    <widget class="QSpinBox" name="sbSample2">
+   <item row="6" column="2">
+    <widget class="QLineEdit" name="leAbs5">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="2">
+    <widget class="QLineEdit" name="leAbs2">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QDoubleSpinBox" name="dsbConc0">
      <property name="buttonSymbols">
       <enum>QAbstractSpinBox::NoButtons</enum>
      </property>
      <property name="maximum">
-      <number>20</number>
+      <double>9999.000000000000000</double>
      </property>
     </widget>
    </item>
@@ -140,72 +188,6 @@ QLabel {
      </property>
      <property name="text">
       <string>标样</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QLabel" name="lbConc">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>浓度(mg/L)</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="3">
-    <widget class="QLabel" name="lbRange">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>量程切换</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="2">
-    <widget class="QLabel" name="lbAbs">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>吸光度</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -234,148 +216,8 @@ QLabel {
      </property>
     </widget>
    </item>
-   <item row="0" column="7">
-    <widget class="QLabel" name="lbSelection">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>选择</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="4">
-    <widget class="QComboBox" name="cbPipe0"/>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="lbCali0">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>零标样</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="3">
-    <widget class="QComboBox" name="cbRange0">
-     <item>
-      <property name="text">
-       <string>0.0-2.0</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>0.0-10.0</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>自定义量程</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="1" column="2">
-    <widget class="QLineEdit" name="leAbs0">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="2">
-    <widget class="QLineEdit" name="leAbs1">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="lbCali1">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>标样1</string>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="7">
     <widget class="QComboBox" name="cbSelect0">
-     <item>
-      <property name="text">
-       <string>不标定</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>待标定</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>已标定</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="2" column="3">
-    <widget class="QComboBox" name="cbRange1">
-     <item>
-      <property name="text">
-       <string>0.0-2.0</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>0.0-10.0</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>自定义量程</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="6" column="7">
-    <widget class="QComboBox" name="cbSelect5">
      <item>
       <property name="text">
        <string>不标定</string>
@@ -406,24 +248,40 @@ QLabel {
      </property>
     </widget>
    </item>
-   <item row="4" column="2">
-    <widget class="QLineEdit" name="leAbs3">
-     <property name="enabled">
-      <bool>true</bool>
+   <item row="3" column="1">
+    <widget class="QDoubleSpinBox" name="dsbConc2">
+     <property name="buttonSymbols">
+      <enum>QAbstractSpinBox::NoButtons</enum>
      </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
+     <property name="maximum">
+      <double>9999.000000000000000</double>
      </property>
     </widget>
    </item>
-   <item row="4" column="3">
-    <widget class="QComboBox" name="cbRange3">
+   <item row="0" column="1">
+    <widget class="QLabel" name="lbConc">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>浓度(mg/L)</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="3">
+    <widget class="QComboBox" name="cbRange2">
      <item>
       <property name="text">
        <string>0.0-2.0</string>
@@ -441,8 +299,134 @@ QLabel {
      </item>
     </widget>
    </item>
-   <item row="2" column="6">
-    <widget class="QSpinBox" name="sbWater1">
+   <item row="2" column="0">
+    <widget class="QLabel" name="lbCali1">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>标样1</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QLabel" name="lbAbs">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>吸光度</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QDoubleSpinBox" name="dsbConc3">
+     <property name="buttonSymbols">
+      <enum>QAbstractSpinBox::NoButtons</enum>
+     </property>
+     <property name="maximum">
+      <double>9999.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="7">
+    <widget class="QLabel" name="lbSelection">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>选择</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2">
+    <widget class="QLineEdit" name="leAbs1">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="4">
+    <widget class="QComboBox" name="cbPipe4"/>
+   </item>
+   <item row="10" column="0" colspan="6">
+    <widget class="QLabel" name="lbResult">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>结果：</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="3">
+    <widget class="QComboBox" name="cbRange1">
+     <item>
+      <property name="text">
+       <string>0.0-2.0</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>0.0-10.0</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>自定义量程</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="1" column="4">
+    <widget class="QComboBox" name="cbPipe0"/>
+   </item>
+   <item row="6" column="6">
+    <widget class="QSpinBox" name="sbWater5">
      <property name="buttonSymbols">
       <enum>QAbstractSpinBox::NoButtons</enum>
      </property>
@@ -451,49 +435,29 @@ QLabel {
      </property>
     </widget>
    </item>
-   <item row="10" column="0" colspan="7">
-    <widget class="QLabel" name="lbResult">
-     <property name="text">
-      <string>拟合结果：</string>
+   <item row="4" column="4">
+    <widget class="QComboBox" name="cbPipe3"/>
+   </item>
+   <item row="5" column="5">
+    <widget class="QSpinBox" name="sbSample4">
+     <property name="buttonSymbols">
+      <enum>QAbstractSpinBox::NoButtons</enum>
+     </property>
+     <property name="maximum">
+      <number>20</number>
      </property>
     </widget>
    </item>
-   <item row="10" column="7">
-    <widget class="QPushButton" name="pushButton">
-     <property name="text">
-      <string>二次拟合</string>
-     </property>
-    </widget>
+   <item row="2" column="4">
+    <widget class="QComboBox" name="cbPipe1"/>
    </item>
-   <item row="4" column="7">
-    <widget class="QComboBox" name="cbSelect3">
-     <item>
-      <property name="text">
-       <string>不标定</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>待标定</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>已标定</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="5" column="0">
-    <widget class="QLabel" name="lbCali4">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
+   <item row="6" column="1">
+    <widget class="QDoubleSpinBox" name="dsbConc5">
+     <property name="buttonSymbols">
+      <enum>QAbstractSpinBox::NoButtons</enum>
      </property>
-     <property name="text">
-      <string>标样4</string>
+     <property name="maximum">
+      <double>9999.000000000000000</double>
      </property>
     </widget>
    </item>
@@ -516,18 +480,148 @@ QLabel {
      </item>
     </widget>
    </item>
-   <item row="5" column="1">
-    <widget class="QDoubleSpinBox" name="dsbConc4">
+   <item row="8" column="0" colspan="8">
+    <widget class="Line" name="line2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="3">
+    <widget class="QComboBox" name="cbRange5">
+     <item>
+      <property name="text">
+       <string>0.0-2.0</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>0.0-10.0</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>自定义量程</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="3" column="6">
+    <widget class="QSpinBox" name="sbWater2">
      <property name="buttonSymbols">
       <enum>QAbstractSpinBox::NoButtons</enum>
      </property>
      <property name="maximum">
-      <double>9999.000000000000000</double>
+      <number>20</number>
      </property>
     </widget>
    </item>
-   <item row="3" column="2">
-    <widget class="QLineEdit" name="leAbs2">
+   <item row="4" column="6">
+    <widget class="QSpinBox" name="sbWater3">
+     <property name="buttonSymbols">
+      <enum>QAbstractSpinBox::NoButtons</enum>
+     </property>
+     <property name="maximum">
+      <number>20</number>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="lbCali2">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>标样2</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QLabel" name="lbRange">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>量程切换</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="7">
+    <widget class="QComboBox" name="cbSelect3">
+     <item>
+      <property name="text">
+       <string>不标定</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>待标定</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>已标定</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="1" column="6">
+    <widget class="QSpinBox" name="sbWater0">
+     <property name="buttonSymbols">
+      <enum>QAbstractSpinBox::NoButtons</enum>
+     </property>
+     <property name="maximum">
+      <number>20</number>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="lbCali4">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>标样4</string>
+     </property>
+    </widget>
+   </item>
+   <item row="11" column="0" colspan="8">
+    <widget class="Line" name="line1">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="5">
+    <widget class="QSpinBox" name="sbSample1">
+     <property name="buttonSymbols">
+      <enum>QAbstractSpinBox::NoButtons</enum>
+     </property>
+     <property name="maximum">
+      <number>20</number>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="2">
+    <widget class="QLineEdit" name="leAbs3">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -561,38 +655,8 @@ QLabel {
    <item row="6" column="4">
     <widget class="QComboBox" name="cbPipe5"/>
    </item>
-   <item row="2" column="1">
-    <widget class="QDoubleSpinBox" name="dsbConc1">
-     <property name="buttonSymbols">
-      <enum>QAbstractSpinBox::NoButtons</enum>
-     </property>
-     <property name="maximum">
-      <double>9999.000000000000000</double>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="QDoubleSpinBox" name="dsbConc2">
-     <property name="buttonSymbols">
-      <enum>QAbstractSpinBox::NoButtons</enum>
-     </property>
-     <property name="maximum">
-      <double>9999.000000000000000</double>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="5">
-    <widget class="QSpinBox" name="sbSample1">
-     <property name="buttonSymbols">
-      <enum>QAbstractSpinBox::NoButtons</enum>
-     </property>
-     <property name="maximum">
-      <number>20</number>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="5">
-    <widget class="QSpinBox" name="sbSample4">
+   <item row="6" column="5">
+    <widget class="QSpinBox" name="sbSample5">
      <property name="buttonSymbols">
       <enum>QAbstractSpinBox::NoButtons</enum>
      </property>
@@ -623,93 +687,13 @@ QLabel {
      </property>
     </widget>
    </item>
-   <item row="6" column="1">
-    <widget class="QDoubleSpinBox" name="dsbConc5">
+   <item row="2" column="1">
+    <widget class="QDoubleSpinBox" name="dsbConc1">
      <property name="buttonSymbols">
       <enum>QAbstractSpinBox::NoButtons</enum>
      </property>
      <property name="maximum">
       <double>9999.000000000000000</double>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="5">
-    <widget class="QSpinBox" name="sbSample3">
-     <property name="buttonSymbols">
-      <enum>QAbstractSpinBox::NoButtons</enum>
-     </property>
-     <property name="maximum">
-      <number>20</number>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="5">
-    <widget class="QSpinBox" name="sbSample5">
-     <property name="buttonSymbols">
-      <enum>QAbstractSpinBox::NoButtons</enum>
-     </property>
-     <property name="maximum">
-      <number>20</number>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QDoubleSpinBox" name="dsbConc0">
-     <property name="buttonSymbols">
-      <enum>QAbstractSpinBox::NoButtons</enum>
-     </property>
-     <property name="maximum">
-      <double>9999.000000000000000</double>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="6">
-    <widget class="QSpinBox" name="sbWater0">
-     <property name="buttonSymbols">
-      <enum>QAbstractSpinBox::NoButtons</enum>
-     </property>
-     <property name="maximum">
-      <number>20</number>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="6">
-    <widget class="QSpinBox" name="sbWater2">
-     <property name="buttonSymbols">
-      <enum>QAbstractSpinBox::NoButtons</enum>
-     </property>
-     <property name="maximum">
-      <number>20</number>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="6">
-    <widget class="QSpinBox" name="sbWater3">
-     <property name="buttonSymbols">
-      <enum>QAbstractSpinBox::NoButtons</enum>
-     </property>
-     <property name="maximum">
-      <number>20</number>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="6">
-    <widget class="QSpinBox" name="sbWater4">
-     <property name="buttonSymbols">
-      <enum>QAbstractSpinBox::NoButtons</enum>
-     </property>
-     <property name="maximum">
-      <number>20</number>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="6">
-    <widget class="QSpinBox" name="sbWater5">
-     <property name="buttonSymbols">
-      <enum>QAbstractSpinBox::NoButtons</enum>
-     </property>
-     <property name="maximum">
-      <number>20</number>
      </property>
     </widget>
    </item>
@@ -723,8 +707,8 @@ QLabel {
      </property>
     </widget>
    </item>
-   <item row="5" column="7">
-    <widget class="QComboBox" name="cbSelect4">
+   <item row="6" column="7">
+    <widget class="QComboBox" name="cbSelect5">
      <item>
       <property name="text">
        <string>不标定</string>
@@ -742,28 +726,37 @@ QLabel {
      </item>
     </widget>
    </item>
-   <item row="8" column="0" colspan="8">
-    <widget class="Line" name="line2">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+   <item row="2" column="7">
+    <widget class="QComboBox" name="cbSelect1">
+     <item>
+      <property name="text">
+       <string>不标定</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>待标定</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>已标定</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="4" column="5">
+    <widget class="QSpinBox" name="sbSample3">
+     <property name="buttonSymbols">
+      <enum>QAbstractSpinBox::NoButtons</enum>
+     </property>
+     <property name="maximum">
+      <number>20</number>
      </property>
     </widget>
    </item>
-   <item row="6" column="0">
-    <widget class="QLabel" name="lbCali5">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>标样5</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="3">
-    <widget class="QComboBox" name="cbRange5">
+   <item row="4" column="3">
+    <widget class="QComboBox" name="cbRange3">
      <item>
       <property name="text">
        <string>0.0-2.0</string>
@@ -781,33 +774,55 @@ QLabel {
      </item>
     </widget>
    </item>
-   <item row="11" column="0" colspan="8">
-    <widget class="Line" name="line1">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+   <item row="3" column="4">
+    <widget class="QComboBox" name="cbPipe2"/>
+   </item>
+   <item row="6" column="0">
+    <widget class="QLabel" name="lbCali5">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>标样5</string>
      </property>
     </widget>
    </item>
-   <item row="6" column="2">
-    <widget class="QLineEdit" name="leAbs5">
-     <property name="enabled">
-      <bool>true</bool>
+   <item row="5" column="6">
+    <widget class="QSpinBox" name="sbWater4">
+     <property name="buttonSymbols">
+      <enum>QAbstractSpinBox::NoButtons</enum>
      </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
+     <property name="maximum">
+      <number>20</number>
      </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
+    </widget>
+   </item>
+   <item row="3" column="7">
+    <widget class="QComboBox" name="cbSelect2">
+     <item>
+      <property name="text">
+       <string>不标定</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>待标定</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>已标定</string>
+      </property>
+     </item>
     </widget>
    </item>
    <item row="12" column="0" colspan="8">
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="1">
-      <widget class="QPushButton" name="pbTrain">
+     <item row="0" column="0">
+      <widget class="QPushButton" name="pbReset">
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -815,7 +830,7 @@ QLabel {
         </size>
        </property>
        <property name="text">
-        <string>训练</string>
+        <string>重置</string>
        </property>
       </widget>
      </item>
@@ -845,8 +860,8 @@ QLabel {
        </property>
       </widget>
      </item>
-     <item row="0" column="0">
-      <widget class="QPushButton" name="pbReset">
+     <item row="0" column="1">
+      <widget class="QPushButton" name="pbTrain">
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -854,23 +869,27 @@ QLabel {
         </size>
        </property>
        <property name="text">
-        <string>重置</string>
+        <string>训练</string>
        </property>
       </widget>
      </item>
     </layout>
    </item>
-   <item row="5" column="4">
-    <widget class="QComboBox" name="cbPipe4"/>
-   </item>
-   <item row="2" column="4">
-    <widget class="QComboBox" name="cbPipe1"/>
-   </item>
-   <item row="3" column="4">
-    <widget class="QComboBox" name="cbPipe2"/>
-   </item>
-   <item row="4" column="4">
-    <widget class="QComboBox" name="cbPipe3"/>
+   <item row="1" column="2">
+    <widget class="QLineEdit" name="leAbs0">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
    <item row="9" column="7">
     <widget class="QPushButton" name="pushButton_2">
@@ -884,4 +903,5 @@ QLabel {
  <resources/>
  <connections/>
 </ui>
+
 
