@@ -1655,7 +1655,7 @@ border-color: rgb(0, 0, 0);</string>
              <string notr="true">font: 10pt &quot;Sans Serif&quot;;</string>
             </property>
             <property name="text">
-             <string>清除</string>
+             <string>复位</string>
             </property>
            </widget>
           </item>
