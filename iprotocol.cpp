@@ -1,13 +1,16 @@
-﻿#include "iprotocol.h"
+#include "iprotocol.h"
 #include <QStringList>
 #include <QDebug>
 #include "defines.h"
 #include "common.h"
 #include "profile.h"
+#include "globelvalues.h"
 
 
 #define PACKET_MIN_LENGTH  7
 #define PACKET_HEAD_LENGTH 4
+
+QStringList Sender::pipeName;
 
 QByteArray checkSum(const QByteArray &by)
 {
@@ -39,7 +42,7 @@ QString Sender::translateExplainCode()
     case 2:str = QObject::tr("排空比色池");break;
     case 3:str = QObject::tr("排空计量管");break;
     case 4:str = QObject::tr("开采样");break;
-    case 5:str = QObject::tr("水样润洗");break;
+    case 5:str = getTCValve1Name(TCValve1()) + QObject::tr("润洗");break;
     case 6:str = QObject::tr("进") + getTCValve1Name(TCValve1());break;
     case 7:str = QObject::tr("消解");break;
     case 8:str = QObject::tr("空白检测");break;
@@ -56,20 +59,29 @@ QString Sender::translateExplainCode()
 
 QString Sender::getTCValve1Name(int i)
 {
-    switch (i)
+    int c = pipeName.count();
+    if (c > i)
+        return pipeName[i];
+    else
+        return QObject::tr("管道%1").arg(i);
+}
+
+void Sender::initPipe()
+{
+    QFile file("/elementPath/pipedef.txt");
+
+    pipeName.clear();
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-    case 1:return QObject::tr("tv1");break;
-    case 2:return QObject::tr("tv2");break;
-    case 3:return QObject::tr("tv3");break;
-    case 4:return QObject::tr("tv4");break;
-    case 5:return QObject::tr("tv5");break;
-    case 6:return QObject::tr("tv6");break;
-    case 7:return QObject::tr("tv7");break;
-    case 8:return QObject::tr("tv8");break;
-    case 9:return QObject::tr("tv9");break;
-    case 10:return QObject::tr("tv10");break;
+        for(;;)
+        {
+            QByteArray line = file.readLine(255);
+
+            if (line.isEmpty())
+                break;
+            pipeName << QString::fromUtf8(line).remove("\n");
+        }
     }
-    return "";
 }
 
 
@@ -115,6 +127,7 @@ bool Sender::coolReachStep(){return judgeStep() == 5;}
 bool Sender::coolJudgeStep(){return judgeStep() == -1;}
 bool Sender::blankStep(){return sent.mid(54, 1).toInt() == 1;}
 bool Sender::colorStep(){return sent.mid(54, 1).toInt() == 2;}
+bool Sender::realTimeValueStep(){return sent.mid(54, 1).toInt() == 3;}
 int Sender::explainCode(){return sent.mid(55, 2).toInt();}
 
 void Sender::setStep(int i){sent.replace(0, 4, QString("0000%1").arg(i).right(4).toLatin1());}
