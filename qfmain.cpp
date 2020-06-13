@@ -1,6 +1,7 @@
-﻿#include "qfmain.h"
+#include "qfmain.h"
 #include "systemwindow.h"
 #include "profile.h"
+#include "globelvalues.h"
 #include "ui_qfmain.h"
 #include "ui_setui.h"
 #include "ui_maintaince.h"
@@ -10,7 +11,7 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QToolButton>
-
+#include "globelvalues.h"
 
 QFMain::QFMain(QWidget *parent) :
     QWidget(parent),
@@ -21,9 +22,14 @@ QFMain::QFMain(QWidget *parent) :
     lightVoltage(new Ui::LightVoltage),
     signalMapper(new QSignalMapper(this)),
     timer(new QTimer(this)),
-    element(new ElementInterface(ET_NH3N, this))
+    element(new ElementInterface(elementPath, this)),
+    autoCalibrationType(AC_Idle)
 {
     ui->setupUi(this);
+
+    // 初始化平台
+    ui->type->setText(element->getFactory()->getDeviceName());
+    ui->measureElement->setText(element->getFactory()->getElementName());
 
     initCalibration();
     initMaintaince();
@@ -32,7 +38,7 @@ QFMain::QFMain(QWidget *parent) :
 
     nameMeasureMethod <<  tr("周期模式") <<  tr("定点模式") <<  tr("维护模式") ;
     nameRange <<  tr("0-10mg/L") <<  tr("0-50mg/L") <<  tr("0-200mg/L");
-    nameSamplePipe <<  tr("水样") <<  tr("标样") <<  tr("零样");
+    nameSamplePipe <<  tr("水样") <<  tr("标样") <<  tr("零样") <<  tr("质控样");
     nameOnlineOffline <<  tr("在线测量") <<  tr("离线测量");
 
     DatabaseProfile profile;
@@ -83,6 +89,13 @@ QFMain::QFMain(QWidget *parent) :
     connect(ui->Range, SIGNAL(clicked()), this, SLOT(Range()));
     connect(ui->SamplePipe, SIGNAL(clicked()), this, SLOT(SamplePipe()));
     connect(ui->Stop, SIGNAL(clicked()), this, SLOT(Stop()));
+
+    connect(element, SIGNAL(TaskFinished(int)), this, SLOT(TaskFinished(int)));
+//    connect(element, SIGNAL(TaskStop(int)), this, SLOT(TaskStop(int)));
+
+    Sender::initPipe();
+
+    //ui->logo->hide();
 }
 
 QFMain::~QFMain()
@@ -114,6 +127,7 @@ void QFMain::initCalibration()
 {
     // calibraiton
     QTabWidget *tabwidget = new QTabWidget();
+    tabwidget->setStyleSheet("QTabBar::tab{font:11pt 'Sans Serif'}");
     usercalib = new CalibFrameUser;
     usercalib->addPipeName(tr("零样"));
     usercalib->addPipeName(tr("标样"));
@@ -124,6 +138,7 @@ void QFMain::initCalibration()
     usercalib->setSampleHigh(5, 5);
     usercalib->loadParams();
     usercalib->renewUI();
+    connect(usercalib,SIGNAL(StartCalibration()), this, SLOT(UserCalibration()));
     factorycalib = new CalibFrameFactory;
     factorycalib->addPipeName(tr("零样"));
     factorycalib->addPipeName(tr("标样"));
@@ -137,6 +152,7 @@ void QFMain::initCalibration()
     tabwidget->addTab(usercalib, tr("用户标定"));
     tabwidget->addTab(factorycalib, tr("出厂标定"));
     ui->contentStackedWidget->addWidget(tabwidget);
+    connect(factorycalib,SIGNAL(StartCalibration()), this, SLOT(FactoryCalibration()));
 }
 
 
@@ -193,11 +209,12 @@ void QFMain::initMaintaince()
                 QObject::tr("无,加热温度,降温温度")},
     {QObject::tr("循环"),2,"00", ColumnInfo::CDT_Combox,
                 QObject::tr("无,流路清洗开始,流路清洗结束,水样润洗开始,水样润洗结束,"
-                            "进水样开始,进水样结束,进清水开始,进清水结束")},
+                            "进水样开始,进水样结束,进清水开始,进清水结束,"
+                            "水泵开始,水泵结束,水样排空开始,水样排空结束")},
     {QObject::tr("流程判定"),1,"0", ColumnInfo::CDT_Combox,
                 QObject::tr("无,液位1到达判定,液位2到达判定,液位3到达判定,加热判断,降温判定")},
     {QObject::tr("信号采集"),1,"0", ColumnInfo::CDT_Combox,
-                QObject::tr("无,空白值采集,显示值采集")},
+                QObject::tr("无,空白值采集,显示值采集,实时数据")},
     {QObject::tr("注释代码"),2,"00", ColumnInfo::CDT_Combox,
                 QObject::tr("无,降温,排空比色池,排空计量管,开采样,水样润洗,进***,消解,空白检测,比色检测,流路清洗,显色,静置,鼓泡,试剂替换,空闲")}};
     QList<ColumnInfo> ci ;
@@ -226,10 +243,6 @@ void QFMain::initMaintaince()
     maintaince->valve11->hide();
     maintaince->valve12->hide();
     connect(maintaince->SampleMeasure, SIGNAL(clicked()), this, SLOT(SampleMeasure()));
-    connect(maintaince->ZeroMeasure, SIGNAL(clicked()), this, SLOT(ZeroMeasure()));
-    connect(maintaince->StandardMeasure, SIGNAL(clicked()), this, SLOT(StandardMeasure()));
-    connect(maintaince->QCMeasure, SIGNAL(clicked()), this, SLOT(QCMeasure()));
-
     connect(maintaince->Drain, SIGNAL(clicked()), this, SLOT(Drain()));
     connect(maintaince->Stop, SIGNAL(clicked()), this, SLOT(Stop()));
     connect(maintaince->Clean, SIGNAL(clicked()), this, SLOT(Clean()));
@@ -242,6 +255,7 @@ void QFMain::initMaintaince()
 void QFMain::initQuery()
 {
     QTabWidget *tabwidget = new QTabWidget();
+    tabwidget->setStyleSheet("QTabBar::tab{font:11pt 'Sans Serif'}");
     ui->contentStackedWidget->addWidget(tabwidget);
     {
         int column1 = 9;
@@ -250,18 +264,18 @@ void QFMain::initQuery()
         QString items1 = "A1,A2,A3,A4,A5,A6,A7,A8,A9,B1";
         QString name1[] = {
             tr("时间"),
-            tr("浓度(mg/L)"),
+            tr("浓度mg/L"),
             tr("吸光度"),
-            tr("空白值C1"),
-            tr("显色值C1"),
-            tr("空白值C2"),
-            tr("显色值C2"),
+            tr("参比1"),
+            tr("吸收1"),
+            tr("参比2"),
+            tr("吸收2"),
             tr("温度"),
-            tr("操作类型"),
+            tr("标识"),
             tr("湿度(%)")
         };
         //   int width1[] = {120,100,70,65,65,65,68,120};
-        int width1[] = {130,100,68,85,85,85,85,55,110,55};
+        int width1[] = {180,110,110,90,90,90,90,55,55,55};
         queryData =  new QueryData(column1);
         for(int i=0;i<column1;i++){
             queryData->setColumnWidth(i,width1[i]);
@@ -275,24 +289,25 @@ void QFMain::initQuery()
     }
 
     {
-        int column1 = 9;
+        int column1 = 10;
         QString label = tr("标定数据查询");
         QString table1 = "Calibration";
         QString items1 = "A1,A2,A3,A4,A5,A6,A7,A8,A9,B1";
         QString name1[] = {
             tr("时间"),
-            tr("浓度(mg/L)"),
+            tr("类型"),
+            tr("浓度mg/L"),
             tr("吸光度"),
-            tr("空白值C1"),
-            tr("显色值C1"),
-            tr("空白值C2"),
-            tr("显色值C2"),
+            tr("参比1"),
+            tr("吸收1"),
+            tr("参比2"),
+            tr("吸收2"),
             tr("温度"),
-            tr("操作类型"),
+            tr("标识"),
             tr("湿度(%)")
         };
         //   int width1[] = {120,100,70,65,65,65,68,120};
-        int width1[] = {130,100,68,85,85,85,85,55,110,55};
+        int width1[] = {180,100,110,110,90,90,90,90,55,55,55};
         queryCalib =  new QueryData(column1);
         for(int i=0;i<column1;i++){
             queryCalib->setColumnWidth(i,width1[i]);
@@ -313,19 +328,19 @@ void QFMain::initQuery()
         QString name1[] = {
             tr("时间"),
             tr("类别"),
-            tr("浓度(mg/L)"),
+            tr("浓度mg/L"),
             tr("吸光度"),
             tr("参比1"),
             tr("吸收1"),
             tr("参比2"),
             tr("吸收2"),
             tr("温度"),
-            tr("数据标识"),
+            tr("标识"),
             tr("指标1"),
             tr("指标2"),
             tr("指标3")};
         //   int width1[] = {120,100,70,65,65,65,68,120};
-        int width1[] = {130,100,68,85,85,85,85,55,110,55,85,55,110,55};
+        int width1[] = {180,100,110,110,90,90,90,90,55,55,100,100,100,55};
         queryQC =  new QueryData(column1);
         for(int i=0;i<column1;i++){
             queryQC->setColumnWidth(i,width1[i]);
@@ -348,7 +363,7 @@ void QFMain::initQuery()
             tr("级别"),
             tr("信息")
         };
-        int width1[] = {120,100,550};
+        int width1[] = {180,80,550};
         queryError =  new QueryData(column1);
         for(int i=0;i<column1;i++){
             queryError->setColumnWidth(i,width1[i]);
@@ -358,6 +373,8 @@ void QFMain::initQuery()
         queryError->setSqlString(table1,items1);
         queryError->UpdateModel();
         queryError->initFirstPageQuery();
+        //QString lab4 = tr("报警记录");
+        //tabwidget->tab->setStyleSheet
         tabwidget->addTab(queryError, tr("报警记录"));
     }
 
@@ -371,7 +388,7 @@ void QFMain::initQuery()
             tr("类别"),
             tr("信息")
         };
-        int width1[] = {120,120,550};
+        int width1[] = {180,120,550};
         queryLog =  new QueryData(column1);
         for(int i=0;i<column1;i++){
             queryLog->setColumnWidth(i,width1[i]);
@@ -384,6 +401,7 @@ void QFMain::initQuery()
         tabwidget->addTab(queryLog, tr("日志记录"));
     }
 }
+
 
 void QFMain::menuClicked(int p)
 {
@@ -453,18 +471,28 @@ void QFMain::updateStatus()
     int totalnum = 0;
     if (task)
     {
+        int timeLong = task->getLastProcessTime();
+        int currProcess = task->getProcess();
+        int remain = (timeLong - currProcess) / 60;
+
         nowstep = task->getStepnum();
         totalnum = task->getTotalStep();
-        ui->progressBar->setRange(0, task->getLastProcessTime());
-        ui->progressBar->setValue(task->getProcess());
+
+        ui->progressBar->setRange(0, timeLong);
+        ui->progressBar->setValue(currProcess);
+        ui->Remain->setText(tr("剩余时间：%1分钟").arg(remain < 1 ? 1 : remain));
+        ui->RealTimeResult->setText(QString::number(task->getRealTimeValue(), 'f', 3));
     } else {
         ui->progressBar->setValue(0);
+        ui->Remain->setText("");
     }
 
     Receiver re = element->getReceiver();
+    int leavetime = 0;
     if (!re.data().isEmpty())
     {
 //        ui->RealTimeResult->setText(QString("%1").arg(re.lightVoltage1()));
+        leavetime = re.stepTime();
         ui->waterVoltage->setText(QString("%1").arg(re.lightVoltage1()));
         ui->waterVoltage1->setText(QString("%1").arg(re.lightVoltage2()));
         ui->waterVoltage2->setText(QString("%1").arg(re.lightVoltage3()));
@@ -481,9 +509,9 @@ void QFMain::updateStatus()
         lightVoltage->RefWaterLevel1->setText(QString("%1").arg(re.refLightSignal()));
         lightVoltage->RefWaterLevel2->setText(QString("%1").arg(re.measureSignal()));
 
-        ui->Recv->setText(re.data());
-        ui->warning->setText(getLastErrorMsg());
+        //ui->Recv->setText(re.data());
     }
+    ui->warning->setText(getLastErrorMsg());
 
     const QString style1 = "image: url(:/LedGreen.ico);";
     const QString style2 = "image: url(:/LedRed.ico);";
@@ -502,12 +530,19 @@ void QFMain::updateStatus()
         ui->led6->setStyleSheet(sd.valve6()?style1:style2);
         ui->led7->setStyleSheet(sd.valve7()?style1:style2);
         ui->led8->setStyleSheet(sd.valve8()?style1:style2);
-
         QString explainString = sd.translateExplainCode();
-        QString explainString2 = QString("(%1)").arg(re.stepTime());
-        QString stepshow = QString("<%1 / %2>").arg(nowstep).arg(totalnum);
-        if (!explainString.isEmpty())
-            ui->CurrentTask->setText(tr("当前流程：") + explainString + stepshow + explainString2);
+        QString explainString2 = QString("(%1)").arg(leavetime);
+        QString stepshow = QString("%1/%2").arg(nowstep).arg(totalnum);
+        if (!explainString.isEmpty()) {
+            ui->CurrentTask->setText(tr("当前流程：") + explainString);
+            ui->stepshow->setText(tr("当前步骤：")+ stepshow + explainString2);
+            if(this->explainString!=explainString)
+            {
+               addLogger(explainString, LoggerTypeRunning);
+               this->explainString=explainString;
+            }
+
+    }
     }
 
     DatabaseProfile profile;
@@ -520,6 +555,11 @@ void QFMain::updateStatus()
     }
 
 
+    QPair<int,int> nt = element->getNextPoint();
+    if (nt.first < 0)
+        ui->MeasureModeInfo->setText(tr("自动测量已关闭"));
+    else
+        ui->MeasureModeInfo->setText(tr("下次测量时间 %1:%2" ).arg(nt.first,2,10,QChar('0')).arg(nt.second,2,10,QChar('0')));
 }
 
 //用户登陆权限管理
@@ -581,7 +621,7 @@ void QFMain::loadSettings()
 
         measuremode->PointMin->setValue(profile.value("PointMin", 0).toInt());
         measuremode->MeasurePeriod->setValue(profile.value("MeasurePeriod", 60).toInt());
-        measuremode->MeasureStartTime->setTime(profile.value("MeasureStartTime", QTime::currentTime()).toTime());
+        measuremode->MeasureStartTime->setDateTime(profile.value("MeasureStartTime").toDateTime());
     }
 }
 
@@ -638,7 +678,7 @@ void QFMain::saveSettings()
 
         profile.setValue("PointMin", measuremode->PointMin->value());
         profile.setValue("MeasurePeriod", measuremode->MeasurePeriod->value());
-        profile.setValue("MeasureStartTime", measuremode->MeasureStartTime->time());
+        profile.setValue("MeasureStartTime", measuremode->MeasureStartTime->dateTime());
     }
     QMessageBox::information(NULL, tr("提示"), tr("保存成功"));
 }
@@ -725,37 +765,7 @@ void QFMain::SampleMeasure()
     if (ret != 0)
         QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
     else
-        addLogger(tr("水样测试"), LoggerTypeOperations);
-}
-
-void QFMain::ZeroMeasure()
-{
-    int ret = element->startTask(TT_ZeroCheck);
-
-    if (ret != 0)
-        QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
-    else
-        addLogger(tr("零点核查"), LoggerTypeOperations);
-}
-
-void QFMain::StandardMeasure()
-{
-    int ret = element->startTask(TT_SampleCheck);
-
-    if (ret != 0)
-        QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
-    else
-        addLogger(tr("标样核查"), LoggerTypeOperations);
-}
-
-void QFMain::QCMeasure()
-{
-    int ret = element->startTask(TT_SpikedCheck);
-
-    if (ret != 0)
-        QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
-    else
-        addLogger(tr("水样加标"), LoggerTypeOperations);
+        addLogger(tr("手动测试"), LoggerTypeOperations);
 }
 
 void QFMain::Drain()
@@ -770,8 +780,9 @@ void QFMain::Drain()
 
 void QFMain::Stop()
 {
-    if (element->getTaskType() <= TT_ErrorProc &&
-            QMessageBox::question(this, tr("提示"), tr("当前正在执行其他任务，是否确定停止？"),
+    int ti = element->getTaskType();
+    if (ti <= TT_ErrorProc && ti > 0 &&
+            QMessageBox::question(this, tr("提示"), tr("当前正在执行任务 %1，是否确定停止？").arg(ti),
                                      QMessageBox::Yes|QMessageBox::No)
                     == QMessageBox::No)
         return;
@@ -873,4 +884,76 @@ void QFMain::SaveLigthVoltage()
         QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
     else
         addLogger(tr("光源调节"), LoggerTypeMaintiance);
+}
+
+void QFMain::UserCalibration()
+{
+    int i = usercalib->getNextCalib();
+    if (i < 0 || autoCalibrationType != AC_Idle)
+        return;
+
+     pframe = usercalib;
+    int ret = element->startTask(i == 0 ? TT_ZeroCalibration : TT_SampleCalibration);
+
+    if (ret != 0)
+        QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
+    else {
+        autoCalibrationType = AC_UserCalibration;
+        addLogger(tr("用户标定"), LoggerTypeOperations);
+    }
+}
+
+void QFMain::FactoryCalibration()
+{
+    int i = factorycalib->getNextCalib();
+    if (i < 0 || autoCalibrationType != AC_Idle)
+        return;
+
+    pframe = factorycalib;
+    int ret = element->startTask(i == 0 ? TT_ZeroCalibration : TT_SampleCalibration);
+
+    if (ret != 0)
+        QMessageBox::warning(this, tr("警告"), tr("%1，执行失败").arg(element->translateStartCode(ret)));
+    else {
+        autoCalibrationType = AC_FactoryCalibration;
+        addLogger(tr("出厂标定"), LoggerTypeOperations);
+    }
+}
+
+void QFMain::TaskFinished(int type)
+{
+    switch (type)
+    {
+    case TT_Measure: break;
+    case TT_ZeroCalibration:
+    case TT_SampleCalibration:
+        if (autoCalibrationType == AC_UserCalibration) {
+            QTimer::singleShot(500, this, SLOT(UserCalibration()));
+        } else if (autoCalibrationType == AC_FactoryCalibration) {
+            QTimer::singleShot(500, this, SLOT(FactoryCalibration()));
+        }
+        break;
+    case TT_ZeroCheck:
+    case TT_SampleCheck:
+    case TT_SpikedCheck:
+    case TT_ErrorProc:
+    case TT_Stop:
+    case TT_Clean:
+    case TT_Drain:
+    case TT_Initial:
+    case TT_Debug:
+    case TT_Initload:
+    case TT_Func:
+    case TT_Config:break;
+    }
+    autoCalibrationType = AC_Idle;
+}
+
+void QFMain::TashStop(int type)
+{
+}
+
+void QFMain::on_pushButton_clicked()
+{
+    ui->warning->clear();
 }
