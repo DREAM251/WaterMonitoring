@@ -1,9 +1,10 @@
-﻿#include "querydata.h"
+#include "querydata.h"
 #include "common.h"
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QStandardItemModel>
 #include <QSqlTableModel>
+#include "globelvalues.h"
 
 QueryData::QueryData(int ucolumn, int urow, QWidget* parent) :
     QWidget(parent , Qt::FramelessWindowHint) , row(urow)
@@ -39,6 +40,8 @@ void QueryData::InitModel()
     tvShowData->setModel(model);//设置模式
     tvShowData->setSelectionBehavior(QAbstractItemView::SelectRows);
     tvShowData->setEditTriggers(QAbstractItemView::NoEditTriggers);//不能编辑模式
+    tvShowData->horizontalHeader()->setFont(QFont("Sans Serif", 9,QFont::Black));
+    tvShowData->setFont(QFont("Sans Serif", 8));
     for(int i=0;i<column;i++){
         model->setHeaderData(i, Qt::Horizontal, name.at(i));//设置表头
         tvShowData->setColumnWidth(i, width.at(i));
@@ -386,7 +389,7 @@ void QueryData::readData(QString &table, QString &filename)
         {
             QString strSource1 = strTargetDir + filepath;
 
-            system(QString("cp /dist/csv/%1.csv %2").arg(table).arg(strSource1).toLatin1().data());
+             system(QString("cp /dist/%1/csv/%2.csv %3").arg(elementPath).arg(table).arg(strSource1).toLatin1().data());
             //QMessageBox::information(NULL, tr("提示"),tr("导出成功！"));
         }
     }
@@ -396,24 +399,25 @@ void QueryData::readData(QString &table, QString &filename)
 void QueryData::slot_PrinterSelectUi()
 {
      QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("/dist/UserData.db");
+     QString s = QString("/dist/%1/UserData.db").arg(elementPath);
+    db.setDatabaseName(s);
     db.open();
 
 
     QString tablename1 = "data";
-    QString filename1 = "/dist/csv/data.csv";
+    QString filename1 = QString("/dist/%1/csv/data.csv").arg(elementPath);
 
     QString tablename2 = "error";
-    QString filename2 = "/dist/csv/error.csv";
+    QString filename2 = QString("/dist/%1/csv/error.csv").arg(elementPath);
 
     QString tablename3 = "calibration";
-    QString filename3 = "/dist/csv/calibration.csv";
+    QString filename3 = QString("/dist/%1/csv/calibration.csv").arg(elementPath);
 
     QString tablename4 = "log";
-    QString filename4 = "/dist/csv/log.csv";
+    QString filename4 = QString("/dist/%1/csv/log.csv").arg(elementPath);
 
     QString tablename5 = "qc";
-    QString filename5 = "/dist/csv/qc.csv";
+    QString filename5 = QString("/dist/%1/csv/qc.csv").arg(elementPath);
 
     readData(tablename1,filename1);
     readData(tablename2,filename2);
