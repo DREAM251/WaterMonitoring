@@ -1,11 +1,11 @@
-﻿#include "common.h"
+#include "common.h"
+#include "globelvalues.h"
 #include <QFile>
 #include <QtSql>
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QMessageBox>
-#include <QSettings>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,8 +24,6 @@
 #include <windows.h>
 #endif
 
-
-static QString errorMessage;
 
 QString Int2Hex(int a , int b)
 {
@@ -261,7 +259,7 @@ bool readSqlValues(QSqlDatabase *sqldb, const QString &table, QStringList &value
 QStringList loadCommandFileLines(const QString &filePath)
 {
     QStringList ct;
-    QFile file(filePath);
+    QFile file(elementPath + filePath);
     char buf[256];
     qint64 len = 0;
 
@@ -277,7 +275,7 @@ QStringList loadCommandFileLines(const QString &filePath)
 bool saveCommandFile(const QStringList &lines, const QString &filePath)
 {
     QString data;
-    QFile file(filePath);
+    QFile file(elementPath + filePath);
     if (file.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
         for (int i = 0; i < lines.count(); i++)
@@ -293,7 +291,7 @@ bool saveCommandFile(const QStringList &lines, const QString &filePath)
 
 bool getUserDataBase(QSqlDatabase &sqlitedb)
 {
-    const QString dbuserdata = "UserData.db";
+    const QString dbuserdata = elementPath + "UserData.db";
     sqlitedb = QSqlDatabase::database(dbuserdata);
 
     if (!sqlitedb.isValid()) {
@@ -337,6 +335,32 @@ void addMeasureData(QList<QVariant> &data)
     sqlquery.clear();
 }
 
+void addCalibrationData(QList<QVariant> &data)
+{
+    QSqlDatabase sqlitedb;
+    if (!getUserDataBase(sqlitedb))
+        return;
+
+    QString TimeID = QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
+    QString Time = QDateTime::currentDateTime().toString("yy-MM-dd hh:mm");
+    QString strMsg;
+
+    int varCount = data.count();
+    for (int i = 0; i < 17; i++)
+    {
+        strMsg += ",'";
+        if (i < varCount)
+            strMsg += data[i].toString();
+        strMsg += "'";
+    }
+
+    QSqlQuery sqlquery(sqlitedb);
+    if (!sqlquery.exec(QString("INSERT INTO Calibration(ID,TimeID,A1,A2,A3,A4,A5,A6,A7,A8,A9,B1,B2,B3,B4,B5,B6,B7,B8,B9)"
+                               "VALUES(NULL,'%1','%2'%3);")
+                       .arg(TimeID).arg(Time).arg(strMsg)))
+        qDebug() << sqlquery.lastError().text() << sqlquery.lastQuery();
+    sqlquery.clear();
+}
 
 QString getLastErrorMsg()
 {
@@ -441,7 +465,10 @@ QString DriverSelectionDialog::getSelectedDriver()
             break;
     }
 
-    return dir[i];
+    if (dir.count() > 0)
+        return dir[i];
+    else
+        return "";
 }
 
 void DriverSelectionDialog::addExclusiveDriver(const QString &dri)
@@ -588,11 +615,11 @@ LOG_WRITER *LOG_WRITER::getObject(const QString &filePath)
     if(writer == NULL) {
         writer = new LOG_WRITER;
 
-        QDir dir("logs");
+        QDir dir("/elementPath/logs");
         if (!dir.exists())
         {
             dir.setPath("");
-            if (!dir.mkdir("logs"))
+            if (!dir.mkdir("/elementPath/logs"))
                 qDebug() << "mkdir logs failed!";
         }
     }
