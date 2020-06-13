@@ -3,7 +3,9 @@
 #include "common.h"
 #include <QMessageBox>
 #include <QProcess>
+#include <QSettings>
 #include "iprotocol.h"
+#include "globelvalues.h"
 
 SystemWindow::SystemWindow(QWidget *parent) :
     QWidget(parent),
@@ -11,10 +13,12 @@ SystemWindow::SystemWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    QSettings set("platform.ini", QSettings::IniFormat);
+    ui->PlatformSelect->setCurrentIndex(set.value("index", 0).toInt());
     ui->DateTimeEdit->setDateTime(QDateTime::currentDateTime());
 
     connect(ui->ScreenCalibration, SIGNAL(clicked()), this, SLOT(screenCalibration()));
-    connect(ui->PlatformSelect, SIGNAL(clicked()), this, SLOT(platformSelect()));
+    connect(ui->PlatformSelect, SIGNAL(currentIndexChanged(int)), this, SLOT(platformSelect(int)));
     connect(ui->UpdateProgram, SIGNAL(clicked()), this, SLOT(updateProgram()));
     connect(ui->SetTime, SIGNAL(clicked()), this, SLOT(setTime()));
 }
@@ -28,8 +32,24 @@ void SystemWindow::screenCalibration()
 {
 }
 
-void SystemWindow::platformSelect()
+void SystemWindow::platformSelect(int i)
 {
+    QSettings set("platform.ini", QSettings::IniFormat);
+
+    set.setValue("index", i);
+    switch (i)
+    {
+    case 0: set.setValue("path", "CODcr/");break;
+    case 1: set.setValue("path", "CODcrHCl/");break;
+    case 2: set.setValue("path", "NH3N/");break;
+    case 3: set.setValue("path", "TP/");break;
+    case 4: set.setValue("path", "TN/");break;
+    }
+
+    if (QMessageBox::question(NULL, tr("需要重启"), tr("平台变更，需要重启才能生效，是否立即重启？"),
+                          QMessageBox::No | QMessageBox::Yes, QMessageBox::No)
+            == QMessageBox::Yes)
+        system("reboot");
 }
 
 void SystemWindow::updateProgram()
@@ -112,26 +132,25 @@ void SystemWindow::on_pushButton_clicked()
     if(dsd.showModule())
     {
         QString strTargetDir = dsd.getSelectedDriver();
-        qDebug()<<QString("%1").arg(strTargetDir);
 
         if(QFile::exists(strTargetDir))
         {
             QString strSource1 = strTargetDir + "/zsfile";
             QString strSource2 = strTargetDir + "/zsfile/logs";
 
-            system(QString("cp /dist/measure.txt %1").arg(strSource1).toLatin1().data());
-            system(QString("cp /dist/drain.txt %1").arg(strSource1).toLatin1().data());
-            system(QString("cp /dist/error.txt %1").arg(strSource1).toLatin1().data());
-            system(QString("cp /dist/stop.txt %1").arg(strSource1).toLatin1().data());
-            system(QString("cp /dist/initialize.txt %1").arg(strSource1).toLatin1().data());
-            system(QString("cp /dist/poweron.txt %1").arg(strSource1).toLatin1().data());
-            system(QString("cp /dist/wash.txt %1").arg(strSource1).toLatin1().data());
-            system(QString("cp /dist/UserData.db %1").arg(strSource1).toLatin1().data());
-            system(QString("cp /dist/config.db %1").arg(strSource1).toLatin1().data());
-            system(QString("cp /dist/logs/mcu.logs %1").arg(strSource2).toLatin1().data());
+            system(QString("cp /dist/%1/measure.txt %2").arg(elementPath).arg(strSource1).toLatin1().data());
+            system(QString("cp /dist/%1/drain.txt %2").arg(elementPath).arg(strSource1).toLatin1().data());
+            system(QString("cp /dist/%1/error.txt %2").arg(elementPath).arg(strSource1).toLatin1().data());
+            system(QString("cp /dist/%1/stop.txt %2").arg(elementPath).arg(strSource1).toLatin1().data());
+            system(QString("cp /dist/%1/initialize.txt %2").arg(elementPath).arg(strSource1).toLatin1().data());
+            system(QString("cp /dist/%1/poweron.txt %2").arg(elementPath).arg(strSource1).toLatin1().data());
+            system(QString("cp /dist/%1/wash.txt %2").arg(elementPath).arg(strSource1).toLatin1().data());
+            system(QString("cp /dist/%1/UserData.db %2").arg(elementPath).arg(strSource1).toLatin1().data());
+            system(QString("cp /dist/%1/config.db %2").arg(elementPath).arg(strSource1).toLatin1().data());
+            system(QString("cp /dist/%1/logs/mcu.log %2").arg(elementPath).arg(strSource2).toLatin1().data());
             for(int i=1;i<=3;i++)
             {
-               system(QString("cp /dist/logs/mcu%1.logs %2").arg(i).arg(strSource2).toLatin1().data());
+               system(QString("cp /dist/%1/logs/mcu%2.log %3").arg(elementPath).arg(i).arg(strSource2).toLatin1().data());
             }
 
 
