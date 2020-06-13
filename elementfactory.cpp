@@ -1,7 +1,7 @@
-﻿#include "elementfactory.h"
+#include "elementfactory.h"
 #include "defines.h"
 
-ElementFactory::ElementFactory(ElementType type) :
+ElementFactory::ElementFactory(QString type) :
     element(type)
 {
 }
@@ -36,4 +36,39 @@ ITask *ElementFactory::getTask(TaskType type)
 IProtocol *ElementFactory::getProtocol()
 {
     return new IProtocol(UL_PORT",9600,n,8,1");
+}
+
+QString ElementFactory::getElementName()
+{
+    if (element == "NH3N/") {
+        return QObject::tr("氨氮");
+    }
+    else if (element == "TP/") {
+        return QObject::tr("总磷");
+    }
+    else if (element == "TN/") {
+        return QObject::tr("总氮");
+    }
+    else
+        return QObject::tr("COD");
+}
+
+QString ElementFactory::getElementUnit()
+{
+    return "mg/L";
+}
+
+QString ElementFactory::getDeviceName()
+{
+    if (element == "NH3N/") {
+        return QObject::tr("ZS-VS01型氨氮（NH3N）在线监测仪");
+    }
+    else if (element == "TP/") {
+        return QObject::tr("ZS-VS01型总磷（TP）在线监测仪");
+    }
+    else if (element == "TN/") {
+        return QObject::tr("ZS-VS01型总氮（TN）在线监测仪");
+    }
+    else
+        return QObject::tr("ZS-VS01型化学需氧量（CODcr）在线监测仪");
 }
