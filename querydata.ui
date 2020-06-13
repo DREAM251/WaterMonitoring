@@ -10,11 +10,20 @@
     <height>497</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <family>Sans Serif</family>
+    <pointsize>10</pointsize>
+    <weight>50</weight>
+    <italic>false</italic>
+    <bold>false</bold>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true"/>
+   <string notr="true">font: 10pt &quot;Sans Serif&quot;;</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
    <property name="margin">
@@ -22,6 +31,18 @@
    </property>
    <item row="0" column="0">
     <widget class="QStackedWidget" name="swPageSel">
+     <property name="font">
+      <font>
+       <family>Sans Serif</family>
+       <pointsize>10</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 10pt &quot;Sans Serif&quot;;</string>
+     </property>
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
      </property>
@@ -46,7 +67,20 @@
         <number>2</number>
        </property>
        <item row="1" column="0" colspan="5">
-        <widget class="QTableView" name="tvShowData"/>
+        <widget class="QTableView" name="tvShowData">
+         <property name="font">
+          <font>
+           <family>Sans Serif</family>
+           <pointsize>8</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">font: 8pt &quot;Sans Serif&quot;;</string>
+         </property>
+        </widget>
        </item>
        <item row="2" column="3">
         <widget class="QPushButton" name="pbNextPage">
@@ -85,8 +119,17 @@
        </item>
        <item row="0" column="4">
         <widget class="QLabel" name="lbPages">
+         <property name="font">
+          <font>
+           <family>Sans Serif</family>
+           <pointsize>10</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
+         </property>
          <property name="styleSheet">
-          <string notr="true">QLabel{font : 11pt;};</string>
+          <string notr="true">QLabel{font : 10pt;};</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::NoFrame</enum>
@@ -123,6 +166,15 @@
            </property>
            <item row="0" column="0">
             <widget class="QSpinBox" name="spJumpPage">
+             <property name="font">
+              <font>
+               <family>Sans Serif</family>
+               <pointsize>10</pointsize>
+               <weight>50</weight>
+               <italic>false</italic>
+               <bold>false</bold>
+              </font>
+             </property>
              <property name="buttonSymbols">
               <enum>QAbstractSpinBox::NoButtons</enum>
              </property>
@@ -169,6 +221,15 @@
        </item>
        <item row="0" column="0">
         <widget class="QComboBox" name="cbSearch">
+         <property name="font">
+          <font>
+           <family>Sans Serif</family>
+           <pointsize>10</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
+         </property>
          <item>
           <property name="text">
            <string>页码检索</string>
@@ -217,7 +278,11 @@
          </property>
          <property name="font">
           <font>
-           <pointsize>14</pointsize>
+           <family>Sans Serif</family>
+           <pointsize>10</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
           </font>
          </property>
          <property name="styleSheet">
@@ -238,7 +303,11 @@
          </property>
          <property name="font">
           <font>
-           <pointsize>14</pointsize>
+           <family>Sans Serif</family>
+           <pointsize>10</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
           </font>
          </property>
          <property name="styleSheet">
@@ -259,7 +328,11 @@
          </property>
          <property name="font">
           <font>
-           <pointsize>14</pointsize>
+           <family>Sans Serif</family>
+           <pointsize>10</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
           </font>
          </property>
          <property name="styleSheet">
@@ -280,7 +353,11 @@
          </property>
          <property name="font">
           <font>
-           <pointsize>14</pointsize>
+           <family>Sans Serif</family>
+           <pointsize>10</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
           </font>
          </property>
          <property name="styleSheet">
