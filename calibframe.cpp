@@ -1,6 +1,5 @@
 ﻿#include "calibframe.h"
 #include "ui_calibframe.h"
-#include <QSettings>
 #include <QDebug>
 #include <QMessageBox>
 
@@ -106,7 +105,16 @@ void CalibFrame::loadParams()
             samples[i].ratio[0] = dbprofile.value(QString("%1/sample").arg(i)).toInt();
             samples[i].ratio[1] = dbprofile.value(QString("%1/water").arg(i)).toInt();
             samples[i].mode = dbprofile.value(QString("%1/mode").arg(i)).toInt();
+            samples[i].A1 = dbprofile.value(QString("%1/A1").arg(i)).toInt();
+            samples[i].A2 = dbprofile.value(QString("%1/A2").arg(i)).toInt();
+            samples[i].B1 = dbprofile.value(QString("%1/B1").arg(i)).toInt();
+            samples[i].B2 = dbprofile.value(QString("%1/B2").arg(i)).toInt();
         }
+    }
+
+    if (dbprofile.beginSection("settings"))
+    {
+        turbidityOffset = dbprofile.value("TurbidityOffset", 1).toFloat();
     }
 }
 
@@ -124,6 +132,12 @@ void CalibFrame::saveParams()
             dbprofile.setValue(QString("%1/sample").arg(i), samples[i].ratio[0]);
             dbprofile.setValue(QString("%1/water").arg(i), samples[i].ratio[1]);
             dbprofile.setValue(QString("%1/mode").arg(i), samples[i].mode);
+
+            dbprofile.setValue(QString("%1/A1").arg(i), samples[i].A1);
+            dbprofile.setValue(QString("%1/A2").arg(i), samples[i].A2);
+            dbprofile.setValue(QString("%1/B1").arg(i), samples[i].B1);
+            dbprofile.setValue(QString("%1/B2").arg(i), samples[i].B2);
+
         }
     }
 }
@@ -218,7 +232,7 @@ void CalibFrame::slot_save()
 void CalibFrame::slot_do()
 {
     renewUI();
-    emit signal_do();
+    emit StartCalibration();
 }
 
 void CalibFrame::slot_train()
@@ -296,16 +310,22 @@ int CalibFrame::getNextCalib()
     return current;
 }
 
-void CalibFrame::setVLight(int A1, int A2)
+void CalibFrame::setVLight(int A1, int A2, int B1, int B2)
 {
     if(current<0){
         return ;
     }
     if(A1<=0)A1=1;
     if(A2<=0)A2=1;
+    if(B1<=0)B1=1;
+    if(B2<=0)B2=1;
     double fA1 = (double)A1;
     double fA2 = (double)A2;
 
+    samples[current].A1 = A1;
+    samples[current].A2 = A2;
+    samples[current].B1 = B1;
+    samples[current].B2 = B2;
     samples[current].mode = HAVE_CALIB;
     samples[current].abs = log10(fA1/fA2);
 
@@ -319,6 +339,7 @@ CALC_END:
     saveParams();
     renewUI();
 }
+
 void CalibFrame::setHaveCalib()
 {
     for(int i(0);i<SAMPLE_COUNT;i++)
@@ -368,10 +389,18 @@ float CalibFrame::getAbs(int select)
 
 int CalibFrame::getPipe(int select)
 {
+    int pipe = -1;
     if(select<0||select>=SAMPLE_COUNT){
-        return 0;
+        return -1;
     }
-    return samples[select].pipe;
+
+    switch(samples[select].pipe)
+    {
+    case 0: pipe = 1; break;
+    case 1: pipe = 4; break;
+    }
+
+    return pipe;
 }
 /**
  * @brief CalibFrame::getRange
@@ -402,6 +431,20 @@ int CalibFrame::getWater(int select)
     return samples[select].ratio[1];
 }
 
+QString CalibFrame::getCurrentName()
+{
+    switch (current)
+    {
+    case 1: return tr("标样一");
+    case 2: return tr("标样二");
+    case 3: return tr("标样三");
+    case 4: return tr("标样四");
+    case 5: return tr("标样五");
+    case 6: return tr("标样六");
+    default: return tr("零标样");
+    }
+}
+
 QString CalibFrame::getPipeName(int select)
 {
     if(select<0||select>=SAMPLE_COUNT){
@@ -427,18 +470,27 @@ CalibFrameUser::CalibFrameUser(QWidget *parent) :
 
 bool CalibFrameUser::calc()
 {
-    loadParams();
     //提取已标定的项目
     QList<struct oneSample*> unit;
     unit.clear();
-    for(int i(0);i<SAMPLE_COUNT;i++)
+    for(int i(0);i<SAMPLE_COUNT;i++) {
+        // 重新计算吸光度
+        if (samples[i].A1 > 0 && samples[i].A2 > 0 &&
+                samples[i].B1 > 0 && samples[i].B2 > 0) {
+            samples[i].abs = log10(samples[i].A1 / samples[i].A2) -
+                    log10(samples[i].B1 / samples[i].B2) * (turbidityOffset);
+        }
+
         if(samples[i].mode==HAVE_CALIB)
             unit.push_back(&samples[i]);
+    }
 
     //计算稀释后的浓度
     int count = unit.count();
+
     double realconc[SAMPLE_COUNT];
     double theoryconc[SAMPLE_COUNT];
+    loadFactoryParams();
     for(int i=0;i<count;i++)
     {
         //实际浓度
@@ -502,6 +554,20 @@ void CalibFrameUser::reset()
     lfitR = 1;
 }
 
+void CalibFrameUser::loadFactoryParams()
+{
+    DatabaseProfile dbprofile;
+    if (dbprofile.beginSection("measure"))
+    {
+        qfitA=dbprofile.value("quada",0).toDouble();
+        qfitB=dbprofile.value("quadb",1).toDouble();
+        qfitC=dbprofile.value("quadc",0).toDouble();
+        qfitR=dbprofile.value("quadr",1).toDouble();
+    }
+}
+
+
+
 CalibFrameFactory::CalibFrameFactory(QWidget *parent):
     CalibFrame(("factorycalib"), parent)
 {
@@ -512,9 +578,17 @@ bool CalibFrameFactory::calc()
     //提取已标定的项目
     QList<struct oneSample*> unit;
     unit.clear();
-    for(int i(0);i<SAMPLE_COUNT;i++)
+    for(int i(0);i<SAMPLE_COUNT;i++) {
+        // 重新计算吸光度
+        if (samples[i].A1 > 0 && samples[i].A2 > 0 &&
+                samples[i].B1 > 0 && samples[i].B2 > 0) {
+            samples[i].abs = log10(samples[i].A1 / samples[i].A2) -
+                    log10(samples[i].B1 / samples[i].B2) * (turbidityOffset);
+        }
+
         if(samples[i].mode==HAVE_CALIB)
             unit.push_back(&samples[i]);
+    }
 
     //计算稀释后的浓度
     int count = unit.count();
