@@ -614,12 +614,12 @@ LOG_WRITER *LOG_WRITER::getObject(const QString &filePath)
     static LOG_WRITER *writer = NULL;
     if(writer == NULL) {
         writer = new LOG_WRITER;
-
-        QDir dir("/elementPath/logs");
+        QString st = elementPath + "/logs";
+        QDir dir(st);
         if (!dir.exists())
         {
             dir.setPath("");
-            if (!dir.mkdir("/elementPath/logs"))
+            if (!dir.mkdir(st))
                 qDebug() << "mkdir logs failed!";
         }
     }
