@@ -68,7 +68,8 @@ QString Sender::getTCValve1Name(int i)
 
 void Sender::initPipe()
 {
-    QFile file("/elementPath/pipedef.txt");
+    QString s = elementPath + "/pipedef.txt";
+    QFile file(s);
 
     pipeName.clear();
     if (file.open(QIODevice::ReadOnly | QIODevice::Text))
