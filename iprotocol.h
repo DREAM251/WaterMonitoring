@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QStringList>
 #include <QTimer>
 #include <qcoreevent.h>
 #include <qextserialport.h>
@@ -19,6 +20,8 @@ public:
     void clear() {sent.clear();}
     QString translateExplainCode();
     QString getTCValve1Name(int i);
+
+    static void initPipe();
 
     int step();
     int stepTime();
@@ -60,6 +63,7 @@ public:
     bool coolJudgeStep();
     bool blankStep();
     bool colorStep();
+    bool realTimeValueStep();
     int explainCode();
 
     void setStep(int i);
@@ -93,6 +97,7 @@ private:
     //           | 100 ......................... | : |  xxxx |
     //           ----------------------------------- ---------
     QByteArray sent;
+    static QStringList pipeName;
 };
 
 class ConfigSender

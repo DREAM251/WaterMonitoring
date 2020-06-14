@@ -41,6 +41,8 @@ enum ErrorFlag
     EF_BlankError
 };
 
+class CalibFrame;
+
 class ITask : public QObject
 {
     Q_OBJECT
@@ -60,6 +62,7 @@ public:
     virtual void stop();
     virtual void oneCmdFinishEvent();
     virtual void recvEvent();
+    inline TaskType getTaskType() {return taskType;}
     inline bool isWorking(){return workFlag;}
     inline ErrorFlag isError(){return errorFlag;}
     inline int getLastProcessTime() {return processSeconds;}
@@ -67,6 +70,7 @@ public:
     inline int getStepnum() {return cmdIndex;}
     int getProcess();
     inline void setTaskType(TaskType type) { taskType = type;}
+    inline float getRealTimeValue() {return realTimeConc;}
 
     virtual void loadParameters();
     virtual void saveParameters();
@@ -93,6 +97,9 @@ protected:
     TaskType taskType;
     QDateTime startTime;
     int processSeconds; // 一次完整测量花费的时间
+
+    int pipe; //取液管道,-1代表默认管道
+    float realTimeConc;
 };
 
 
@@ -104,12 +111,19 @@ public:
         int range;
         bool rangeLock;
         int pipe;
+        int mode;
 
         float lineark;
         float linearb;
         float quada;
         float quadb;
         float quadc;
+
+        float userk;
+        float userb;
+
+        float smoothRange;
+        float turbidityOffset;
 
         int blankErrorValue;
     };
@@ -127,12 +141,18 @@ public:
     virtual bool collectColorValues();
 
     virtual void dataProcess();
+    virtual float realTimeDataProcess(int blankValue,
+                                      int colorValue,
+                                      int blankValueC2,
+                                      int colorValueC2);
     void recvEvent();
     virtual void loadParameters();
     virtual void saveParameters();
     virtual QStringList loadCommands();
 
-private:
+    void testDataProcess();
+
+protected:
     int blankSampleTimes;
     int colorSampleTimes;
     int blankValue;
@@ -143,12 +163,19 @@ private:
 
     double vabs;
     double conc;
+
+    int lastBlankValue;
+    int lastBlankValueC2;
 };
 
 
 class CalibrationTask : public MeasureTask
 {
+public:
+    CalibrationTask();
 
+    void loadParameters();
+    virtual void dataProcess();
 };
 
 

@@ -1,6 +1,5 @@
 ﻿#include "modbusmodule.h"
 #include "ui_modbusmodule.h"
-#include <QSettings>
 #include <QDebug>
 #include <QDateTime>
 #include <QTextCodec>

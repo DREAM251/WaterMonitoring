@@ -1,7 +1,8 @@
 ﻿#include "elementinterface.h"
 #include "profile.h"
+#include <QDebug>
 
-MeasureMode::MeasureMode(ElementType element) :
+MeasureMode::MeasureMode(QString element) :
     workFlag(false),
     element(element)
 {
@@ -24,39 +25,54 @@ void MeasureMode::stopAutoMeasure()
 
 void MeasureMode::MMTimerEvent()
 {
-    if (!isWorking())
-        return;
+    QTime ct = QTime::currentTime();
 
-    QDateTime cdt = QDateTime::currentDateTime();
+    if (ct.second() < 2)
+    {
+        QPair<int,int> nt = getNextPoint(ct.addSecs(-2));
+        if (nt.first == ct.hour() && nt.second == ct.minute()) {
+            startTask(TT_Measure);
+        }
+    }
+}
+
+QPair<int, int> MeasureMode::getNextPoint(const QTime &st)
+{
+    int hour = -1;
+    int min = 0;
     DatabaseProfile profile;
     if (profile.beginSection("measuremode")) {
         int measureMode = profile.value("MeasureMethod", 0).toInt();
-        // 0 : 周期模式
-        // 1 : 定点模式
-        // 2 : 维护模式
         switch (measureMode)
         {
-        case 0: {
-            int offset = profile.value("PointMin").toInt();
-            QDateTime dt = cdt.addSecs(-60 * offset);
+        case 0: {// 周期模式
+            int period = profile.value("MeasurePeriod", 60).toInt() * 60;
+            QDateTime dt = profile.value("MeasureStartTime").toDateTime(),
+                    cdt = QDateTime::currentDateTime();
 
-            if (dt.time().second() == 0 && dt.time().minute() == 0 &&
-                    profile.value(QString("Point%1").arg(dt.time().hour()), false).toBool())
-            {
-                startTask(TT_Measure);
+            cdt.setTime(st);
+            if (cdt > dt) {
+                int minGap = ((dt.secsTo(cdt) / period) + 1) * period;
+                dt = dt.addSecs(minGap);
             }
+            hour = dt.time().hour();
+            min = dt.time().minute();
         }break;
 
-        case 1: {
-            int period = profile.value("MeasurePeriod", 60).toInt();
-            QTime stime = profile.value("MeasureStartTime", QTime::currentTime()).toTime();
+        case 1: {// 定点模式
+            int period = profile.value("PointMin").toInt();
+            int nexthour =  st.addSecs(-60 * period).hour() + 1;
 
-            int g = cdt.time().secsTo(stime);
-            if (g < 0)
-                g = -g;
-            if (g % (period * 60) == 0)
+            for(int i=0; i<24 ; i++)
             {
-                startTask(TT_Measure);
+                int j = (i+nexthour)%24;
+                bool en = profile.value(QString("Point%1").arg(j), false).toBool();
+
+                if(en) {
+                    hour = j;
+                    min = period;
+                    break;
+                }
             }
         }break;
 
@@ -64,17 +80,13 @@ void MeasureMode::MMTimerEvent()
             break;
         }
     }
-}
-
-QDateTime MeasureMode::getNextPoint()
-{
-    return QDateTime::currentDateTime();
+    return QPair<int, int>(hour, min);
 }
 
 /////////
 
 
-ElementInterface::ElementInterface(ElementType element, QObject *parent) :
+ElementInterface::ElementInterface(QString element, QObject *parent) :
     QObject(parent),
     MeasureMode(element),
     timer(new QTimer(this)),
@@ -82,19 +94,19 @@ ElementInterface::ElementInterface(ElementType element, QObject *parent) :
     currentTaskType(TT_Idle),
     protocol(NULL),
     currentTask(NULL),
-    factory(element)
+    factory(new ElementFactory(element))
 {
     for (int i = 1 + (int)TT_Idle; i < (int)TT_END; i++)
     {
         TaskType tt = (TaskType)(i);
 
-        ITask *it = factory.getTask(tt);
+        ITask *it = factory->getTask(tt);
         if (it) {
             it->setTaskType(tt);
             flowTable.insert(tt, it);
         }
     }
-    protocol = factory.getProtocol();
+    protocol = factory->getProtocol();
 
     timer->start(100);
     connect(timer, SIGNAL(timeout()), this, SLOT(TimerEvent()));
@@ -196,7 +208,8 @@ void ElementInterface::TimerEvent()
                 startTask(TT_ErrorProc);
             }
             else if (!currentTask->isWorking()) {
-                // ...
+                emit TaskFinished(currentTask->getTaskType());
+
                 currentTaskType = TT_Idle;
                 currentTask = NULL;
             }
@@ -206,5 +219,4 @@ void ElementInterface::TimerEvent()
 
 void ElementInterface::externTriggerMeasure()
 {
-
 }

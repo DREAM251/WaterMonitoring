@@ -168,11 +168,7 @@
             <widget class="QSpinBox" name="spJumpPage">
              <property name="font">
               <font>
-               <family>Sans Serif</family>
                <pointsize>10</pointsize>
-               <weight>50</weight>
-               <italic>false</italic>
-               <bold>false</bold>
               </font>
              </property>
              <property name="buttonSymbols">
@@ -223,11 +219,7 @@
         <widget class="QComboBox" name="cbSearch">
          <property name="font">
           <font>
-           <family>Sans Serif</family>
            <pointsize>10</pointsize>
-           <weight>50</weight>
-           <italic>false</italic>
-           <bold>false</bold>
           </font>
          </property>
          <item>

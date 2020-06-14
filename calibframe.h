@@ -19,6 +19,11 @@ struct oneSample{
     int ratio[2];
     int pipe;
     int mode;
+
+    float A1;
+    float A2;
+    float B1;
+    float B2;
 };
 struct autoCalibSample{
     float abs;
@@ -53,7 +58,7 @@ public:
     void setRange(int sel, QString name);
     void setSampleLow(int s1,int s2);
     void setSampleHigh(int s1,int s2);
-    void setVLight(int A1,int A2);
+    void setVLight(int A1, int A2, int B1, int B2);
 
     int getNextCalib();
     void setHaveCalib();
@@ -68,6 +73,15 @@ public:
     int getSample(int select);
     int getWater(int select);
 
+    QString getCurrentName();
+
+    float getCurrentConc() {return getConc(current);}
+    float getCurrentAbs() {return getAbs(current);}
+    int getCurrentRange() {return getRange(current);}
+    int getCurrentPipe() {return getPipe(current);}
+    int getCurrentSample() {return getSample(current);}
+    int getCurrentWater() {return getWater(current);}
+
 public Q_SLOTS:
     void slot_save();
     void slot_do();
@@ -76,7 +90,7 @@ public Q_SLOTS:
     void slot_range(int);
 
 Q_SIGNALS:
-    void signal_do();
+    void StartCalibration();
 
 protected:
     Ui::CalibFrame *ui;
@@ -85,6 +99,7 @@ protected:
     QString profile;
     QString rangeName[3];
     int samplelow,waterlow,samplehigh,waterhigh;//进样比例-单定量环
+    int turbidityOffset;
 
     struct oneSample samples[SAMPLE_COUNT];
     QDoubleSpinBox *pdsbConc[SAMPLE_COUNT];
@@ -109,6 +124,8 @@ public:
     virtual void loadParams();
     virtual void renewUI();
     virtual void reset();
+
+    void loadFactoryParams();
 
 protected:
     bool calc();

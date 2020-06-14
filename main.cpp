@@ -5,11 +5,15 @@
 #include "profile.h"
 #include "screensaver.h"
 #include "common.h"
+#include "globelvalues.h"
 #include <QApplication>
 #include <QMessageBox>
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QTextCodec>
+#include <QSettings>
+#include <QDir>
+#include "globelvalues.h"
 
 #if defined (_MSC_VER)
 #define CODE  "GB2312"
@@ -18,7 +22,6 @@
 #endif
 
 void initDataBase();
-ScreenSaver *screenSaver = NULL;
 
 class Application : public QApplication
 {
@@ -61,6 +64,16 @@ int main(int argc, char *argv[])
     QTextCodec::setCodecForTr(QTextCodec::codecForName(CODE));
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName(CODE));
     QTextCodec::setCodecForLocale(QTextCodec::codecForName(CODE));
+
+    // 平台初始化
+    QSettings set("platform.ini", QSettings::IniFormat);
+    elementPath = set.value("path", "CODcr/").toString();
+    if (!QFile::exists(elementPath)) {
+        QMessageBox::critical(NULL, QObject::tr("严重警告"),
+                              QObject::tr("平台数据路径不存在，请联系厂家"));
+        QDir dir;
+        dir.mkdir(elementPath);
+    }
 
     screenSaver = new ScreenSaver();
 
@@ -121,9 +134,9 @@ void initDataBase()
                "A1 TEXT,A2 TEXT,A3 TEXT,A4 TEXT,A5 TEXT,A6 TEXT,A7 TEXT,A8 TEXT,A9 TEXT,"
                "B1 TEXT,B2 TEXT,B3 TEXT,B4 TEXT,B5 TEXT,B6 TEXT,B7 TEXT,B8 TEXT,B9 TEXT);");
 
-    /*query.exec("CREATE TRIGGER if not exists deleteUntil1w after insert on log when (select count(*) from log) > 10000 "
+    query.exec("CREATE TRIGGER if not exists deleteFirst after insert on log when (select count(*) from log) > 200000 "
                "begin "
                "delete from log where log.id in (select log.id from log limit 1); "
-               "end");*/
+               "end");
     query.clear();
 }

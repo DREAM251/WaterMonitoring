@@ -18,7 +18,7 @@ public:
         AMT_Extern
     };
 
-    MeasureMode(ElementType element);
+    MeasureMode(QString element);
     ~MeasureMode();
 
     bool startAutoMeasure(AutoMeasureMode mode, const QString &parameter);
@@ -28,13 +28,12 @@ public:
     virtual int startTask(TaskType type) = 0;
 
     void MMTimerEvent();
-
-    QDateTime getNextPoint();
+    QPair<int, int> getNextPoint(const QTime &st = QTime::currentTime());
 
 private:
     bool workFlag;
     AutoMeasureMode mode;
-    ElementType element;
+    QString element;
 };
 
 class ElementInterface : public QObject,
@@ -43,7 +42,7 @@ class ElementInterface : public QObject,
     Q_OBJECT
 
 public:
-    ElementInterface(ElementType element, QObject *parent = NULL);
+    ElementInterface(QString element, QObject *parent = NULL);
     ~ElementInterface();
 
     int getLastMeasureTime();
@@ -53,6 +52,7 @@ public:
 
     TaskType getTaskType() {return currentTaskType;}
     ITask *getTask() {return currentTask;}
+    ElementFactory *getFactory() {return factory;}
 
     QString translateStartCode(int);
     int startTask(TaskType type);
@@ -62,6 +62,10 @@ public Q_SLOTS:
     void TimerEvent();
     void externTriggerMeasure();
 
+Q_SIGNALS:
+    void TaskFinished(int);
+    void TaskStop(int);
+
 private:
     QTimer *timer;
     int counter;
@@ -70,7 +74,7 @@ private:
     QHash<TaskType, ITask *> flowTable;
     IProtocol *protocol;
     ITask *currentTask;
-    ElementFactory factory;
+    ElementFactory *factory;
 };
 
 #endif // ELEMENTINTERFACE_H

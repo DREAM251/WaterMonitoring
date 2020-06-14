@@ -17,7 +17,7 @@ public:
 
 public slots:
     void screenCalibration();
-    void platformSelect();
+    void platformSelect(int i);
     void updateProgram();
     void setTime();
 private slots:

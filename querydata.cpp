@@ -1,4 +1,4 @@
-#include "querydata.h"
+﻿#include "querydata.h"
 #include "common.h"
 #include <QSqlDatabase>
 #include <QSqlQuery>

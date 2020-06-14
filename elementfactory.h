@@ -7,26 +7,20 @@
 #include <QHash>
 #include <QString>
 
-enum ElementType
-{
-    ET_CODCr = 0,
-    ET_NH3N,
-    ET_TP,
-    ET_TN,
-    ET_CODMN,
-    ET_TPb
-};
-
 class ElementFactory
 {
 public:
-    ElementFactory(ElementType elementName);
+    ElementFactory(QString elementName);
 
     ITask *getTask(TaskType type);
     IProtocol *getProtocol();
 
+    QString getElementName();
+    QString getElementUnit();
+    QString getDeviceName();
+
 private:
-    ElementType element;
+    QString element;
 };
 
 #endif // ELEMENTFACTORY_H

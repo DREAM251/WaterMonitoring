@@ -1,4 +1,4 @@
-#include "itask.h"
+﻿#include "itask.h"
 #include "defines.h"
 #include "profile.h"
 #include "../globelvalues.h"

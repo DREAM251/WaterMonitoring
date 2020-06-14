@@ -1,4 +1,4 @@
-#include "instructioneditor.h"
+﻿#include "instructioneditor.h"
 #include "common.h"
 #include <QMessageBox>
 #include <QFile>

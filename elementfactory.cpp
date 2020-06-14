@@ -1,4 +1,4 @@
-#include "elementfactory.h"
+﻿#include "elementfactory.h"
 #include "defines.h"
 
 ElementFactory::ElementFactory(QString type) :
@@ -50,7 +50,7 @@ QString ElementFactory::getElementName()
         return QObject::tr("总氮");
     }
     else
-        return QObject::tr("COD");
+        return QObject::tr("CODCr");
 }
 
 QString ElementFactory::getElementUnit()

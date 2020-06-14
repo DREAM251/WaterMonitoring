@@ -673,7 +673,7 @@ QRadioButton::indicator{min-width:24px;min-height:24px;}</string>
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>32</height>
+                <height>34</height>
                </size>
               </property>
               <property name="font">
@@ -706,7 +706,7 @@ QRadioButton::indicator{min-width:24px;min-height:24px;}</string>
               <property name="minimumSize">
                <size>
                 <width>150</width>
-                <height>32</height>
+                <height>34</height>
                </size>
               </property>
               <property name="font">
@@ -739,7 +739,7 @@ QRadioButton::indicator{min-width:24px;min-height:24px;}</string>
               <property name="minimumSize">
                <size>
                 <width>150</width>
-                <height>32</height>
+                <height>34</height>
                </size>
               </property>
               <property name="font">
@@ -772,7 +772,7 @@ QRadioButton::indicator{min-width:24px;min-height:24px;}</string>
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>32</height>
+                <height>34</height>
                </size>
               </property>
               <property name="font">

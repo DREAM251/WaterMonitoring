@@ -42,7 +42,9 @@ SOURCES += main.cpp\
     datafit.cpp \
     keyboard/keyboardenter.cpp \
     keyboard/keyboard.cpp \
-    screensaver.cpp
+    screensaver.cpp \
+    globelvalues.cpp \
+    smooth.cpp
 
 HEADERS  += systemwindow.h \
     iprotocol.h \
@@ -65,7 +67,9 @@ HEADERS  += systemwindow.h \
     datafit.h \
     keyboard/keyboardenter.h \
     keyboard/keyboard.h \
-    screensaver.h
+    screensaver.h \
+    globelvalues.h \
+    smooth.h
 
 FORMS    += systemwindow.ui \
     qfmain.ui \

@@ -1,6 +1,5 @@
 ﻿#include "screensaver.h"
 #include "ui_screensaver.h"
-#include <QSettings>
 
 #if defined (Q_WS_QWS)
 #include <QWSServer>

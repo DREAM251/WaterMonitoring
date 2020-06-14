@@ -18,6 +18,13 @@ class Maintaince;
 class MeasureMode;
 class LightVoltage;
 }
+
+enum AutoCalibrationType {
+    AC_Idle,
+    AC_UserCalibration,
+    AC_FactoryCalibration
+};
+
 class QFMain : public QWidget
 {
     Q_OBJECT
@@ -47,9 +54,7 @@ public slots:
     void SamplePipe();
 
     void SampleMeasure();
-    void ZeroMeasure();
-    void StandardMeasure();
-    void QCMeasure();
+
     void Drain();
     void Stop();
     void Clean();
@@ -58,9 +63,17 @@ public slots:
     void InitLoad();
     void SaveLigthVoltage();
 
+    void UserCalibration();
+    void FactoryCalibration();
+    void TaskFinished(int type); // 业务结束
+    void TashStop(int type); // 业务终止
+
 Q_SIGNALS:
     void systemTrigger();
     void userTrigger();
+
+private slots:
+    void on_pushButton_clicked();
 
 private:
     Ui::QFMain *ui;
@@ -72,6 +85,7 @@ private:
     QTimer *timer;
     ElementInterface *element;
     int loginLevel;
+    AutoCalibrationType autoCalibrationType;
 
     QueryData *queryData;
     QueryData *queryCalib;
@@ -87,7 +101,7 @@ private:
     QStringList nameMeasureMethod;
     QStringList nameRange;
     QStringList nameSamplePipe;
-
+    QString explainString;
 };
 
 #endif // QFMAIN_H

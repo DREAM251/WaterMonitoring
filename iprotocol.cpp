@@ -1,4 +1,4 @@
-#include "iprotocol.h"
+﻿#include "iprotocol.h"
 #include <QStringList>
 #include <QDebug>
 #include "defines.h"
@@ -68,7 +68,8 @@ QString Sender::getTCValve1Name(int i)
 
 void Sender::initPipe()
 {
-    QString s = elementPath + "/pipedef.txt";
+
+    QString s = "/dist/" + elementPath + "/pipedef.txt";
     QFile file(s);
 
     pipeName.clear();

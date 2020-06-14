@@ -105,11 +105,7 @@
          </property>
          <property name="font">
           <font>
-           <family>Sans Serif</family>
            <pointsize>10</pointsize>
-           <weight>50</weight>
-           <italic>false</italic>
-           <bold>false</bold>
           </font>
          </property>
          <property name="styleSheet">
@@ -136,11 +132,7 @@
          </property>
          <property name="font">
           <font>
-           <family>Sans Serif</family>
            <pointsize>10</pointsize>
-           <weight>50</weight>
-           <italic>false</italic>
-           <bold>false</bold>
           </font>
          </property>
          <property name="autoFillBackground">
@@ -164,11 +156,7 @@
         <widget class="QLabel" name="lbBuad">
          <property name="font">
           <font>
-           <family>Sans Serif</family>
            <pointsize>10</pointsize>
-           <weight>50</weight>
-           <italic>false</italic>
-           <bold>false</bold>
           </font>
          </property>
          <property name="styleSheet">
@@ -183,11 +171,7 @@
         <widget class="QComboBox" name="cbBuad">
          <property name="font">
           <font>
-           <family>Sans Serif</family>
            <pointsize>10</pointsize>
-           <weight>50</weight>
-           <italic>false</italic>
-           <bold>false</bold>
           </font>
          </property>
          <property name="styleSheet">
@@ -214,11 +198,7 @@
         <widget class="QLabel" name="lbData">
          <property name="font">
           <font>
-           <family>Sans Serif</family>
            <pointsize>10</pointsize>
-           <weight>50</weight>
-           <italic>false</italic>
-           <bold>false</bold>
           </font>
          </property>
          <property name="styleSheet">
@@ -233,11 +213,7 @@
         <widget class="QComboBox" name="cbData">
          <property name="font">
           <font>
-           <family>Sans Serif</family>
            <pointsize>10</pointsize>
-           <weight>50</weight>
-           <italic>false</italic>
-           <bold>false</bold>
           </font>
          </property>
          <property name="styleSheet">
@@ -269,11 +245,7 @@
         <widget class="QLabel" name="lbParity">
          <property name="font">
           <font>
-           <family>Sans Serif</family>
            <pointsize>10</pointsize>
-           <weight>50</weight>
-           <italic>false</italic>
-           <bold>false</bold>
           </font>
          </property>
          <property name="styleSheet">
@@ -288,11 +260,7 @@
         <widget class="QComboBox" name="cbParity">
          <property name="font">
           <font>
-           <family>Sans Serif</family>
            <pointsize>10</pointsize>
-           <weight>50</weight>
-           <italic>false</italic>
-           <bold>false</bold>
           </font>
          </property>
          <property name="styleSheet">
@@ -319,11 +287,7 @@
         <widget class="QLabel" name="lbStop">
          <property name="font">
           <font>
-           <family>Sans Serif</family>
            <pointsize>10</pointsize>
-           <weight>50</weight>
-           <italic>false</italic>
-           <bold>false</bold>
           </font>
          </property>
          <property name="styleSheet">
@@ -344,11 +308,7 @@
          </property>
          <property name="font">
           <font>
-           <family>Sans Serif</family>
            <pointsize>10</pointsize>
-           <weight>50</weight>
-           <italic>false</italic>
-           <bold>false</bold>
           </font>
          </property>
          <property name="styleSheet">
@@ -460,11 +420,7 @@ font: 10pt &quot;Sans Serif&quot;;</string>
       <widget class="QLabel" name="lbInfo_3">
        <property name="font">
         <font>
-         <family>Sans Serif</family>
          <pointsize>10</pointsize>
-         <weight>50</weight>
-         <italic>false</italic>
-         <bold>false</bold>
         </font>
        </property>
        <property name="styleSheet">
@@ -479,11 +435,7 @@ font: 10pt &quot;Sans Serif&quot;;</string>
       <widget class="QLabel" name="lbInfo">
        <property name="font">
         <font>
-         <family>Sans Serif</family>
          <pointsize>10</pointsize>
-         <weight>50</weight>
-         <italic>false</italic>
-         <bold>false</bold>
         </font>
        </property>
        <property name="styleSheet">
@@ -504,11 +456,7 @@ font: 10pt &quot;Sans Serif&quot;;</string>
        </property>
        <property name="font">
         <font>
-         <family>Sans Serif</family>
          <pointsize>10</pointsize>
-         <weight>50</weight>
-         <italic>false</italic>
-         <bold>false</bold>
         </font>
        </property>
        <property name="styleSheet">
@@ -526,11 +474,7 @@ font: 10pt &quot;Sans Serif&quot;;</string>
       <widget class="QLabel" name="lbInfo_2">
        <property name="font">
         <font>
-         <family>Sans Serif</family>
          <pointsize>10</pointsize>
-         <weight>50</weight>
-         <italic>false</italic>
-         <bold>false</bold>
         </font>
        </property>
        <property name="styleSheet">
@@ -551,11 +495,7 @@ font: 10pt &quot;Sans Serif&quot;;</string>
        </property>
        <property name="font">
         <font>
-         <family>Sans Serif</family>
          <pointsize>10</pointsize>
-         <weight>50</weight>
-         <italic>false</italic>
-         <bold>false</bold>
         </font>
        </property>
        <property name="styleSheet">

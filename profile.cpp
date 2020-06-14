@@ -15,7 +15,6 @@ DatabaseProfile::DatabaseProfile(const QString &name)
         sqlitedb.setDatabaseName(name);
     }
 
-    //SQLITECIPHER
     if (!sqlitedb.isOpen())
     {
         if (!sqlitedb.open())

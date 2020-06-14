@@ -69,9 +69,6 @@ public Q_SLOTS:
     void UpdateFile();
 
 private:
-    QStringList loadCommandFileLines(const QString &filePath);
-    bool saveCommandFile(const QStringList &lines, const QString &filePath);
-
     QStringList analysisOneLine(const QString &oneline);
     QString combineOneLine(const QStringList &misc);
 

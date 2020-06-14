@@ -1,4 +1,4 @@
-#ifndef GLOBEL_VALUES_H
+﻿#ifndef GLOBEL_VALUES_H
 #define GLOBEL_VALUES_H
 
 #include "calibframe.h"
@@ -7,5 +7,8 @@
 
 extern CalibFrame *pframe;
 extern ScreenSaver *screenSaver;
+extern QString elementPath;
+extern QString str;
+extern QString errorMessage;
 
 #endif // GLOBEL_H

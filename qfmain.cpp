@@ -1,4 +1,4 @@
-#include "qfmain.h"
+﻿#include "qfmain.h"
 #include "systemwindow.h"
 #include "profile.h"
 #include "globelvalues.h"
