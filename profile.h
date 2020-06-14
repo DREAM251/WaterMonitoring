@@ -8,7 +8,7 @@
 class DatabaseProfile
 {
 public:
-    DatabaseProfile(const QString &name = "/dist/elementPath/config.db");
+    DatabaseProfile(const QString &name = str);
 
     bool beginSection(const QString &section);
     bool setValue(const QString &key, const QVariant &value, const QString &keyName = QString());
