@@ -133,7 +133,6 @@ void ITask::oneCmdFinishEvent()
             return;
         }
     }
-
     sendNextCommand();
 }
 
