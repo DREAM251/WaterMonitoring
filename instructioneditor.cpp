@@ -7,6 +7,7 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QProcess>
+#include <QHeaderView>
 
 ComboBoxDelegate::ComboBoxDelegate(const QString &itemList, QObject* parent):
     QStyledItemDelegate(parent)
@@ -29,6 +30,7 @@ QWidget *ComboBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
 {
     QComboBox *curComboBox = new QComboBox(parent);
     curComboBox->setFixedHeight(option.rect.height());
+    curComboBox->setFixedWidth(option.rect.width());
     curComboBox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     curComboBox->addItems(curItemStrList);
     curComboBox->installEventFilter(const_cast<ComboBoxDelegate*>(this));
@@ -77,7 +79,11 @@ InstructionEditor::InstructionEditor(const QList<ColumnInfo> &h,
 
     tableView = new QTableView();
     tableView->setModel(tableModel);
+    tableView->horizontalHeader()->setStyleSheet("QHeaderView::section {color: black;padding-left: 4px;border: 1px solid #6c6c6c;font: 8pt 'Sans Serif';}");
+    tableView->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents );
+
     tableView->setFont(QFont("Sans Serif", 8));
+
     tableView->setSelectionMode(QAbstractItemView::ContiguousSelection);
     for (int i = 0; i < header.count(); i++)
     {
