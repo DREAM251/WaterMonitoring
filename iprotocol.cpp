@@ -66,10 +66,30 @@ QString Sender::getTCValve1Name(int i)
         return QObject::tr("管道%1").arg(i);
 }
 
+QString Sender::getPumpStatus(int i)
+{
+    QString stry;
+    if(i==0)
+    {
+        stry = "停止";
+        return stry;
+    }
+    else if(i==1)
+    {
+        stry = "正传";
+        return stry;
+    }
+    if(i==2)
+    {
+        stry = "反转";
+        return stry;
+    }
+}
+
 void Sender::initPipe()
 {
 
-    QString s = "/dist/" + elementPath + "/pipedef.txt";
+    QString s = elementPath + "/pipedef.txt";
     QFile file(s);
 
     pipeName.clear();

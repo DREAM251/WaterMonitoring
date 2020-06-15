@@ -20,6 +20,7 @@ public:
     void clear() {sent.clear();}
     QString translateExplainCode();
     QString getTCValve1Name(int i);
+    QString getPumpStatus(int i);
 
     static void initPipe();
 

@@ -102,6 +102,8 @@ private:
     QStringList nameRange;
     QStringList nameSamplePipe;
     QString explainString;
+    QString explainString2;
+    QString explainString3;
 };
 
 #endif // QFMAIN_H

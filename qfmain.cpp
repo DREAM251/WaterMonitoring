@@ -174,12 +174,12 @@ void QFMain::initMaintaince()
     struct ColumnInfo aa[] = {
     {QObject::tr("编号"),4,"1000"},
     {QObject::tr("执行时间"),4,"0005"},
-    {QObject::tr("蠕动泵"),1,"0"},
-    {QObject::tr("蠕动泵转速"),2,"20"},
-    {QObject::tr("泵2"),1,"0"},
-    {QObject::tr("十通阀1"),1,"0",ColumnInfo::CDT_Combox,
+    {QObject::tr("进样泵"),1,"0"},
+    {QObject::tr("转速"),2,"20"},
+    {QObject::tr("排液泵"),1,"0"},
+    {QObject::tr("十通1"),1,"0",ColumnInfo::CDT_Combox,
                 QObject::tr("关,阀1,阀2,阀3,阀4,阀5,阀6,阀7,阀8,阀9,阀10-A")},
-    {QObject::tr("十通阀2"),1,"0", ColumnInfo::CDT_Combox,
+    {QObject::tr("十通2"),1,"0", ColumnInfo::CDT_Combox,
                 QObject::tr("关,阀1,阀2,阀3,阀4,阀5,阀6,阀7,阀8,阀9,阀10-A")},
     {QObject::tr("阀1"),1,"0"},
     {QObject::tr("阀2"),1,"0"},
@@ -197,8 +197,8 @@ void QFMain::initMaintaince()
     {QObject::tr("风扇"),1,"0"},
     {QObject::tr("设置液位"),1,"0"},
     {QObject::tr("加热温度"),4,"0000"},
-    {QObject::tr("液位LED控制"),1,"0"},
-    {QObject::tr("测量LED控制"),1,"0"},
+    {QObject::tr("液位LED"),1,"0"},
+    {QObject::tr("测量LED"),1,"0"},
     {QObject::tr("保留"),4,"0000"},
     {QObject::tr("分隔符"),1,":"},
     {QObject::tr("时间关联"),2,"00", ColumnInfo::CDT_Combox,
@@ -207,7 +207,7 @@ void QFMain::initMaintaince()
     {QObject::tr("额外时间"),4,"0000"},
     {QObject::tr("温度关联"),2,"00", ColumnInfo::CDT_Combox,
                 QObject::tr("无,加热温度,降温温度")},
-    {QObject::tr("循环"),2,"00", ColumnInfo::CDT_Combox,
+    {QObject::tr("  步骤循环  "),2,"00", ColumnInfo::CDT_Combox,
                 QObject::tr("无,流路清洗开始,流路清洗结束,水样润洗开始,水样润洗结束,"
                             "进水样开始,进水样结束,进清水开始,进清水结束,"
                             "水泵开始,水泵结束,水样排空开始,水样排空结束")},
@@ -266,10 +266,10 @@ void QFMain::initQuery()
             tr("时间"),
             tr("浓度mg/L"),
             tr("吸光度"),
-            tr("参比1"),
             tr("吸收1"),
-            tr("参比2"),
             tr("吸收2"),
+            tr("参比1"),
+            tr("参比2"),
             tr("温度"),
             tr("标识"),
             tr("湿度(%)")
@@ -289,7 +289,7 @@ void QFMain::initQuery()
     }
 
     {
-        int column1 = 10;
+        int column1 = 12;
         QString label = tr("标定数据查询");
         QString table1 = "Calibration";
         QString items1 = "A1,A2,A3,A4,A5,A6,A7,A8,A9,B1";
@@ -298,16 +298,18 @@ void QFMain::initQuery()
             tr("类型"),
             tr("浓度mg/L"),
             tr("吸光度"),
-            tr("参比1"),
             tr("吸收1"),
-            tr("参比2"),
             tr("吸收2"),
+            tr("参比1"),
+            tr("参比2"),
             tr("温度"),
             tr("标识"),
-            tr("湿度(%)")
+            tr("斜率k"),
+            tr("截距b")
+
         };
         //   int width1[] = {120,100,70,65,65,65,68,120};
-        int width1[] = {180,100,110,110,90,90,90,90,55,55,55};
+        int width1[] = {180,100,110,110,90,90,90,90,55,55,55,110,110};
         queryCalib =  new QueryData(column1);
         for(int i=0;i<column1;i++){
             queryCalib->setColumnWidth(i,width1[i]);
@@ -330,10 +332,10 @@ void QFMain::initQuery()
             tr("类别"),
             tr("浓度mg/L"),
             tr("吸光度"),
-            tr("参比1"),
             tr("吸收1"),
-            tr("参比2"),
             tr("吸收2"),
+            tr("参比1"),
+            tr("参比2"),
             tr("温度"),
             tr("标识"),
             tr("指标1"),
@@ -493,6 +495,7 @@ void QFMain::updateStatus()
     {
 //        ui->RealTimeResult->setText(QString("%1").arg(re.lightVoltage1()));
         leavetime = re.stepTime();
+        explainString2 = QString("(%1)").arg(leavetime);
         ui->waterVoltage->setText(QString("%1").arg(re.lightVoltage1()));
         ui->waterVoltage1->setText(QString("%1").arg(re.lightVoltage2()));
         ui->waterVoltage2->setText(QString("%1").arg(re.lightVoltage3()));
@@ -516,12 +519,17 @@ void QFMain::updateStatus()
     const QString style1 = "image: url(:/LedGreen.ico);";
     const QString style2 = "image: url(:/LedRed.ico);";
     Sender sd = element->getSender();
+
     if (!sd.data().isEmpty())
     {
-        ui->pump1->setText(QString("%1").arg(sd.peristalticPump()));
-        ui->pump2->setText(QString("%1").arg(sd.pump2()));
-        ui->TV1->setText(QString("%1").arg(sd.TCValve1()));
-        ui->TV2->setText(QString("%1").arg(sd.TCValve2()));
+        int j = sd.peristalticPump();
+        ui->pump1->setText(QString("%1").arg(sd.getPumpStatus(j)));
+        int k = sd.pump2();
+        ui->pump2->setText(QString("%1").arg(sd.getPumpStatus(k)));
+        int i = sd.TCValve1();
+        ui->TV1->setText(QString("%1").arg(sd.getTCValve1Name(i)));
+        int h = sd.TCValve2();
+        ui->TV2->setText(QString("%1").arg(sd.getTCValve1Name(h)));
         ui->led1->setStyleSheet(sd.valve1()?style1:style2);
         ui->led2->setStyleSheet(sd.valve2()?style1:style2);
         ui->led3->setStyleSheet(sd.valve3()?style1:style2);
@@ -530,20 +538,31 @@ void QFMain::updateStatus()
         ui->led6->setStyleSheet(sd.valve6()?style1:style2);
         ui->led7->setStyleSheet(sd.valve7()?style1:style2);
         ui->led8->setStyleSheet(sd.valve8()?style1:style2);
-        QString explainString = sd.translateExplainCode();
-        QString explainString2 = QString("(%1)").arg(leavetime);
-        QString stepshow = QString("%1/%2").arg(nowstep).arg(totalnum);
-        if (!explainString.isEmpty()) {
-            ui->CurrentTask->setText(tr("当前流程：") + explainString);
-            ui->stepshow->setText(tr("当前步骤：")+ stepshow + explainString2);
-            if(this->explainString!=explainString)
-            {
-               addLogger(explainString, LoggerTypeRunning);
-               this->explainString=explainString;
-            }
+        explainString3 = sd.translateExplainCode();
+        //QString explainString2 = QString("(%1)").arg(leavetime);
+//        QString stepshow = QString("%1/%2").arg(nowstep).arg(totalnum);
+//        if (!explainString.isEmpty()) {
+//            ui->CurrentTask->setText(tr("当前流程：") + explainString);
+//            ui->stepshow->setText(tr("当前步骤：")+ stepshow + explainString2);
+//            if(this->explainString!=explainString)
+//            {
+//               addLogger(explainString, LoggerTypeRunning);
+//               this->explainString=explainString;
+//            }
 
+//    }
     }
-    }
+    QString stepshow = QString("%1/%2").arg(nowstep).arg(totalnum);
+    if (!explainString3.isEmpty()) {
+        ui->CurrentTask->setText(tr("当前流程：") + explainString3);
+        ui->stepshow->setText(tr("当前步骤：")+ stepshow + explainString2);
+        if(this->explainString!=explainString3)
+        {
+           addLogger(explainString3, LoggerTypeRunning);
+           this->explainString=explainString3;
+        }
+
+}
 
     DatabaseProfile profile;
     if (profile.beginSection("measure")){
