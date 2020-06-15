@@ -49,8 +49,11 @@ QString ElementFactory::getElementName()
     else if (element == "TN/") {
         return QObject::tr("总氮");
     }
+    else if (element == "CODcrHCl/") {
+        return QObject::tr("CODcr:高氯");
+    }
     else
-        return QObject::tr("CODCr");
+        return QObject::tr("CODcr");
 }
 
 QString ElementFactory::getElementUnit()
