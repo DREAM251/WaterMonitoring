@@ -4,10 +4,11 @@
 #include <QSqlQuery>
 #include <QStringList>
 #include <QSqlError>
-#include "common.h"
 
-DatabaseProfile::DatabaseProfile(const QString &name)
+
+DatabaseProfile::DatabaseProfile()
 {
+    QString name = elementPath + "/config.db";
     QSqlDatabase sqlitedb = QSqlDatabase::database(name);
 
     if (!sqlitedb.isValid()) {

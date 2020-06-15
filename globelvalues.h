@@ -8,7 +8,6 @@
 extern CalibFrame *pframe;
 extern ScreenSaver *screenSaver;
 extern QString elementPath;
-extern QString str;
 extern QString errorMessage;
 
 #endif // GLOBEL_H

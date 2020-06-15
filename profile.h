@@ -4,14 +4,16 @@
 #include <QSqlDatabase>
 #include <QVariant>
 #include "globelvalues.h"
+#include "common.h"
 #include <QString>
+
 
 
 class DatabaseProfile
 {
 public:
 
-    DatabaseProfile(const QString &name = str);
+    DatabaseProfile();
 
     bool beginSection(const QString &section);
     bool setValue(const QString &key, const QVariant &value, const QString &keyName = QString());

@@ -6,4 +6,4 @@ CalibFrame *pframe = NULL;
 ScreenSaver *screenSaver = NULL;
 QString elementPath = "";
 QString errorMessage = "";
-QString str = elementPath + "/config.db";
+
