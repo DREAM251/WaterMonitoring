@@ -7,6 +7,7 @@
 #include <math.h>
 #include <QTime>
 #include "smooth.h"
+#include <QDebug>
 
 int getRandom(int min,int max)
 {
@@ -107,6 +108,18 @@ void ITask::oneCmdFinishEvent()
                         protocol->getSender().TCValve1());
             addErrorMsg(QObject::tr("%1抽取失败，请检查").arg(pp), 1);
             errorFlag = EF_SamplingError;
+            stop();
+            return;
+        }
+    }
+
+    // 反排异常判定
+    if (protocol->getSender().waterLevel())
+    {
+        if (protocol->getReceiver().waterLevel() >= protocol->getSender().waterLevel())
+        {
+            addErrorMsg(QObject::tr("反排异常，请检查"), 1);
+            errorFlag = EF_Opwater;
             stop();
             return;
         }
@@ -300,18 +313,26 @@ void ITask::Timeout()
 
 
 MeasureTask::MeasureTask() :
+   measureway(-1),
     blankValue(0),
     colorValue(0),
   blankValueC2(0),
   colorValueC2(0)
 {
 //    testDataProcess();
+
 }
 
 bool MeasureTask::start(IProtocol *protocol)
 {
     if (ITask::start(protocol))
     {
+        DatabaseProfile profile;
+        if (profile.beginSection("measuremode"))
+        {
+            measureway = profile.value("MeasureMethod").toInt();
+        }
+
         clearCollectedValues();
         return true;
     }
@@ -419,6 +440,11 @@ void MeasureTask::dataProcess()
     conc = setPrecision(c, 4, &strResult);
 
     QList<QVariant> data;
+    QString stm;
+    if(measureway==0||measureway==1){
+        stm="N";}
+    else if(measureway==2){
+        stm="M";}
     data << strResult;
     data << QString::number(vabs, 'f', 4);
     data << QString::number(blankValue);
@@ -426,7 +452,7 @@ void MeasureTask::dataProcess()
     data << QString::number(blankValueC2);
     data << QString::number(colorValueC2);
     data << QString::number(protocol->getReceiver().mcu1Temp());
-    data << QObject::tr("M");
+    data << QString("%1").arg(stm);
     data << QString::number(vcolor);
     data << QString::number(args.turbidityOffset);
     data << QString("%1,%2,%3").arg(args.quada).arg(args.quadb).arg(args.quadc);
@@ -531,6 +557,7 @@ void MeasureTask::loadParameters()
     if (profile.beginSection("measuremode")) {
         args.mode = profile.value("OnlineOffline", 0).toInt();
         args.pipe = profile.value("SamplePipe").toInt();
+        //measureway = profile.value("MeasureMethod").toInt();
     }
 
     if (profile.beginSection("measure"))
@@ -682,7 +709,7 @@ void CalibrationTask::loadParameters()
     if (pframe) {
         corArgs.loopTab[2] = pframe->getCurrentSample(); //
         corArgs.loopTab[3] = pframe->getCurrentWater(); //
-        pipe = pframe->getCurrentPipe();
+        //pipe = pframe->getCurrentPipe();
     }
 }
 

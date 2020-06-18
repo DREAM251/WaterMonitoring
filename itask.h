@@ -38,7 +38,8 @@ enum ErrorFlag
     EF_NoError = 0,
     EF_HeatError,
     EF_SamplingError,
-    EF_BlankError
+    EF_BlankError,
+    EF_Opwater
 };
 
 class CalibFrame;
@@ -97,6 +98,7 @@ protected:
     TaskType taskType;
     QDateTime startTime;
     int processSeconds; // 一次完整测量花费的时间
+
 
     int pipe; //取液管道,-1代表默认管道
     float realTimeConc;
@@ -159,6 +161,7 @@ protected:
     int blankValueC2;
     int colorValue;
     int colorValueC2;
+    int measureway;
     WorkArguments args;
 
     double vabs;
