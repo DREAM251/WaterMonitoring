@@ -3,9 +3,29 @@
 
 #include "ui_querydata.h"
 #include <QDialog>
-
+#include <QThread>
 class QSqlDatabase;
 class QStandardItemModel;
+class QueryData;
+class myThread : public QThread
+{
+    Q_OBJECT
+public:
+    explicit myThread(QObject *parent = 0);
+
+
+protected:
+    void run();
+
+    void readData(QString &table,QString &filename);
+
+private:
+
+signals:
+    void isDone(QStringList str);
+public slots:
+
+};
 
 class QueryData : public QWidget ,public Ui_QueryData
 {
@@ -36,6 +56,7 @@ private slots:
     void slot_QueryDateChange(QDate);
     void slot_PrinterData(QModelIndex);
     void slot_PrinterSelectUi();
+    void dealDone(QStringList qstr);
 signals:
     void sigPrinterData(QStringList);
     void sigPrinterPageData(QStringList);
@@ -49,6 +70,7 @@ private:
     int queryItemsEndID;    /*检索方式的最终ID序号*/
     QStringList printerPageData;
     QStringList printerData;
+    myThread *thread;
 public:
     void setHeaderName(int i , const QString &name);
     void setColumnWidth(int i,int nwidth);
@@ -59,7 +81,8 @@ public:
     void setSQLDatabase(QSqlDatabase *);
     void setColumnIsHidden(int, bool);
     void initFirstPageQuery();
-    void readData(QString &table,QString &filename);
+    int runInthread(QString &table);
+
 };
 
 #endif // QUERYDATA_H
