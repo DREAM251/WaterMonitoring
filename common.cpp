@@ -569,11 +569,11 @@ void DriverSelectionDialog::GetDrives(QStringList &driverDir, QStringList &drive
 }
 #endif
 
-
 LOG_WRITER::LOG_WRITER() : fcount(4) {}
 
 void LOG_WRITER::writeLog(QString Msg1, QString Msg2, QString prefix, int fcount)
 {
+    //QString prefix1 = elementPath + prefix;
     const qint64 maxFileSize = 5*1024*1024;//5MB
     QFile recfile(prefix + ".log");
     if(recfile.open(QIODevice::Append | QIODevice::Text))
@@ -612,20 +612,22 @@ void LOG_WRITER::writeLog(QString Msg1, QString Msg2, QString prefix, int fcount
 LOG_WRITER *LOG_WRITER::getObject(const QString &filePath)
 {
     static LOG_WRITER *writer = NULL;
+    QString stu =elementPath + "/logs";
     if(writer == NULL) {
         writer = new LOG_WRITER;
-        QString st = elementPath + "/logs";
-        QDir dir(st);
+
+        QDir dir(stu);
         if (!dir.exists())
         {
             dir.setPath("");
-            if (!dir.mkdir(st))
+            if (!dir.mkdir(stu))
                 qDebug() << "mkdir logs failed!";
         }
     }
-    writer->filePath = filePath;
+    writer->filePath =elementPath + filePath;;
     return writer;
 }
+
 
 void LOG_WRITER::notice(const QString &x)
 {
