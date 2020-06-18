@@ -112,7 +112,7 @@ void QFMain::initSettings()
 
     QFrame *f = new QFrame;
     measuremode->setupUi(f);
-    setui->tabWidget->insertTab(0, f, tr("计划任务"));
+    setui->tabWidget->insertTab(0, f, tr("测量模式"));
 
     setui->tabWidget->setCurrentIndex(0);
     ui->contentStackedWidget->addWidget(w);
@@ -129,8 +129,8 @@ void QFMain::initCalibration()
     QTabWidget *tabwidget = new QTabWidget();
     tabwidget->setStyleSheet("QTabBar::tab{font:11pt 'Sans Serif'}");
     usercalib = new CalibFrameUser;
-    usercalib->addPipeName(tr("零样"));
-    usercalib->addPipeName(tr("标样"));
+    //usercalib->addPipeName(tr("零样"));
+    //usercalib->addPipeName(tr("标样"));
     usercalib->setRange(0, "0-10mg/L");
     usercalib->setRange(1, "0-50mg/L");
     usercalib->setRange(2, "0-200mg/L");
@@ -140,8 +140,8 @@ void QFMain::initCalibration()
     usercalib->renewUI();
     connect(usercalib,SIGNAL(StartCalibration()), this, SLOT(UserCalibration()));
     factorycalib = new CalibFrameFactory;
-    factorycalib->addPipeName(tr("零样"));
-    factorycalib->addPipeName(tr("标样"));
+    //factorycalib->addPipeName(tr("零样"));
+    //factorycalib->addPipeName(tr("标样"));
     factorycalib->setRange(0, "0-10mg/L");
     factorycalib->setRange(1, "0-50mg/L");
     factorycalib->setRange(2, "0-200mg/L");
@@ -149,8 +149,8 @@ void QFMain::initCalibration()
     factorycalib->setSampleHigh(5, 5);
     factorycalib->loadParams();
     factorycalib->renewUI();
-    tabwidget->addTab(usercalib, tr("用户标定"));
-    tabwidget->addTab(factorycalib, tr("出厂标定"));
+    tabwidget->addTab(usercalib, tr("用户校准"));
+    tabwidget->addTab(factorycalib, tr("出厂校准"));
     ui->contentStackedWidget->addWidget(tabwidget);
     connect(factorycalib,SIGNAL(StartCalibration()), this, SLOT(FactoryCalibration()));
 }
@@ -292,7 +292,7 @@ void QFMain::initQuery()
         int column1 = 12;
         QString label = tr("标定数据查询");
         QString table1 = "Calibration";
-        QString items1 = "A1,A2,A3,A4,A5,A6,A7,A8,A9,B1";
+        QString items1 = "A1,A2,A3,A4,A5,A6,A7,A8,A9,B1,B2,B3";
         QString name1[] = {
             tr("时间"),
             tr("类型"),
@@ -495,7 +495,7 @@ void QFMain::updateStatus()
     {
 //        ui->RealTimeResult->setText(QString("%1").arg(re.lightVoltage1()));
         leavetime = re.stepTime();
-        explainString2 = QString("(%1)").arg(leavetime);
+        explainString2 = QString("(%1S)").arg(leavetime);
         ui->waterVoltage->setText(QString("%1").arg(re.lightVoltage1()));
         ui->waterVoltage1->setText(QString("%1").arg(re.lightVoltage2()));
         ui->waterVoltage2->setText(QString("%1").arg(re.lightVoltage3()));
@@ -539,30 +539,18 @@ void QFMain::updateStatus()
         ui->led7->setStyleSheet(sd.valve7()?style1:style2);
         ui->led8->setStyleSheet(sd.valve8()?style1:style2);
         explainString3 = sd.translateExplainCode();
-        //QString explainString2 = QString("(%1)").arg(leavetime);
-//        QString stepshow = QString("%1/%2").arg(nowstep).arg(totalnum);
-//        if (!explainString.isEmpty()) {
-//            ui->CurrentTask->setText(tr("当前流程：") + explainString);
-//            ui->stepshow->setText(tr("当前步骤：")+ stepshow + explainString2);
-//            if(this->explainString!=explainString)
-//            {
-//               addLogger(explainString, LoggerTypeRunning);
-//               this->explainString=explainString;
-//            }
-
-//    }
     }
     QString stepshow = QString("%1/%2").arg(nowstep).arg(totalnum);
-    if (!explainString3.isEmpty()) {
+    if (!explainString3.isEmpty())
+    {
         ui->CurrentTask->setText(tr("当前流程：") + explainString3);
-        ui->stepshow->setText(tr("当前步骤：")+ stepshow + explainString2);
         if(this->explainString!=explainString3)
         {
            addLogger(explainString3, LoggerTypeRunning);
            this->explainString=explainString3;
         }
-
-}
+    }
+    ui->stepshow->setText(tr("当前步骤：")+ stepshow + explainString2);
 
     DatabaseProfile profile;
     if (profile.beginSection("measure")){
@@ -975,4 +963,7 @@ void QFMain::TashStop(int type)
 void QFMain::on_pushButton_clicked()
 {
     ui->warning->clear();
+    clearLastErrorMsg();
+
+
 }

@@ -208,7 +208,7 @@ QToolButton::checked{background-color:white; color:black;}</string>
            </font>
           </property>
           <property name="text">
-           <string>标定</string>
+           <string>校准</string>
           </property>
           <property name="icon">
            <iconset resource="res/qtres.qrc">
@@ -1639,23 +1639,11 @@ border-color: rgb(0, 0, 0);</string>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="minimumSize">
-             <size>
-              <width>50</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>50</width>
-              <height>16777215</height>
-             </size>
-            </property>
             <property name="styleSheet">
              <string notr="true">font: 10pt &quot;Sans Serif&quot;;</string>
             </property>
             <property name="text">
-             <string>复位</string>
+             <string>报警复位</string>
             </property>
            </widget>
           </item>
