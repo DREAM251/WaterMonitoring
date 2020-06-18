@@ -209,7 +209,7 @@ QLabel {
       </size>
      </property>
      <property name="text">
-      <string>取液管道</string>
+      <string>标定次数</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -382,9 +382,6 @@ QLabel {
      </property>
     </widget>
    </item>
-   <item row="5" column="4">
-    <widget class="QComboBox" name="cbPipe4"/>
-   </item>
    <item row="10" column="0" colspan="6">
     <widget class="QLabel" name="lbResult">
      <property name="enabled">
@@ -422,9 +419,6 @@ QLabel {
      </item>
     </widget>
    </item>
-   <item row="1" column="4">
-    <widget class="QComboBox" name="cbPipe0"/>
-   </item>
    <item row="6" column="6">
     <widget class="QSpinBox" name="sbWater5">
      <property name="buttonSymbols">
@@ -435,9 +429,6 @@ QLabel {
      </property>
     </widget>
    </item>
-   <item row="4" column="4">
-    <widget class="QComboBox" name="cbPipe3"/>
-   </item>
    <item row="5" column="5">
     <widget class="QSpinBox" name="sbSample4">
      <property name="buttonSymbols">
@@ -447,9 +438,6 @@ QLabel {
       <number>20</number>
      </property>
     </widget>
-   </item>
-   <item row="2" column="4">
-    <widget class="QComboBox" name="cbPipe1"/>
    </item>
    <item row="6" column="1">
     <widget class="QDoubleSpinBox" name="dsbConc5">
@@ -652,9 +640,6 @@ QLabel {
      </property>
     </widget>
    </item>
-   <item row="6" column="4">
-    <widget class="QComboBox" name="cbPipe5"/>
-   </item>
    <item row="6" column="5">
     <widget class="QSpinBox" name="sbSample5">
      <property name="buttonSymbols">
@@ -773,9 +758,6 @@ QLabel {
       </property>
      </item>
     </widget>
-   </item>
-   <item row="3" column="4">
-    <widget class="QComboBox" name="cbPipe2"/>
    </item>
    <item row="6" column="0">
     <widget class="QLabel" name="lbCali5">
@@ -897,6 +879,24 @@ QLabel {
       <string>一次拟合</string>
      </property>
     </widget>
+   </item>
+   <item row="1" column="4">
+    <widget class="QSpinBox" name="num0"/>
+   </item>
+   <item row="2" column="4">
+    <widget class="QSpinBox" name="num1"/>
+   </item>
+   <item row="3" column="4">
+    <widget class="QSpinBox" name="num2"/>
+   </item>
+   <item row="4" column="4">
+    <widget class="QSpinBox" name="num3"/>
+   </item>
+   <item row="5" column="4">
+    <widget class="QSpinBox" name="num4"/>
+   </item>
+   <item row="6" column="4">
+    <widget class="QSpinBox" name="num5"/>
    </item>
   </layout>
  </widget>
